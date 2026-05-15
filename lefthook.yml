@@ -1,0 +1,75 @@
+commit-msg:
+  commands:
+    restamp-history:
+      run: python3 scripts/hooks/restamp-history-hook.py {1}
+pre-commit:
+  commands:
+    # DISABLED 2026-05-15: astro-noop is a `run: 'true'` placeholder that
+    # does nothing. Remove this comment block and the entry below if a
+    # real Astro-specific gate is added later.
+    # astro-noop:
+    #   run: 'true'
+    end-of-file-newline:
+      # Exclude LaunchPad sealed envelopes (scaffold-decision.json,
+      # scaffold-receipt.json). These are atomically written by
+      # lp_pick_stack and lp_scaffold_stack as canonical JSON
+      # (sort_keys + tight separators) with no trailing newline by
+      # design — the embedded sha256 is computed over the in-memory
+      # canonicalized dict before file write, so a trailing-byte
+      # change does not invalidate the seal, but the canonical-byte
+      # convention is preserved for cross-writer/reader integrity.
+      exclude: '\.launchpad/(scaffold-decision|scaffold-receipt)\.json$'
+      glob: '*.{js,jsx,ts,tsx,json,css,md,yml,yaml,html,sh}'
+      priority: 10
+      run: "failed=\"\"\nwhile IFS= read -r file; do\n  if [ -f \"$file\" ] && [ -s\
+        \ \"$file\" ]; then\n    if [ \"$(tail -c 1 \"$file\" | od -An -tx1 | tr -d\
+        \ ' \\n')\" != \"0a\" ]; then\n      failed=\"$failed $file\"\n    fi\n  fi\n\
+        done <<< \"$(echo \"{staged_files}\" | tr ' ' '\\n')\"\nif [ -n \"$failed\"\
+        \ ]; then\n  echo \"Files missing final newline:$failed\"\n  exit 1\nfi\n"
+    # DISABLED 2026-05-15: eslint not installed as a dev dep. Re-enable
+    # after running `pnpm add -D eslint @typescript-eslint/parser
+    # @typescript-eslint/eslint-plugin eslint-plugin-astro` and adding an
+    # eslint.config.mjs.
+    # eslint-fix:
+    #   exclude: next-env\.d\.ts$
+    #   glob: '*.{js,jsx,ts,tsx,mjs,cjs}'
+    #   priority: 2
+    #   run: pnpm eslint --fix {staged_files}
+    #   stage_fixed: true
+    large-file-guard:
+      glob: '*.{js,jsx,ts,tsx,json,css,md,yml,yaml,html,sh,mjs,cjs}'
+      priority: 10
+      run: "max_size=512000\nviolations=\"\"\nwhile IFS= read -r file; do\n  if [\
+        \ -f \"$file\" ]; then\n    size=$(wc -c < \"$file\" | tr -d ' ')\n    if\
+        \ [ \"$size\" -gt \"$max_size\" ]; then\n      violations=\"$violations\\\
+        n  $file ($(( size / 1024 ))KB)\"\n    fi\n  fi\ndone <<< \"$(echo \"{staged_files}\"\
+        \ | tr ' ' '\\n')\"\nif [ -n \"$violations\" ]; then\n  echo \"Files exceed\
+        \ 500KB limit:$violations\"\n  exit 1\nfi\n"
+    # DISABLED 2026-05-15: prettier not installed as a dev dep. Re-enable
+    # after running `pnpm add -D prettier prettier-plugin-astro` and adding
+    # a prettier config.
+    # prettier-fix:
+    #   glob: '*.{js,jsx,ts,tsx,json,css,md,yml,yaml,html}'
+    #   priority: 1
+    #   run: pnpm prettier --write {staged_files}
+    #   stage_fixed: true
+    # DISABLED 2026-05-15: structure-check allowlist hard-codes a monorepo
+    # layout (apps/, packages/) and refuses Astro single-app projects: it
+    # will flag public/, src/, astro.config.mjs, and .gitleaks.toml as
+    # non-whitelisted root items. Re-enable after customizing
+    # scripts/maintenance/check-repo-structure.sh to allow public/, src/,
+    # and astro.config.mjs at root for this single-Astro-app project.
+    # structure-check:
+    #   priority: 10
+    #   run: bash scripts/maintenance/check-repo-structure.sh
+    trailing-whitespace:
+      glob: '*.{js,jsx,ts,tsx,json,css,md,yml,yaml,html,sh}'
+      priority: 10
+      run: "found=0\nwhile IFS= read -r file; do\n  if [ -f \"$file\" ] && grep -n\
+        \ '[[:blank:]]$' \"$file\" > /dev/null 2>&1; then\n    echo \"$file has trailing\
+        \ whitespace:\"\n    grep -n '[[:blank:]]$' \"$file\"\n    found=1\n  fi\n\
+        done <<< \"$(echo \"{staged_files}\" | tr ' ' '\\n')\"\nif [ \"$found\" -eq\
+        \ 1 ]; then\n  exit 1\nfi\n"
+    typecheck:
+      priority: 10
+      run: pnpm typecheck

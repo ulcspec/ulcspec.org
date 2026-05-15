@@ -1,0 +1,11 @@
+# CODEOWNERS for ulcspec.org
+#
+# Each line maps a path pattern to one or more owners. When a PR touches a
+# matching path, GitHub automatically requests review from the listed owners.
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Default owners apply to every file unless overridden by a more specific rule below.
+# TODO: confirm whether the default owner should be the @ulcspec org or a
+# personal handle (e.g. the originator's @username). Defaulting to the org
+# for now so PR-review routing matches the upstream spec repo at
+# github.com/ulcspec/ULC.
+* @ulcspec

@@ -1,0 +1,59 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# Added by LaunchPad /lp-define -- audit log is per-user debug state
+.launchpad/audit.log
+# Build outputs
+build/
+*.tsbuildinfo
+# Dependencies
+# Environments
+.env.local
+.env.consultant
+.env.migrate
+# Logs
+*.log
+# OS
+# Python
+*.pyc
+__pycache__/
+# Turborepo
+.turbo/
+# Next.js
+.next/
+# pnpm
+.pnpm-store/
+# Misc caches
+.cache/
+.tsbuildinfo
+coverage/
+# Generated images
+generated_images/
+# LaunchPad runtime
+.launchpad/.bootstrap-in-progress
+.launchpad/.bootstrap.lock
+.launchpad/backups/
+# LaunchPad scaffold tempdirs (composition + single-adapter wrapping)
+.lp-tmp/

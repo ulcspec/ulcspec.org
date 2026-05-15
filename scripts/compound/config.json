@@ -1,0 +1,14 @@
+{
+  "ambitionMode": false,
+  "analyzeCommand": "",
+  "branchPrefix": "compound/",
+  "evaluator": {
+    "enabled": false,
+    "maxCycles": 3,
+    "sprintContract": false
+  },
+  "maxIterations": 25,
+  "outputDir": "./scripts/compound",
+  "reportsDir": "./docs/reports",
+  "tool": "claude"
+}
