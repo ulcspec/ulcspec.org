@@ -9,14 +9,14 @@
 
 | Surface | Section spec | Copy artifact | Route | Surface type | Status |
 |---|---|---|---|---|---|
-| Homepage hero | [hero.md](sections/hero.md) | [hero](../growth/copy/hero.md) | `/` | Page | hardened |
-| For Designers | [for-designers.md](sections/for-designers.md) | [for-designers](../growth/copy/for-designers.md) | `/for-designers` | Page | designed |
-| For Manufacturers | [for-manufacturers.md](sections/for-manufacturers.md) | [for-manufacturers](../growth/copy/for-manufacturers.md) | `/for-manufacturers` | Page | designed |
-| Validator | [validator.md](sections/validator.md) | [validator](../growth/copy/validator.md) | `/validator` | Page | shaped |
-| Spec (rendered spec content) | [spec.md](sections/spec.md) | [spec](../growth/copy/spec.md) | `/spec` (+ sub-routes) | Page | planned |
-| Governance | [governance.md](sections/governance.md) | [governance](../growth/copy/governance.md) | `/governance` | Page | shaped |
-| Downloads | [downloads.md](sections/downloads.md) | [downloads](../growth/copy/downloads.md) | `/downloads` | Page | designed |
-| Adopters | [adopters.md](sections/adopters.md) | [adopters](../growth/copy/adopters.md) | `/#adopters` (landing-page section at v1; pivot to `/adopters` page when registry is non-empty) | **Landing-page section** (not its own page at v1) | shaped |
+| Homepage hero | [hero.md](sections/hero.md) | [hero](../growth/copy/hero.md) | `/` | Page | approved |
+| For Designers | [for-designers.md](sections/for-designers.md) | [for-designers](../growth/copy/for-designers.md) | `/for-designers` | Page | approved |
+| For Manufacturers | [for-manufacturers.md](sections/for-manufacturers.md) | [for-manufacturers](../growth/copy/for-manufacturers.md) | `/for-manufacturers` | Page | approved |
+| Validator | [validator.md](sections/validator.md) | [validator](../growth/copy/validator.md) | `/validator` | Page | approved |
+| Spec (rendered spec content) | [spec.md](sections/spec.md) | [spec](../growth/copy/spec.md) | `/spec` (+ sub-routes) | Page | approved |
+| Governance | [governance.md](sections/governance.md) | [governance](../growth/copy/governance.md) | `/governance` | Page | approved |
+| Downloads | [downloads.md](sections/downloads.md) | [downloads](../growth/copy/downloads.md) | `/downloads` | Page | approved |
+| Adopters | [adopters.md](sections/adopters.md) | [adopters](../growth/copy/adopters.md) | `/#adopters` (landing-page section at v1; pivot to `/adopters` page when registry is non-empty) | **Landing-page section** (not its own page at v1) | approved |
 
 ## Top-nav order (locked, applies to every page)
 

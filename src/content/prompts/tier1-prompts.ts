@@ -3,7 +3,7 @@
 //   - src/components/Tier1QuickWin.astro (homepage hero, RENDER prompt only)
 //   - src/pages/for-designers.astro      (RENDER + COMPARE + EXTRACT)
 //   - src/pages/downloads.astro          (ALL 5; canonical catalog)
-//   - future /spec#how-to-use-today      (RENDER prompt)
+//   - src/components/TwoTierConsumption.astro on /spec (RENDER prompt)
 //
 // The five prompts at /downloads#prompts are the canonical catalog; the
 // homepage hero + /for-designers + /spec render named subsets via the
