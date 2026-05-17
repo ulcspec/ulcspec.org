@@ -286,13 +286,11 @@ async function fetchWithTimeout(
     Accept: accept,
     'User-Agent': 'ulcspec.org-build',
   };
-  // Astro / Vite exposes server-side env vars via `import.meta.env`. We
-  // read GITHUB_TOKEN unprefixed (not PUBLIC_*) so it stays server-only
-  // and never leaks into client bundles. Cast via Record<string, string>
-  // because the var is not declared in env.d.ts (project-wide types are
-  // greenfield; declaring every optional env var is premature).
-  const env = import.meta.env as unknown as Record<string, string | undefined>;
-  const token = env.GITHUB_TOKEN;
+  // Read GITHUB_TOKEN unprefixed (not PUBLIC_*) so it stays server-only
+  // and never leaks into client bundles. Uses process.env to align with
+  // src/lib/spec-sync-loader.ts; both modules run in the Node build
+  // process where process.env is the native, well-typed access path.
+  const token = process.env.GITHUB_TOKEN;
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
