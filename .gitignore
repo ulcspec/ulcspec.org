@@ -57,3 +57,10 @@ generated_images/
 .launchpad/backups/
 # LaunchPad scaffold tempdirs (composition + single-adapter wrapping)
 .lp-tmp/
+# Growth-toolkit strategic artifacts (private; mirrored from ULC repo)
+docs/growth/
+# Internal strategic / process artifacts (not for public visibility)
+docs/tasks/
+docs/brainstorms/
+.launchpad/brainstorm-summary.md
+.launchpad/rationale.md
