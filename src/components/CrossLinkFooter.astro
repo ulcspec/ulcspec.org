@@ -1,0 +1,54 @@
+---
+// Contextual cross-link band used at the bottom of long-form audience pages
+// (/for-designers, /for-manufacturers). Five named outbound links + maintainer
+// credential. Designed so the consuming page provides the link list with
+// page-appropriate framing copy.
+
+interface LinkItem {
+  href: string;
+  /**
+   * Trusted HTML rendered via `set:html` so labels can embed `<code>` for
+   * filename references. MUST be repo-authored; never pass user input here.
+   * Promote to a `TrustedHtml` branded type on the 3rd `set:html` consumer.
+   */
+  labelHtml: string;
+}
+
+interface Props {
+  links: LinkItem[];
+  /** Optional eyebrow label above the link grid. */
+  label?: string;
+}
+
+const { links, label = 'Keep going' } = Astro.props;
+---
+
+<section
+  class="border-t border-token"
+  style="background: var(--bg);"
+  aria-labelledby="cross-link-footer-label"
+>
+  <div class="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+    <p
+      id="cross-link-footer-label"
+      class="small-caps text-xs text-[var(--text-subtle)] mb-6"
+    >
+      {label}
+    </p>
+    <ul
+      class="grid gap-x-8 gap-y-2 md:grid-cols-2 lg:grid-cols-3 text-base"
+    >
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="min-h-[44px] py-2 inline-flex items-center gap-2 text-[var(--text)] hover:text-[var(--accent-warm)] transition-colors"
+          >
+            <span set:html={link.labelHtml} />
+            <span aria-hidden="true" class="text-[var(--accent-warm)]">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

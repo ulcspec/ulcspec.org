@@ -1,17 +1,93 @@
 ---
 import '../styles/global.css';
-const { content } = Astro.props;
+import { THEME_STORAGE_KEY } from '../lib/theme';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'ULC: open machine-readable standard for luminaire cut sheets',
+  description = "Designers spec faster when manufacturers publish ULC. The open JSON cut-sheet layer LLMs read today and designers' tools consume natively.",
+  ogImage,
+  canonical,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<title>{content.title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {/* Theme bootstrap (no-FOUC). Runs before paint. Whitelists the stored
+        value so a corrupted localStorage entry can't poison data-theme. */}
+    <script is:inline define:vars={{ THEME_KEY: THEME_STORAGE_KEY }}>
+      (function () {
+        try {
+          var stored = localStorage.getItem(THEME_KEY);
+          var valid = stored === 'light' || stored === 'dark';
+          var systemLight =
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: light)').matches;
+          var theme = valid ? stored : systemLight ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (_) {
+          /* default dark via the markup attribute */
+        }
+      })();
+    </script>
+
+    {/* Fonts: preload Inter 600 + JetBrains Mono 400, lazy-load full families */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    {/* Favicon kit */}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/android-chrome-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="/android-chrome-512x512.png"
+    />
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {/* Per-page head injection: JSON-LD, page-specific preloads, etc. */}
+    <slot name="head" />
+  </head>
+  <body class="font-sans antialiased">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+  </body>
 </html>

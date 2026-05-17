@@ -1,0 +1,60 @@
+---
+// Tier 1 quick-win band: literal prompt block with copy-button + sample-file link.
+// Copy: docs/growth/copy/hero.md ("Tier 1 quick-win band").
+// Prompt source of truth: src/content/prompts/tier1-prompts.ts.
+// Renders the render-as-spec-sheet prompt via the shared <PromptBlock>; namespaced
+// id avoids collision with /for-designers (which renders the same prompt under id
+// `tier1-render`).
+import PromptBlock from './PromptBlock.astro';
+import { TIER1_PROMPT_RENDER } from '../content/prompts/tier1-prompts';
+---
+
+<section
+  class="relative border-t border-token"
+  style="background: var(--bg-elevated);"
+>
+  <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28 lg:py-32">
+    <div class="max-w-3xl">
+      <h2
+        class="font-display text-3xl md:text-4xl font-semibold tracking-tight leading-tight"
+      >
+        Try ULC right now
+      </h2>
+      <p class="mt-5 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+        Generic LLMs (ChatGPT, Claude, Gemini) parse a <code class="font-mono text-[var(--accent-warm)]">.ulc</code> file natively. Drag any sample record into the chat alongside this prompt and the LLM produces a clean spec sheet, cross-product comparison, or attribute lookup. No setup. No waiting for ecosystem maturity.
+      </p>
+    </div>
+
+    <div class="mt-8 max-w-4xl">
+      <PromptBlock
+        id="tier1-home-render"
+        label={TIER1_PROMPT_RENDER.label}
+        text={TIER1_PROMPT_RENDER.text}
+      />
+
+      <p class="mt-6 text-sm">
+        <a
+          href="/downloads#examples"
+          class="text-[var(--accent-warm)] hover:underline underline-offset-4 inline-flex items-center gap-1.5"
+        >
+          Try a sample <code class="font-mono">.ulc</code> file
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </div>
+
+    <p
+      class="mt-12 max-w-3xl text-sm md:text-base text-[var(--text-muted)] leading-relaxed border-t border-token pt-8"
+    >
+      Lighting-domain specialty tools add on-demand fetching of the linked IES /
+      LDT photometric files and built-in glossary for industry shorthand. Both
+      tiers work; the difference is depth, not whether ULC is consumable.{' '}
+      <a
+        href="/spec#how-to-use-today"
+        class="text-[var(--accent-warm)] hover:underline underline-offset-4 whitespace-nowrap"
+      >
+        More on the two-tier consumption model <span aria-hidden="true">→</span>
+      </a>
+    </p>
+  </div>
+</section>
