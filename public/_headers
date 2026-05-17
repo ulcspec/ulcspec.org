@@ -1,5 +1,59 @@
 # Cloudflare Pages _headers
-# Per-route content-type + cache-control overrides.
+# Per-route content-type, cache-control, and security overrides.
+
+# Security baseline — applies to every response.
+# CSP 'unsafe-inline' for script-src covers the theme-bootstrap inline script
+# and the JSON-LD identity script; switch to nonce-based CSP (Astro
+# experimental.csp) when those are extracted. 'unsafe-inline' for style-src
+# covers Tailwind's inline style attributes.
+/*
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# Hashed build assets (Astro outputs content-hashed filenames under /_astro/).
+# Safe to cache forever; immutable signals the URL itself changes when the
+# content changes.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Root-served favicons + OG image. Filenames are stable so immutable is safe;
+# rename to bust cache when the asset itself changes.
+/favicon.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon-16x16.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon-32x32.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon-48x48.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/android-chrome-192x192.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/android-chrome-512x512.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/og-image.png
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML pages: short cache, must-revalidate so site updates surface quickly.
+/
+  Cache-Control: public, max-age=3600, must-revalidate
+
+/*.html
+  Cache-Control: public, max-age=3600, must-revalidate
 
 # Serve the JSON Schema with the IANA-registered media type so JSON Schema
 # tooling (Ajv, hyperjump, jschon, etc.) picks it up via Accept-header

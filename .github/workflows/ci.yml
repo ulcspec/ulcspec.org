@@ -45,3 +45,85 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Verify locked copy survives the build (verbatim grep)
+        run: |
+          set -euo pipefail
+          BUILD=dist/index.html
+          test -f "$BUILD" || (echo "no dist/index.html"; exit 1)
+          grep -F "National Lighting Bureau AI Think Tank 2026" "$BUILD"
+          grep -F "Designers spec faster when manufacturers publish ULC." "$BUILD"
+          grep -F "Manufacturers reach designers who specify ULC-readable products." "$BUILD"
+          grep -F "In active dialogue with DIAL" "$BUILD"
+          grep -F "This list will populate as manufacturers publish" "$BUILD"
+          if grep -F "Enlighten Europe" "$BUILD"; then
+            echo "FAIL: forbidden 'Enlighten Europe' string leaked into build output"
+            exit 1
+          fi
+
+      - name: Verify all v1 routes built
+        run: |
+          set -euo pipefail
+          for route in for-designers for-manufacturers validator spec governance downloads; do
+            f="dist/${route}/index.html"
+            test -f "$f" || (echo "FAIL: missing $f"; exit 1)
+            grep -F "ULC home" "$f" >/dev/null \
+              || (echo "FAIL: $f missing nav chrome"; exit 1)
+          done
+          echo "All 6 v1 routes built and ship nav chrome."
+
+      - name: Verify sitemap + robots + llms artifacts
+        run: |
+          set -euo pipefail
+          test -f dist/sitemap-index.xml || (echo "FAIL: dist/sitemap-index.xml missing"; exit 1)
+          test -f dist/sitemap-0.xml || (echo "FAIL: dist/sitemap-0.xml missing"; exit 1)
+          test -f dist/robots.txt || (echo "FAIL: dist/robots.txt missing"; exit 1)
+          test -f dist/llms.txt || (echo "FAIL: dist/llms.txt missing"; exit 1)
+          grep -F "Sitemap: https://ulcspec.org/sitemap-index.xml" dist/robots.txt
+          for route in for-designers for-manufacturers validator spec governance downloads; do
+            grep -F "https://ulcspec.org/${route}" dist/sitemap-0.xml \
+              || (echo "FAIL: sitemap missing route $route"; exit 1)
+          done
+          grep -F "<loc>https://ulcspec.org/</loc>" dist/sitemap-0.xml \
+            || (echo "FAIL: sitemap missing homepage"; exit 1)
+          echo "Sitemap + robots + llms artifacts OK."
+
+      - name: Validate JSON-LD structure
+        run: |
+          set -euo pipefail
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('dist/index.html', 'utf8');
+            const matches = html.match(/<script type=\"application\/ld\\+json\"[^>]*>([\\s\\S]*?)<\\/script>/g);
+            if (!matches || matches.length === 0) { console.error('FAIL: no JSON-LD found'); process.exit(1); }
+            for (const m of matches) {
+              const body = m.replace(/<script[^>]*>/, '').replace(/<\\/script>/, '');
+              const parsed = JSON.parse(body);
+              const arr = Array.isArray(parsed) ? parsed : [parsed];
+              for (const obj of arr) {
+                if (!obj['@context']) { console.error('FAIL: missing @context'); process.exit(1); }
+                if (!obj['@type']) { console.error('FAIL: missing @type'); process.exit(1); }
+              }
+              console.log('JSON-LD OK: ' + arr.map(o => o['@type']).join(', '));
+            }
+          "
+
+      - name: Verify Cloudflare Analytics beacon gate (off without token)
+        run: |
+          set -euo pipefail
+          BUILD=dist/index.html
+          if grep -q "static.cloudflareinsights.com" "$BUILD"; then
+            echo "FAIL: Cloudflare beacon present in $BUILD without PUBLIC_CF_ANALYTICS_TOKEN set in CI. Gate is broken."
+            exit 1
+          fi
+          echo "Beacon correctly absent when no token is configured."
+
+      - name: Verify OG image is in sync with SVG source
+        run: |
+          set -euo pipefail
+          pnpm og:build
+          git diff --exit-code public/og-image.png \
+            || (echo "FAIL: public/og-image.png is out of sync with src/assets/og-image.svg. Run 'pnpm og:build' locally and commit the result."; exit 1)
+
+      - name: Lighthouse CI
+        run: pnpm exec lhci autorun
+

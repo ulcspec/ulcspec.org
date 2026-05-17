@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import logo from '../assets/logo.png';
 import Button from './Button.astro';
 import ThemeToggle from './ThemeToggle.astro';
@@ -37,13 +38,15 @@ const isActive = (href: string) =>
       class="flex items-center gap-3 shrink-0 rounded-full"
       aria-label="ULC home"
     >
-      <img
-        src={logo.src}
-        width="40"
-        height="40"
+      <Image
+        src={logo}
+        width={40}
+        height={40}
         alt=""
         loading="eager"
         decoding="async"
+        densities={[1, 2]}
+        format="webp"
         class="h-10 w-10 rounded-full"
       />
     </a>
