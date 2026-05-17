@@ -1,0 +1,80 @@
+---
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+import SectionCard from '../../../components/SectionCard.astro';
+import EditOnGitHub from '../../../components/EditOnGitHub.astro';
+
+const categories: readonly { slug: string; title: string; description: string }[] = [
+  { slug: 'downlight', title: 'Downlight', description: 'Recessed downlight starter skeleton. Pattern A (per-SKU) baseline.' },
+  { slug: 'linear-pendant', title: 'Linear pendant', description: 'Suspended linear pendant. Pattern D (per-foot linear scaling) baseline.' },
+  { slug: 'wall-pack', title: 'Wall-pack', description: 'Exterior building-mounted wall-pack. Cutoff angle, IP rating, mounting kit.' },
+  { slug: 'high-bay', title: 'High-bay', description: 'Industrial high-mount fixture. Lumen output, optical accessory, mounting height range.' },
+  { slug: 'bollard', title: 'Bollard', description: 'Exterior pedestrian-scale fixture. Pole geometry, optical distribution, IP rating.' },
+  { slug: 'wall-sconce', title: 'Wall-sconce', description: 'Interior wall-mounted decorative fixture. Up/down split, lamp source, dimming.' },
+];
+---
+
+<PageShell
+  title="Per-category templates - ULC specification"
+  description="Authoring templates for six luminaire categories: downlight, linear-pendant, wall-pack, high-bay, bollard, wall-sconce."
+>
+  <SpecDocsLayout>
+    <p class="page-eyebrow"><SpecVersionBadge /></p>
+    <h1 class="page-h1">Per-category templates.</h1>
+    <p class="page-intro">
+      Authoring templates ship for six luminaire categories: downlight,
+      linear-pendant, wall-pack, high-bay, bollard, and wall-sconce.
+      Each template is a starting-point JSON skeleton annotated with
+      required and optional fields, type hints, and provenance examples.
+      Download the JSON, fill in your data, run the validator.
+    </p>
+
+    <ul class="cat-cards">
+      {categories.map((c) => (
+        <li>
+          <SectionCard
+            href={`/spec/templates/${c.slug}`}
+            title={c.title}
+            description={c.description}
+            eyebrow="Template"
+          />
+        </li>
+      ))}
+    </ul>
+
+    <EditOnGitHub upstreamPath="templates/README.md" />
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-eyebrow { margin: 0 0 1.25rem 0; }
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) { .page-h1 { font-size: 2.75rem; } }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 2rem 0;
+    max-width: 44rem;
+  }
+  .cat-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .cat-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

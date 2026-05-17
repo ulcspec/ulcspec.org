@@ -1,0 +1,222 @@
+---
+// Step 4 marketecture (manufacturer track): before/after the manufacturer's
+// publishing flow. Two columns. Manufacturer publishing is the protagonist;
+// the contrast is "aggregator interpretation as data layer" vs "direct fetch
+// with hash verification." Inline HTML/CSS, themeable.
+//
+// Single-surface consumer as of 2026-05-16 (/for-manufacturers only). The
+// kept / replaced / added buckets are manufacturer-track wording. Promote to
+// a reusable figure component only when a second surface needs the same
+// structure.
+
+interface BeforeState {
+  kept: readonly string[];
+  problem: readonly string[];
+}
+interface AfterState {
+  kept: readonly string[];
+  added: readonly string[];
+}
+
+const before: BeforeState = {
+  kept: ['PDF datasheet', 'IES photometric file', 'LDT file'],
+  problem: [
+    'Extraction layer guesses structure',
+    "Aggregator's interpretation becomes the data layer",
+    "Designer's tool reads someone else's read of your data",
+  ],
+};
+
+const after: AfterState = {
+  kept: ['PDF datasheet', 'IES photometric file', 'LDT file'],
+  added: [
+    'ULC record (metadata only)',
+    'SHA-256 hash references to source files',
+    "Designer's tool fetches your authoritative record directly",
+    'No aggregator interpretation in the middle',
+  ],
+};
+---
+
+<figure class="mf-fig">
+  <div
+    class="mf-grid"
+    role="img"
+    aria-label="Before and after the manufacturer's publishing flow. Before: PDF, IES, and LDT files exist, but the extraction layer guesses structure and the aggregator's interpretation becomes the data layer. After: same PDF, IES, and LDT files, plus a ULC record with SHA-256 hash references; the designer's tool fetches the authoritative record directly with no aggregator interpretation in the middle."
+  >
+    <article class="mf-col mf-col--before">
+      <header>
+        <p class="mf-col__eyebrow">Today</p>
+        {/* Styled as a heading visually, but rendered as <p> so the diagram
+            does not emit document-outline H3s that compete with the surrounding
+            .theme H3s. The accessible name for the figure comes from the
+            role="img" + aria-label on .mf-grid above. */}
+        <p class="mf-col__title">PDF + IES + LDT, read through an aggregator</p>
+      </header>
+      <div class="mf-section">
+        <p class="mf-section__label">You publish</p>
+        <ul class="mf-list">
+          {before.kept.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="mf-section mf-section--problem">
+        <p class="mf-section__label">What the designer's tool actually sees</p>
+        <ul class="mf-list">
+          {before.problem.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </article>
+
+    <div class="mf-arrow" aria-hidden="true">
+      <svg viewBox="0 0 40 24" width="40" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12h34M26 4l10 8-10 8" />
+      </svg>
+    </div>
+
+    <article class="mf-col mf-col--after">
+      <header>
+        <p class="mf-col__eyebrow">With ULC</p>
+        <p class="mf-col__title">PDF + IES + LDT + ULC, fetched directly</p>
+      </header>
+      <div class="mf-section">
+        <p class="mf-section__label">You publish</p>
+        <ul class="mf-list">
+          {after.kept.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="mf-section mf-section--gain">
+        <p class="mf-section__label">What the designer's tool actually sees</p>
+        <ul class="mf-list">
+          {after.added.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  </div>
+  <figcaption class="mf-cap">
+    Before and after, from the manufacturer's seat. The PDF stays beautiful for human readers. The ULC record stays accurate for machine readers.
+  </figcaption>
+</figure>
+
+<style>
+  .mf-fig {
+    margin: 2rem 0 0 0;
+  }
+  @media print {
+    .mf-fig {
+      page-break-inside: avoid;
+    }
+    .mf-col,
+    .mf-col--after,
+    .mf-section--problem,
+    .mf-section--gain {
+      /* Before/after tinting is load-bearing; force print to render it. */
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  .mf-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  @media (min-width: 1024px) {
+    .mf-grid {
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.25rem;
+    }
+  }
+  .mf-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: var(--bg-elevated);
+  }
+  .mf-col--after {
+    border-color: color-mix(in oklab, var(--accent-warm) 35%, var(--border));
+  }
+  .mf-col__eyebrow {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.375rem 0;
+  }
+  .mf-col__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    margin: 0;
+  }
+  .mf-section__label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.375rem 0;
+  }
+  .mf-section--problem .mf-section__label,
+  .mf-section--gain .mf-section__label {
+    color: var(--accent-warm);
+  }
+  .mf-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .mf-list li {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    padding-left: 0.875rem;
+    position: relative;
+  }
+  .mf-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--text-subtle);
+  }
+  .mf-section--problem .mf-list li::before,
+  .mf-section--gain .mf-list li::before {
+    background: var(--accent-warm);
+  }
+  .mf-arrow {
+    color: var(--accent-warm);
+    align-self: center;
+    justify-self: center;
+    padding: 0.5rem;
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .mf-arrow {
+      display: block;
+    }
+  }
+  .mf-cap {
+    margin-top: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    line-height: 1.5;
+  }
+</style>

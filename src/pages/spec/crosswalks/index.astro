@@ -1,0 +1,169 @@
+---
+// /spec/crosswalks — index page.
+//
+// Per spec.md scope discipline: GLDF / DIAL / DIALux is mentioned at
+// length ONLY here (and on per-standard sub-pages). Other surfaces
+// link to the crosswalk but don't elaborate.
+//
+// At v1 all four crosswalks are status="planned"; the page renders the
+// list with status flags. Per-standard sub-pages land once the upstream
+// mapping documents land (mappings/<standard>-crosswalk.md).
+
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+import StatusFlag from '../../../components/StatusFlag.astro';
+import Callout from '../../../components/Callout.astro';
+import EditOnGitHub from '../../../components/EditOnGitHub.astro';
+
+interface Crosswalk {
+  slug: string;
+  title: string;
+  description: string;
+  status: 'planned' | 'in-progress' | 'landed';
+}
+
+const crosswalks: readonly Crosswalk[] = [
+  {
+    slug: 'gldf',
+    title: 'GLDF',
+    description:
+      'Global Lighting Data Format, DIAL-stewarded XML container for the DIALux and RELUX planning ecosystems. ULC and GLDF address different problems at different layers; a manufacturer can publish both.',
+    status: 'planned',
+  },
+  {
+    slug: 'etim',
+    title: 'ETIM',
+    description:
+      'ElectroTechnical Information Model, widely adopted classification vocabulary for product attributes in electrotechnical wholesale. ULC schema fields cite ETIM feature identifiers inline where a correspondence exists.',
+    status: 'planned',
+  },
+  {
+    slug: 'ies-lm-63',
+    title: 'IES LM-63',
+    description:
+      'IESNA photometric data format. ULC does not duplicate or replace its content; this crosswalk documents how to extract ULC field values from .ies files.',
+    status: 'planned',
+  },
+  {
+    slug: 'eulumdat',
+    title: 'EULUMDAT',
+    description:
+      'European photometric data format. Parallel to IES LM-63; the same field-extraction guidance applies, with EULUMDAT-specific source-block conventions.',
+    status: 'planned',
+  },
+];
+---
+
+<PageShell
+  title="Crosswalks - ULC specification"
+  description="Field-by-field mapping from ULC to adjacent standards: GLDF, ETIM, IES LM-63, EULUMDAT. All four planned at v1."
+>
+  <SpecDocsLayout>
+    <p class="page-eyebrow"><SpecVersionBadge /></p>
+    <h1 class="page-h1">Crosswalks.</h1>
+    <p class="page-intro">
+      Crosswalks translate ULC fields into the field models of adjacent
+      standards: GLDF (the DIAL-stewarded format for planning-software
+      ecosystems), ETIM (European product-data pool), IES LM-63
+      (photometric file format), and EULUMDAT (European photometric
+      format). Manufacturers and software vendors who already publish or
+      consume any of these formats can crosswalk to ULC without
+      rewriting their data layer. All four are planned; status per
+      standard is flagged below.
+    </p>
+
+    <ul class="cw-list">
+      {crosswalks.map((c) => (
+        <li class="cw-item">
+          <div class="cw-item__head">
+            <h2 class="cw-item__title">
+              <a href={`/spec/crosswalks/${c.slug}`}>{c.title}</a>
+            </h2>
+            <StatusFlag status={c.status} />
+          </div>
+          <p class="cw-item__desc">{c.description}</p>
+        </li>
+      ))}
+    </ul>
+
+    <Callout intent="default" label="What landed = what shipped">
+      <p>
+        Per-standard sub-pages render once the corresponding upstream
+        mapping document (<code>mappings/&lt;standard&gt;-crosswalk.md</code>)
+        lands in the spec repository. At v1 all four are at the planning
+        stage; the status flag advances as upstream work progresses.
+      </p>
+    </Callout>
+
+    <EditOnGitHub upstreamPath="mappings/README.md" />
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-eyebrow { margin: 0 0 1.25rem 0; }
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) { .page-h1 { font-size: 2.75rem; } }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 2rem 0;
+    max-width: 44rem;
+  }
+
+  .cw-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .cw-item {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cw-item:last-child {
+    border-bottom: none;
+  }
+  .cw-item__title {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .cw-item__head {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .cw-item__title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .cw-item__title a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .cw-item__title a:hover {
+    color: var(--accent-warm);
+  }
+  .cw-item__desc {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 44rem;
+  }
+</style>

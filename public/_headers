@@ -1,0 +1,13 @@
+# Cloudflare Pages _headers
+# Per-route content-type + cache-control overrides.
+
+# Serve the JSON Schema with the IANA-registered media type so JSON Schema
+# tooling (Ajv, hyperjump, jschon, etc.) picks it up via Accept-header
+# negotiation. application/schema+json is RFC 8259 / draft-bhutton-json-schema.
+#
+# Cache aggressively: the schema file is versioned in-place; replacing it
+# means a new ULC version. Edge revalidation on every deploy is fine.
+
+/schema/*
+  Content-Type: application/schema+json
+  Cache-Control: public, max-age=300, must-revalidate

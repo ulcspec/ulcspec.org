@@ -1,0 +1,86 @@
+---
+// /spec/authoring-patterns — first-draft stub.
+//
+// Renders the section-landing intro from copy artifact
+// docs/growth/copy/spec.md "Authoring patterns". Body content is
+// upstream MDX (ulcspec/ULC docs/authoring-patterns.md) that PR-1
+// wires via the content loader. Until then the page shows the
+// copy-writer-authored intro + a "Content syncs from upstream" notice.
+
+import PageShell from '../../components/PageShell.astro';
+import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
+import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
+import EditOnGitHub from '../../components/EditOnGitHub.astro';
+import Callout from '../../components/Callout.astro';
+import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
+
+const entry = manifestEntryForRouteOrThrow('/spec/authoring-patterns');
+const upstreamPath = entry.upstreamPath;
+
+// NOTE: OnThisPage mount is deferred to PR-1 (spec-content-sync loader).
+// At v1 scaffold the body of this page is a placeholder Callout, not
+// rendered MDX, so right-rail anchor links would scroll to non-existent
+// ids. OnThisPage re-enters when the actual <h2 id="pattern-a">...</h2>
+// headings exist in the DOM (PR-1 wires the headings array from the
+// rendered MDX's heading slot).
+---
+
+<PageShell
+  title="Authoring patterns - ULC specification"
+  description="The four real-world manufacturer publishing shapes ULC supports: per-SKU, per-photometric-scenario, per-IES with provenance, per-foot linear scaling."
+>
+  <SpecDocsLayout>
+    <p class="page-eyebrow"><SpecVersionBadge /></p>
+    <h1 class="page-h1">Authoring patterns.</h1>
+    <p class="page-intro">
+      Manufacturers publish luminaire product data in four real-world
+      shapes. Pattern A is per-SKU cutsheets. Pattern B is per-
+      photometric-scenario with applicability blocks compressing
+      configurator catalogs. Pattern C is per-IES with provenance
+      classes. Pattern D is per-foot linear scaling. The four canonical
+      reference records in the spec repository's <code>examples/</code>
+      directory show each pattern in full.
+    </p>
+
+    <Callout intent="default" label="Content sync">
+      <p>
+        The body of this page is upstream MDX from
+        <code>{`ulcspec/ULC/${upstreamPath}`}</code>, pulled at build
+        time by the spec-sync content loader. The loader landing PR is
+        tracked in the spec implementation plan; this scaffolded page
+        validates the docs-layout chrome (sidebar, version badge,
+        right-rail mini-TOC, edit-on-GitHub link) end-to-end.
+      </p>
+    </Callout>
+
+    <EditOnGitHub upstreamPath={upstreamPath} />
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-eyebrow { margin: 0 0 1.25rem 0; }
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) {
+    .page-h1 { font-size: 2.75rem; }
+  }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 1.5rem 0;
+    max-width: 44rem;
+  }
+  .page-intro code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent-warm);
+  }
+</style>

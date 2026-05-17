@@ -1,0 +1,203 @@
+---
+// /spec landing page.
+//
+// Composition:
+//   1. Brief orientation header (H1 + sub-H1 + version badge + body)
+//   2. Section nav cards: 7 cards (Tier 1+2 activation card first; six
+//      content-area cards after)
+//   3. Two-tier consumption section (anchor #how-to-use-today)
+//
+// Copy per docs/growth/copy/spec.md "/spec landing page" + "How to use
+// ULC today". Layout-wise this page uses the two-pane variant of
+// <SpecDocsLayout> (sidebar + main; right-rail suppressed by default).
+
+import PageShell from '../../components/PageShell.astro';
+import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
+import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
+import SectionCard from '../../components/SectionCard.astro';
+import TwoTierConsumption from '../../components/TwoTierConsumption.astro';
+
+const pageTitle = 'The ULC specification';
+const pageDescription =
+  'Schema, taxonomy, authoring patterns, per-category templates, and PIM mapping guides. Open JSON Schema, Draft 2020-12.';
+
+interface NavCard {
+  href: string;
+  title: string;
+  description: string;
+  eyebrow?: string;
+  variant?: 'default' | 'accent';
+}
+
+const navCards: readonly NavCard[] = [
+  {
+    href: '#how-to-use-today',
+    title: 'How to use ULC today',
+    description:
+      'Tier 1 generic LLMs parse .ulc files natively; Tier 2 lighting-domain specialty tools add IES / LDT depth. Activate without waiting.',
+    eyebrow: 'Activate',
+    variant: 'accent',
+  },
+  {
+    href: '/spec/authoring-patterns',
+    title: 'Authoring patterns',
+    description:
+      'Four real-world manufacturer publishing shapes (A: per-SKU · B: per-photometric-scenario · C: per-IES with provenance · D: per-foot linear).',
+    eyebrow: 'Reference',
+  },
+  {
+    href: '/spec/schema',
+    title: 'Schema reference',
+    description:
+      'JSON Schema Draft 2020-12. Every field documented with type, required/optional, allowed values, and example. Served at /schema/ulc.json.',
+    eyebrow: 'Reference',
+  },
+  {
+    href: '/spec/taxonomy',
+    title: 'Taxonomy',
+    description:
+      'Closed enums for luminaire categories, mounting types, optical accessories, attestations, dimming protocols, source-file types, provenance sources.',
+    eyebrow: 'Reference',
+  },
+  {
+    href: '/spec/templates',
+    title: 'Per-category templates',
+    description:
+      'Downlight, linear-pendant, wall-pack, high-bay, bollard, wall-sconce. Each is a starter JSON skeleton with required and optional fields annotated.',
+    eyebrow: 'Templates',
+  },
+  {
+    href: '/spec/pim',
+    title: 'PIM mapping guides',
+    description:
+      'How to add a ULC export path alongside your existing exports for Salsify, Akeneo, SAP, and custom / in-house PIMs.',
+    eyebrow: 'PIM mapping',
+  },
+  {
+    href: '/spec/crosswalks',
+    title: 'Crosswalks',
+    description:
+      'Field-by-field mapping from ULC to GLDF, ETIM, IES LM-63, and EULUMDAT. All four planned at v1; status flagged on the index.',
+    eyebrow: 'Crosswalks',
+  },
+];
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  <SpecDocsLayout>
+    <header class="spec-landing__header">
+      <p class="spec-landing__eyebrow">
+        <SpecVersionBadge />
+      </p>
+      <h1 class="spec-landing__h1">The ULC specification.</h1>
+      <p class="spec-landing__sub">
+        Schema, taxonomy, authoring patterns, per-category templates, and
+        PIM mapping guides. Pulled from the canonical source at
+        <code>github.com/ulcspec/ULC</code> at build time.
+      </p>
+      <div class="spec-landing__body">
+        <p>
+          The specification is authored in the spec repository as JSON
+          Schema, Markdown documentation, taxonomy enums, per-category
+          authoring templates, and PIM platform mapping guides. This site
+          renders that content.
+        </p>
+        <p>
+          To propose a change, file a Schema Change Proposal in the spec
+          repository. To report a typo, click "Edit this page on GitHub"
+          at the bottom of any rendered page.
+        </p>
+      </div>
+    </header>
+
+    <nav class="spec-landing__nav" aria-label="Spec content areas">
+      <ul class="spec-landing__cards">
+        {navCards.map((c) => (
+          <li>
+            <SectionCard
+              href={c.href}
+              title={c.title}
+              description={c.description}
+              eyebrow={c.eyebrow}
+              variant={c.variant}
+            />
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <TwoTierConsumption />
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .spec-landing__header {
+    margin-bottom: 3rem;
+  }
+  .spec-landing__eyebrow {
+    margin: 0 0 1.25rem 0;
+  }
+  .spec-landing__h1 {
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1rem 0;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+  }
+  @media (min-width: 640px) {
+    .spec-landing__h1 { font-size: 2.25rem; }
+  }
+  @media (min-width: 768px) {
+    .spec-landing__h1 { font-size: 3rem; }
+  }
+  @media (min-width: 1024px) {
+    /* Matches sibling-surface H1 ramp (for-designers / for-manufacturers
+       at lg:text-[3.25rem]). Keeps the landing as the surface marquee. */
+    .spec-landing__h1 { font-size: 3.25rem; }
+  }
+  .spec-landing__sub {
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: 0 0 1.75rem 0;
+    max-width: 48rem;
+  }
+  .spec-landing__sub code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent-warm);
+  }
+  .spec-landing__body {
+    max-width: 44rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+  .spec-landing__body p {
+    margin: 0;
+  }
+  .spec-landing__body p + p {
+    margin-top: 0.875rem;
+  }
+
+  .spec-landing__nav {
+    margin-top: 1.5rem;
+  }
+  .spec-landing__cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .spec-landing__cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

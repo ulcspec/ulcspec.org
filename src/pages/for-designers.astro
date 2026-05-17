@@ -1,0 +1,897 @@
+---
+// /for-designers — designer-track audience landing page. Full 8-step
+// storyboard end-to-end, designer-to-designer register.
+//
+// Spec:          docs/tasks/sections/for-designers.md
+// Copy:          docs/growth/copy/for-designers.md
+// Positioning:   docs/growth/positioning-designer.md
+// Storyboard:    docs/growth/sales-pitch-storyboard-designer.md
+
+import PageShell from '../components/PageShell.astro';
+import StickyToc from '../components/StickyToc.astro';
+import PromptBlock from '../components/PromptBlock.astro';
+import QuoteCopyBlock from '../components/QuoteCopyBlock.astro';
+import Callout from '../components/Callout.astro';
+import FaqAccordion from '../components/FaqAccordion.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import WhereHoursGoDiagram from '../components/WhereHoursGoDiagram.astro';
+import BeforeAfterDiagram from '../components/BeforeAfterDiagram.astro';
+import {
+  TIER1_PROMPT_RENDER,
+  TIER1_PROMPT_COMPARE,
+  TIER1_PROMPT_EXTRACT,
+} from '../content/prompts/tier1-prompts';
+
+const tocItems = [
+  { href: '#insight', label: 'Where the hours go' },
+  { href: '#alternatives', label: 'What designers do today' },
+  { href: '#perfect-world', label: 'What a working layer looks like' },
+  { href: '#introduction', label: 'What ULC is' },
+  { href: '#try-ulc-today', label: 'Try ULC today' },
+  { href: '#themes', label: 'Differentiated value' },
+  { href: '#proof', label: 'Proof' },
+  { href: '#objections', label: 'Common objections' },
+  { href: '#the-ask', label: 'The Ask' },
+];
+
+const faqItems = [
+  {
+    id: 'q-cold-start',
+    question: "How does this help me today if my tools don't read ULC yet?",
+    answerHtml: `<p>The tool you most likely already have open reads it natively: a generic LLM. ChatGPT, Claude, Gemini. Drop a <code>.ulc</code> file in alongside one of the prompts above and ask. You saw it in the Try ULC Today section.</p><p>For lighting-domain-tuned consumption (on-demand IES / LDT file fetching, industry-shorthand glossary built in), lighting-domain specialty tools exist today. Both work; the difference is depth of lighting-domain support. As more tools (BIM plugins, internal firm viewers, future spec databases) read ULC, your consumption surface grows; today's consumption surface is already real. You are not waiting.</p>`,
+  },
+  {
+    id: 'q-gldf-wait',
+    question: 'Why not wait for GLDF to ship JSON?',
+    answerHtml: `<p>GLDF is a companion, not a substitute. It is an XML format focused on photometric planning, DIAL-stewarded, consumed by DIALux and RELUX, a more complex format at a different layer than cut-sheet metadata. A manufacturer can publish both ULC and GLDF. A designer can consume both for different needs (ULC for cut-sheet attribute work, GLDF for photometric planning in planning software). The crosswalk between them is planned.</p><p>Waiting for GLDF to add JSON means waiting on a roadmap that may not match the cut-sheet-consumption use case anyway. ULC is the cut-sheet layer; GLDF is the planning layer. They coexist.</p>`,
+  },
+  {
+    id: 'q-maintenance-cost',
+    question: "What's the maintenance cost if the schema evolves?",
+    answerHtml: `<p>The schema evolves through the Schema Change Proposal process on GitHub. Anyone (you, a peer firm, a manufacturer, a tool author) proposes a change with a problem statement, a proposed change, and a rationale. The community reviews and decides.</p><p>Pre-1.0 changes are additive-only per the ROADMAP, which means files you produce or consume today do not get invalidated when the schema grows. Maintenance cost for the schema itself is community-distributed, not a single party's burden. Your consumption-side cost is the cost of reading JSON, which today is zero in any modern tool.</p>`,
+  },
+  {
+    id: 'q-pet-project',
+    question: "Isn't this just one designer's pet project?",
+    answerHtml: `<p>Created by lighting designers, for lighting designers, and structured to scale beyond a single voice. It was introduced at the National Lighting Bureau AI Think Tank 2026 in New York. It is in active dialogue with DIAL, LIA, and IES. Crosswalks to GLDF and ETIM are planned.</p><p>The repository is MIT-licensed at <code>github.com/ulcspec/ULC</code> with open governance and the SCP process. Anyone can fork, anyone can submit a change proposal, anyone can implement a competing consumer. The structural commitment to community shaping is at the license layer, which is permanent.</p>`,
+  },
+];
+
+type ProofStatus = 'available' | 'pending';
+interface ProofRow {
+  theme: 'T1' | 'T2' | 'T3';
+  proof: string;
+  status: ProofStatus;
+}
+
+const proofRows: readonly ProofRow[] = [
+  { theme: 'T1', proof: 'Four canonical reference records (ERCO Quintessence, Vode Nexa, Selux Aya, Lumenpulse Lumenfacade)', status: 'available' },
+  { theme: 'T1', proof: 'The Tier 1 prompt block on this page IS the live demo', status: 'available' },
+  { theme: 'T1', proof: 'First firm pilot consuming ULC in spec review', status: 'pending' },
+  { theme: 'T2', proof: 'Open governance: MIT license, repo, GOVERNANCE.md, SCP process', status: 'available' },
+  { theme: 'T2', proof: 'Active community engagement: NLB AI Think Tank 2026 New York; in dialogue with DIAL / LIA / IES; planned crosswalks to GLDF and ETIM', status: 'available' },
+  { theme: 'T2', proof: 'First community-authored SCP merged', status: 'pending' },
+  { theme: 'T2', proof: 'Formal endorsement from IES / IALD / LIA (dialogue exists today)', status: 'pending' },
+  { theme: 'T3', proof: 'Adopters section live, current state matches the homepage section', status: 'available' },
+  { theme: 'T3', proof: 'Four canonical reference records consumable in any JSON-reading tool', status: 'available' },
+];
+
+const crossLinks = [
+  { href: '/validator', labelHtml: 'Verify a <code>.ulc</code> file from a rep' },
+  { href: '/spec#how-to-use-today', labelHtml: 'Two-tier consumption deep dive' },
+  { href: '/downloads#examples', labelHtml: 'Sample records + LLM prompts' },
+  { href: '/governance', labelHtml: 'Stewardship and open license' },
+  { href: '/for-manufacturers', labelHtml: 'Read the manufacturer-track pitch' },
+  { href: '/#adopters', labelHtml: 'See current adopters' },
+];
+
+const repLine = "We're tightening our spec workflow on accuracy. Are you publishing ULC files for [product line] yet? If you have them, we'd love to start consuming them in our review process. If not, can you let me know your timeline? We're going to start asking this of all our preferred manufacturers.";
+
+const pageTitle = 'ULC for lighting designers: the data layer upgrade';
+const pageDescription = 'The open machine-readable standard for luminaire cut sheets. Designers consume ULC today through any LLM. Try the prompts and run the 90-day Ask.';
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  {/* Hero band */}
+  <section class="relative overflow-hidden">
+    <div class="dot-grid" aria-hidden="true"></div>
+    <div
+      class="relative mx-auto max-w-7xl px-6 pt-16 pb-12 md:px-10 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20"
+    >
+      <p class="small-caps text-xs md:text-sm text-[var(--text-muted)] mb-6">
+        Designer track
+      </p>
+      <h1
+        class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
+      >
+        For lighting designers, interior designers, and architects who specify lighting fixtures.
+      </h1>
+      <p
+        class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
+      >
+        Specifying lighting fixtures from PDFs is the most error-prone and time-expensive part of project delivery. The data layer is what has to upgrade. ULC is that upgrade.
+      </p>
+    </div>
+  </section>
+
+  {/* Body: 2-col on desktop with sticky TOC sidebar, single-col on mobile */}
+  <div class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12">
+    <div class="lg:pt-12">
+      <StickyToc items={tocItems} />
+    </div>
+
+    <article class="long-form pt-10 lg:pt-12 max-w-[68ch]">
+
+      {/* ── 1. INSIGHT ─────────────────────────────────────────────────── */}
+      <section id="insight" aria-labelledby="insight-heading">
+        <p class="step-num">Step 1</p>
+        <h2 id="insight-heading">Where spec-time hours actually go</h2>
+        <p>
+          The most error-prone and time-expensive part of project delivery is not design. It is specifying fixtures from PDFs. Six hours cross-referencing CRI, CCT, wattage, and accessory pairings across twelve datasheets for one luminaire-schedule line. Then doing it again on VE round three. The hours bleed into the data layer.
+        </p>
+        <p>
+          The part that has to upgrade is not the designer's skill or the design tool. It is the data layer underneath, which today is PDF. ULC is that upgrade: an open machine-readable standard for luminaire cut sheets that any tool reading JSON can consume directly.
+        </p>
+        <WhereHoursGoDiagram />
+      </section>
+
+      {/* ── 2. ALTERNATIVES ────────────────────────────────────────────── */}
+      <section id="alternatives" aria-labelledby="alternatives-heading">
+        <p class="step-num">Step 2</p>
+        <h2 id="alternatives-heading">What designers do today</h2>
+        <p>
+          If ULC did not exist, the alternatives are the things designers already do that are not working. There are three. There is no direct alternative to ULC. There is no other open machine-readable cut-sheet standard. The companion formats GLDF and ETIM live at different layers and coexist with ULC; the crosswalk to GLDF is planned.
+        </p>
+
+        <table class="alt-table">
+          <thead>
+            <tr>
+              <th scope="col">Approach</th>
+              <th scope="col">Pros for the designer</th>
+              <th scope="col">Cons for the designer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Manual PDF extraction during spec-writing</th>
+              <td>Zero new tooling. The workflow every designer already runs.</td>
+              <td>Six hours bleeding into a single luminaire-schedule line. Extraction errors are a non-zero rate. Cross-CRI / CCT / accessory comparison reduces to copy-paste across twelve PDFs at once.</td>
+            </tr>
+            <tr>
+              <th scope="row">Personal or firm reference library</th>
+              <td>Faster lookup for products already in the library. Internal cheat sheets compound over years.</td>
+              <td>Drift-prone: manufacturers update products; the library does not. Private to one firm. Labor-intensive to maintain at scale.</td>
+            </tr>
+            <tr>
+              <th scope="row">Lean on manufacturer rep relationships</th>
+              <td>The rep knows things the PDF does not. Direct line for the questions PDFs do not answer.</td>
+              <td>The rep is a human bottleneck for accuracy. Depends on the rep's knowledge and availability. Does not scale across twelve manufacturers in one schedule line.</td>
+            </tr>
+            <tr class="alt-row--empty">
+              <th scope="row">Direct alternatives</th>
+              <td colspan="2">
+                <strong class="text-[var(--text)]">None.</strong> ULC is category-creating. There is no other open, lightweight, machine-readable cut-sheet standard today.
+              </td>
+            </tr>
+            <tr class="alt-row--companion">
+              <th scope="row">Companion formats (GLDF, ETIM)</th>
+              <td colspan="2">
+                Not competitors. GLDF is a more complex XML format focused on photometric planning, DIAL-stewarded, mature in continental Europe, consumed by DIALux and RELUX. A different layer. ETIM and other taxonomies are classification layers. ULC and GLDF coexist; crosswalk to GLDF is planned.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          These are the three. ULC is a fourth option: an open machine-readable cut-sheet standard that consumes JSON instead of bleeding hours.
+        </p>
+      </section>
+
+      {/* ── 3. PERFECT WORLD ───────────────────────────────────────────── */}
+      <section id="perfect-world" aria-labelledby="perfect-heading">
+        <p class="step-num">Step 3</p>
+        <h2 id="perfect-heading">What a working cut-sheet layer would look like</h2>
+        <p>A working cut-sheet layer for designers, in three criteria.</p>
+
+        <ol class="criteria-list">
+          <li>
+            <h3>Every attribute accurate by construction.</h3>
+            <p>
+              Apples-to-apples comparison across CRI, CCT, wattage, optical accessories, mounting. VE review collapses from hours to seconds against your original design intent. Luminaire schedules generate from a list of files instead of from twelve PDFs by hand.
+            </p>
+          </li>
+          <li>
+            <h3>Built and shaped by lighting designers through an open process.</h3>
+            <p>
+              The data layer your specifications run on cannot be captured by a single vendor's product roadmap. Long-term trust that does not have to be re-earned every quarter.
+            </p>
+          </li>
+          <li>
+            <h3>Something you can act on this quarter, not someday.</h3>
+            <p>
+              Adoption you can see. Tools you already use today (your generic LLM, your BIM plugin, your firm's internal viewer) without waiting for ecosystem maturity in private.
+            </p>
+          </li>
+        </ol>
+
+        <Callout intent="accent">
+          <p>
+            If these three feel right, ULC is the layer you have been waiting for. If you reject one of them, ULC is not the right standard for your work; that is a real answer, not a failure.
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
+      <section id="introduction" aria-labelledby="introduction-heading">
+        <p class="step-num">Step 4</p>
+        <h2 id="introduction-heading">What ULC is</h2>
+        <p>
+          ULC is the open machine-readable standard for luminaire cut sheets. The layer your AI, your BIM plugin, your firm's internal tools, and the next tool you'll adopt can read alongside the PDFs and IES files you already work with.
+        </p>
+        <BeforeAfterDiagram />
+        <p>
+          Today, your spec workflow runs through twelve PDFs open at once, a drift-prone firm library, and a rep on speed dial. With ULC, your tools consume the manufacturer's authoritative cut-sheet data directly. Per-field provenance back to the source PDF / IES / LDT by SHA-256 hash. Apples-to-apples comparison in the tools you already use. VE review in seconds. Luminaire schedules generated from the list. The rep stays in the workflow for design and product judgment; ULC takes the data archaeology off the rep's plate too.
+        </p>
+      </section>
+
+      {/* ── 5. TRY ULC TODAY (Tier 1 activation) ───────────────────────── */}
+      <section id="try-ulc-today" aria-labelledby="try-heading">
+        <p class="step-num">Activation</p>
+        <h2 id="try-heading">Try ULC today</h2>
+        <p>
+          Generic LLMs (ChatGPT, Claude, Gemini) parse a <code>.ulc.json</code> file natively. Drop a sample record into the chat alongside one of the prompts below and the LLM produces a clean spec-sheet rendering, an apples-to-apples comparison across two products, or a luminaire-schedule-ready table. The six-hour PDF cross-referencing pass collapses to seconds. No setup. No waiting for ecosystem maturity.
+        </p>
+
+        <PromptBlock
+          id={TIER1_PROMPT_RENDER.id}
+          eyebrow="Prompt 1"
+          label={TIER1_PROMPT_RENDER.label}
+          text={TIER1_PROMPT_RENDER.text}
+        />
+        <PromptBlock
+          id={TIER1_PROMPT_COMPARE.id}
+          eyebrow="Prompt 2"
+          label={TIER1_PROMPT_COMPARE.label}
+          text={TIER1_PROMPT_COMPARE.text}
+        />
+        <PromptBlock
+          id={TIER1_PROMPT_EXTRACT.id}
+          eyebrow="Prompt 3"
+          label={TIER1_PROMPT_EXTRACT.label}
+          text={TIER1_PROMPT_EXTRACT.text}
+        />
+
+        <p class="sample-link">
+          <a href="/downloads#examples">
+            Try a sample <code>.ulc</code> file <span aria-hidden="true">→</span>
+          </a>
+        </p>
+
+        <Callout>
+          <p>
+            Lighting-domain specialty tools add on-demand fetching of the linked IES / LDT photometric files and built-in resolution for industry-shorthand glossary: L90, TM-21, CCR, SVM, melanopic DER, IES-C, CIE 97 maintenance-factor tables. One specialty tool, LightingAgent.AI, is in development today. Both tiers work; the difference is depth of lighting-domain support, not whether ULC is consumable. You pick the tool you trust; ULC is the substrate underneath.
+          </p>
+          <p>
+            <a href="/spec#how-to-use-today" class="link">
+              More on the two-tier consumption model <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 6. DIFFERENTIATED VALUE (3 themes) ─────────────────────────── */}
+      <section id="themes" aria-labelledby="themes-heading">
+        <p class="step-num">Step 5</p>
+        <h2 id="themes-heading">Differentiated value, three themes</h2>
+
+        {/* Theme 1 */}
+        <section id="theme-1" class="theme" aria-labelledby="theme-1-heading">
+          <p class="theme__num">Theme 1</p>
+          <h3 id="theme-1-heading">Specifications accurate by construction. Save time. Profit more.</h3>
+          <p>
+            ULC delivers cut-sheet data that is accurate by construction. Apples-to-apples comparison across fixtures, in your existing tools, with every attribute traceable back to the manufacturer's source file by SHA-256 hash. The six-hour PDF cross-referencing pass collapses. VE review in seconds against your original design intent, not hours. Luminaire schedules generate from the list. The hours come back to design, or to more projects.
+          </p>
+          <Callout intent="default" label="Demo callback">
+            <p>
+              You saw this happen if you ran the prompt above. The comparison move that today eats six hours collapses to seconds in the LLM. That is what "accurate by construction" looks like in your existing tool stack.
+            </p>
+          </Callout>
+          <Callout intent="default" label="Per-field provenance">
+            <p>
+              Every measured value in a ULC record carries a pointer back to the source PDF, IES, or LDT it came from, with a SHA-256 hash of that source file. The LLM is not paraphrasing off a PDF. It is reading the manufacturer's authoritative attribute, with the source verifiable.
+            </p>
+          </Callout>
+          <p class="return-line">
+            That is how ULC gets you specifications accurate by construction, and gets the hours back.
+          </p>
+        </section>
+
+        {/* Theme 2 */}
+        <section id="theme-2" class="theme" aria-labelledby="theme-2-heading">
+          <p class="theme__num">Theme 2</p>
+          <h3 id="theme-2-heading">Designers built it. Designers shape how it evolves.</h3>
+          <p>
+            ULC was built by lighting designers. The schema decisions came from how designers actually write specs, not from a software vendor's product roadmap, not from a planning-software body's priorities. When your workflow surfaces a gap (a missing field, an ambiguous enum, a constraint that does not match how spec-writing actually works), you propose a change on GitHub through the open Schema Change Proposal process. The community decides.
+          </p>
+          <Callout intent="accent">
+            <p>
+              The data layer your specifications run on cannot be captured by a single vendor's product roadmap. Long-term trust that does not have to be re-earned every quarter.
+            </p>
+          </Callout>
+          <Callout intent="default" label="Open license + governance">
+            <p>
+              The repository is at <code>github.com/ulcspec/ULC</code>. MIT license. <code>GOVERNANCE.md</code> defines who maintains, how decisions flow, how stewardship transitions. The Schema Change Proposal process is documented in <code>CONTRIBUTING.md</code>. Anyone can fork. Anyone can submit an SCP. Anyone can implement a competing consumer.
+            </p>
+          </Callout>
+          <Callout intent="default" label="How an SCP works">
+            <p>
+              An SCP is a problem statement, a proposed change, and a rationale. The community reviews. Pre-1.0 changes are additive-only per the ROADMAP, which means the records you produce or consume today do not get invalidated when the schema grows.
+            </p>
+          </Callout>
+          <p class="return-line">
+            That is how ULC stays the designers' standard, built and shaped by the people who use it.
+          </p>
+        </section>
+
+        {/* Theme 3 */}
+        <section id="theme-3" class="theme" aria-labelledby="theme-3-heading">
+          <p class="theme__num">Theme 3</p>
+          <h3 id="theme-3-heading">Visible adoption you can use today.</h3>
+          <p>
+            You do not have to wait for ecosystem maturity behind closed doors. Check the adopters section on the homepage to see which manufacturers have adopted ULC. Consume the four canonical reference records (ERCO Quintessence, Vode Nexa, Selux Aya, Lumenpulse Lumenfacade) in any tool you already use today.
+          </p>
+          <p>
+            The framing matters here and is matter-of-fact, not a sell. Generic LLMs (ChatGPT, Claude, Gemini) parse a ULC file natively. You saw that two sections ago. For lighting-domain-tuned consumption (on-demand IES / LDT fetching, built-in industry-shorthand glossary), lighting-domain specialty tools exist today. Both work; the difference is depth, not whether ULC is consumable. You pick the tool you trust; ULC is the substrate underneath.
+          </p>
+          <div class="theme__links">
+            <a href="/#adopters" class="link">See the current adopters <span aria-hidden="true">→</span></a>
+            <a href="/downloads#examples" class="link">Download the four canonical reference records <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="return-line">
+            That is how ULC gives you visible adoption you can use today, in the tools you already trust.
+          </p>
+        </section>
+      </section>
+
+      {/* ── 7. PROOF ───────────────────────────────────────────────────── */}
+      <section id="proof" aria-labelledby="proof-heading">
+        <p class="step-num">Step 6</p>
+        <h2 id="proof-heading">Proof</h2>
+        <p>
+          ULC is new. No design firm has yet adopted ULC as a preferred-data-layer requirement on their manufacturer list. The proof matrix below names what exists today and what is honestly pending.
+        </p>
+
+        <table class="proof-table" aria-label="ULC proof matrix">
+          <thead>
+            <tr>
+              <th scope="col">Theme</th>
+              <th scope="col">Proof</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {proofRows.map((row) => (
+              <tr>
+                <td class="proof-theme">{row.theme}</td>
+                <td>{row.proof}</td>
+                <td>
+                  <span class={`status-pill status-pill--${row.status}`}>
+                    {row.status === 'available' ? 'Available now' : 'Pending'}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <p>
+          The honest answer to "who else is using this?" is that ULC is at the stage where the earliest pilots shape the schema. If you are the first design firm to formally adopt ULC on your preferred-manufacturer list, your needs shape what gets prioritized. Later adopters get the standard once it is table-stakes.
+        </p>
+      </section>
+
+      {/* ── 8. OBJECTIONS ──────────────────────────────────────────────── */}
+      <section id="objections" aria-labelledby="objections-heading">
+        <p class="step-num">Step 7</p>
+        <h2 id="objections-heading">Common objections</h2>
+        <FaqAccordion items={faqItems} />
+      </section>
+
+      {/* ── 9. THE ASK ─────────────────────────────────────────────────── */}
+      <section id="the-ask" aria-labelledby="ask-heading">
+        <p class="step-num">Step 8</p>
+        <h2 id="ask-heading">The Ask</h2>
+        <p>
+          The activation mechanic for ULC turns when designers ask manufacturers. The Ask is one specific commitment: <strong class="text-[var(--text)]">90-day channel advocacy</strong>. Ask your top 5 preferred manufacturer reps for ULC files in the next 90 days.
+        </p>
+
+        <p class="small-caps text-xs text-[var(--text-subtle)] mt-8 mb-0">
+          The specific line to use with the rep
+        </p>
+        <QuoteCopyBlock id="rep-line" text={repLine} />
+
+        <h3 class="ask-sub-heading">What the 90-day Ask commits you to</h3>
+        <ol class="ask-commit">
+          <li>Identify your top 5 preferred manufacturer reps (the manufacturers whose products show up most often in your schedules).</li>
+          <li>Ask each rep the question above, within the next 90 days.</li>
+          <li>Log each rep's response (have it / on roadmap / no plan / unfamiliar).</li>
+          <li>Report back at the 90-day mark: a single email or a 20-minute call, your preference.</li>
+        </ol>
+
+        <Callout intent="default" label="What ULC provides">
+          <p>
+            During the 90 days, ULC stewardship provides: pointers to the four canonical reference records for your own consumption pilot during real spec work; on-call response to your reps if they want to talk to ULC stewardship directly before publishing; aggregated rep-response data flowing back to designers participating in the cohort.
+          </p>
+        </Callout>
+
+        <Callout intent="warning" label="What this is not">
+          <p>
+            The Ask is not a signature. Not a contract. Not a commitment to adopt ULC formally on your firm's tooling stack. Not a budget request to your firm principal. Not a consulting engagement. Not a speaking commitment. Not a co-marketing campaign. The Ask is the size of the Ask.
+          </p>
+        </Callout>
+
+        <p class="debrief">
+          If you ran the 90-day Ask and want to debrief, write directly to the steward:{' '}
+          <a
+            href="mailto:contact@ulcspec.org?subject=Designer-track%2090-day%20Ask%20debrief"
+            class="link"
+          >contact@ulcspec.org</a>.
+        </p>
+      </section>
+    </article>
+  </div>
+
+  <CrossLinkFooter links={crossLinks} />
+</PageShell>
+
+<style>
+  /* ── Long-form prose, designer-document register ──────────────────── */
+  .long-form {
+    color: var(--text-muted);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  .long-form > section {
+    margin-top: 4.5rem;
+    scroll-margin-top: 5rem;
+  }
+  .long-form > section:first-child {
+    margin-top: 0;
+  }
+  .long-form p {
+    margin: 0 0 1.25rem 0;
+    max-width: 68ch;
+  }
+  .long-form p:last-child {
+    margin-bottom: 0;
+  }
+  .long-form strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .long-form code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .long-form a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .long-form a:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  .step-num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.625rem 0 !important;
+  }
+
+  .long-form h2 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.5rem 0;
+    max-width: 28ch;
+  }
+  @media (min-width: 768px) {
+    .long-form h2 {
+      font-size: 2.25rem;
+    }
+  }
+  .long-form h3 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 1.75rem 0 0.75rem 0;
+  }
+  @media (min-width: 768px) {
+    .long-form h3 {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* ── Alternatives table ─────────────────────────────────────────────
+     Mobile: rows stack (one cell per row, leading "header" cell labels each).
+     Desktop ≥768px: real 3-column table with sticky header. */
+  .alt-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border-collapse: collapse;
+    width: 100%;
+    display: block;
+  }
+  .alt-table thead,
+  .alt-table tbody,
+  .alt-table tr {
+    display: block;
+  }
+  .alt-table thead {
+    display: none;
+  }
+  .alt-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.125rem;
+  }
+  .alt-table tr:last-child {
+    border-bottom: none;
+  }
+  .alt-table th[scope='row'],
+  .alt-table td {
+    display: block;
+    text-align: left;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .alt-table th[scope='row'] {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .alt-table td + td {
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .alt-table {
+      display: table;
+    }
+    .alt-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .alt-table tbody {
+      display: table-row-group;
+    }
+    .alt-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .alt-table th,
+    .alt-table td {
+      display: table-cell;
+      padding: 1.125rem 1.25rem;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .alt-table tr:last-child th,
+    .alt-table tr:last-child td {
+      border-bottom: none;
+    }
+    .alt-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+    }
+    .alt-table th[scope='row'] {
+      margin-bottom: 0;
+      width: 30%;
+    }
+    .alt-table td + td {
+      margin-top: 0;
+    }
+  }
+  .alt-table .alt-row--empty th[scope='row'] {
+    color: var(--accent-warm);
+  }
+  .alt-table .alt-row--companion {
+    background: color-mix(in oklab, var(--text-subtle) 4%, var(--bg-elevated));
+  }
+
+  /* ── Criteria list ────────────────────────────────────────────────── */
+  .criteria-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    counter-reset: criterion;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .criteria-list > li {
+    counter-increment: criterion;
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    position: relative;
+  }
+  .criteria-list > li::before {
+    content: counter(criterion, decimal-leading-zero);
+    position: absolute;
+    left: -2.5rem;
+    top: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .criteria-list > li {
+      padding-left: 1.5rem;
+    }
+    .criteria-list > li::before {
+      display: block;
+    }
+    .criteria-list {
+      padding-left: 2.5rem;
+    }
+  }
+  .criteria-list h3 {
+    margin-top: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .criteria-list h3 {
+      font-size: 1.125rem;
+    }
+  }
+  .criteria-list p {
+    font-size: 1rem;
+    margin: 0.375rem 0 0 0;
+  }
+
+  /* ── Theme blocks (3) ─────────────────────────────────────────────── */
+  .theme {
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+    margin-top: 2.5rem !important;
+    scroll-margin-top: 5rem;
+  }
+  .theme:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .theme__num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    margin: 0 0 0.5rem 0 !important;
+  }
+  .theme h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .theme h3 {
+      font-size: 1.625rem;
+    }
+  }
+  .theme .return-line {
+    font-style: italic;
+    color: var(--text);
+    border-left: 2px solid var(--accent-warm);
+    padding-left: 1rem;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+  .theme__links {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+  }
+
+  .link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding: 0.375rem 0;
+  }
+  .link:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  /* ── Try-ULC-today extras ─────────────────────────────────────────── */
+  .sample-link {
+    margin-top: 1.25rem !important;
+    font-size: 0.9375rem;
+  }
+  .sample-link a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+  }
+
+  /* ── Proof matrix ───────────────────────────────────────────────────
+     Mobile: rows stack with theme + status inline above the proof text.
+     Desktop ≥768px: 3-column layout. */
+  .proof-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+  }
+  .proof-table thead,
+  .proof-table tbody,
+  .proof-table tr {
+    display: block;
+  }
+  .proof-table thead {
+    display: none;
+  }
+  .proof-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 1.125rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    align-items: center;
+  }
+  .proof-table tr:last-child {
+    border-bottom: none;
+  }
+  .proof-table td {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .proof-table td:nth-child(1) {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .proof-table td:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .proof-table td:nth-child(3) {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+  @media (min-width: 768px) {
+    .proof-table {
+      display: table;
+    }
+    .proof-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .proof-table tbody {
+      display: table-row-group;
+    }
+    .proof-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .proof-table th,
+    .proof-table td {
+      display: table-cell;
+      padding: 0.875rem 1.125rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .proof-table tr:last-child td {
+      border-bottom: none;
+    }
+    .proof-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+      padding-bottom: 0.5rem;
+    }
+  }
+  .proof-theme {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    min-width: 1.75rem;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .status-pill--available {
+    color: var(--accent-warm);
+    border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  }
+  .status-pill--pending {
+    color: var(--text-subtle);
+    border-color: var(--border);
+    background: var(--bg-elevated);
+  }
+
+  /* ── The Ask extras ───────────────────────────────────────────────── */
+  .ask-sub-heading {
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .ask-commit {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .ask-commit li {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-left: 0.25rem;
+  }
+  .ask-commit li::marker {
+    color: var(--accent-warm);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  .debrief {
+    margin-top: 1.75rem !important;
+    font-size: 0.9375rem;
+  }
+
+  /* ── Print: TOC suppressed, FAQ open by default ───────────────────── */
+  @media print {
+    .toc-mobile,
+    .toc-desktop {
+      display: none !important;
+    }
+    .long-form > section {
+      margin-top: 2rem;
+      page-break-inside: avoid;
+    }
+  }
+</style>
