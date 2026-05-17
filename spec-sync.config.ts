@@ -36,9 +36,11 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Design-phase placeholder. PR-1 replaces this with a real pinned SHA.
-  // The badge auto-detects "this isn't a real SHA" and shows "pin pending".
-  upstreamCommit: 'design-preview',
+  // Pinned to the current upstream HEAD at PR-1a land time
+  // (2026-05-17). Advance via:
+  //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
+  // and rebuild. The badge auto-detects a real SHA and renders it.
+  upstreamCommit: '6eb8edab5132df977fb3d9da0348d8de9018dba6',
   upstreamVersion: 'v0.5.1',
   upstreamEditBranch: 'main',
   files: [
