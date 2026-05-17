@@ -58,9 +58,15 @@ const stages = [
   }
   @media (min-width: 768px) {
     .wh-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.625rem;
+      padding: 1.5rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .wh-grid {
       grid-template-columns: repeat(6, 1fr);
       gap: 0.5rem;
-      padding: 1.5rem;
     }
   }
   .wh-stage {

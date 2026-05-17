@@ -1,7 +1,7 @@
 # Design System
 
-**Last Updated**: 2026-05-16
-**Status**: v1 tokens locked; concrete implementation lives in `src/styles/global.css`
+**Last Updated**: 2026-05-17
+**Status**: v1 tokens locked; concrete implementation lives in `src/styles/global.css`. Long-form prose tokens + new shared component vocabulary added for `/for-designers` v1.
 **Strategic source**: `.harness/design-artifacts/design-system-v1.md` (private; reasoning + competitor analysis)
 
 > Public, technical design system reference. Captures the concrete tokens, typography stack, color palette, motifs, and component conventions implementations consume. For *why* these decisions were made (competitive landscape, lighting-industry register, dark-mode rationale, alternatives killed), read the strategic-intent doc in `.harness/`.
@@ -31,6 +31,7 @@ Earlier consideration of a serif (Newsreader) was rejected; Inter at display sca
 |---|---|---|
 | `text-7xl` (`72-80px`) | Hero display, desktop ≥1024px |
 | `text-6xl` (`56-60px`) | Hero display, ≥768px |
+| `text-5xl-plus` (`52px`, arbitrary `text-[3.25rem]`) | Audience-page H1 desktop ≥1024px |
 | `text-5xl` (`44-48px`) | Hero display, ≥640px; section H2 desktop |
 | `text-4xl` (`36px`) | Section H2 |
 | `text-3xl` (`28-30px`) | Section H2 mobile |
@@ -39,6 +40,17 @@ Earlier consideration of a serif (Newsreader) was rejected; Inter at display sca
 | `text-base` (`16px`) | Body |
 | `text-sm` (`14px`) | Captions, link rows, meta |
 | `text-xs` (`12px`) | Small-caps strips |
+
+**Long-form prose scale (Stripe-Docs-tier, applies inside `.long-form` containers on documentation surfaces):**
+
+| Token | Size | Use |
+|---|---|---|
+| `prose-body` | `17px` (`1.0625rem`), line-height 1.7 | Long-form running body (legibility-tuned between `text-base` 16 and `text-lg` 18). Intentional — not a deviation. |
+| `prose-h2` | `30px` mobile, `36px` ≥768px (`1.875rem` / `2.25rem`) | Long-form H2 inside `.long-form` |
+| `prose-h3-display` | `24px` mobile, `26px` ≥768px (`1.5rem` / `1.625rem`) | Theme-block H3 (`.theme h3`) |
+| `prose-h3-body` | `17px` mobile, `18px` ≥768px (`1.0625rem` / `1.125rem`) | Inline list / criteria H3 (`.criteria-list h3`) — collapsed to body-weight-bumped rather than a third distinct size |
+
+Long-form pages compose `.long-form` on the article container; the page-level stylesheet then maps these tokens via concrete CSS rules. The H3 ramp is intentionally two-step (display vs body-bumped) to avoid a third intermediate H3 size.
 
 **Loading discipline:** preload Inter regular + 600/700 only via the `<link>` element; mono and remaining weights load lazy. `font-display: swap` to avoid FOIT.
 
@@ -84,6 +96,21 @@ Brand amber sampled from the logo glow (warmer than pure orange). Sky-blue accen
 
 **Contrast targets:** body text and links MUST clear WCAG 2.2 AA (4.5:1 normal text, 3:1 large text + UI components). The amber-600 light-theme accent is chosen specifically to hold contrast on `--bg #FAFAF7`. Run `npx @adamcoster/wcag-contrast-checker` or equivalent on each token pair before adding new color combinations.
 
+### Tints and mixes
+
+Surfaces that need a faint accent or row-companion treatment use `color-mix` in `oklab` or `srgb` against an existing token rather than introducing a new color. Established tints:
+
+| Use | Recipe |
+|---|---|
+| Alt-row companion (table row de-emphasis) | `color-mix(in oklab, var(--text-subtle) 4%, var(--bg-elevated))` |
+| Callout (`accent` intent) tint | `color-mix(in oklab, var(--accent-warm) 6%, var(--bg-elevated))` |
+| Callout (`warning` intent) tint | `color-mix(in oklab, var(--accent-warm) 12%, var(--bg-elevated))` |
+| Status pill (`available`) bg, dark | `color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated))` |
+| Status pill (`available`) bg, light (WCAG-text-floor fix) | `color-mix(in srgb, var(--accent-warm) 12%, var(--bg-elevated))` |
+| Diagram stage "bleed" tint | `color-mix(in oklab, var(--accent-warm) 5%, var(--bg))` |
+
+**Status-pill contrast amendment (light theme).** The `.status-pill--available` "Available now" pill contains visible text, so WCAG 2.2 AA 4.5:1 applies (text contrast), not the 3:1 non-text-UI floor. The light-theme variant overrides foreground to `var(--accent-warm-deep)` (amber-700) and lifts the tint to 12% so the pill clears 4.5:1 in axe.
+
 ## Visual motifs
 
 Three first-class motifs. Use sparingly.
@@ -128,15 +155,33 @@ Audience-aware density: marketing surfaces breathe; docs surfaces are tighter.
 
 | Component | File | Notes |
 |---|---|---|
-| Site shell | `src/layouts/main.astro` | Owns `<html>`, head metadata, theme bootstrap script, font loading, skip link |
+| Site shell | `src/layouts/main.astro` | Owns `<html>`, head metadata, theme bootstrap script, font loading, skip link. Exposes `<slot name="head">` for per-page JSON-LD / preload injection. |
+| Page wrapper | `src/components/PageShell.astro` | Layout + `Nav` + `<main>` + `SiteFooter` wrap consumed by every route. `<slot name="head">` forwarded to `main.astro`. |
 | Top nav | `src/components/Nav.astro` | Sticky header, locked link order, logo on left, theme toggle on right, mobile menu via `<button aria-expanded>` |
-| Theme toggle | `src/components/ThemeToggle.astro` | Inline SVG sun + moon, sun shown in dark theme, moon shown in light |
+| Theme toggle | `src/components/ThemeToggle.astro` | Inline SVG sun + moon, sun shown in dark theme, moon shown in light. Wraps `Button`. Consumes `THEME_STORAGE_KEY` + `ThemeName` from `src/lib/theme.ts`. |
+| Button primitive | `src/components/Button.astro` | `variant="primary \| secondary \| ghost"` × `size="md \| sm \| icon"`. Renders `<a>` when `href` is set, `<button>` otherwise. |
 | Hero | `src/components/Hero.astro` | Eyebrow + H1 with dual-color treatment + sub-H1 + dual CTAs. Dot-grid backdrop |
-| Tier 1 quick-win | `src/components/Tier1QuickWin.astro` | Lead paragraph + monospace prompt block + Clipboard API copy button + Tier 2 note |
+| Tier 1 quick-win | `src/components/Tier1QuickWin.astro` | Lead paragraph + `PromptBlock` (consumes the SSOT prompt) + Tier 2 note |
+| Prompt block | `src/components/PromptBlock.astro` | Reusable LLM prompt UI: eyebrow + label + monospace `<pre>` + Copy button. Self-binds via `bindAllCopyCards` over `[data-prompt-card]` wrappers. |
+| Quote-copy block | `src/components/QuoteCopyBlock.astro` | Amber-bordered blockquote with a "Copy line" affordance. Self-binds via `bindAllCopyCards` over `[data-quote-card]`. |
+| Callout | `src/components/Callout.astro` | Three intents: `default \| accent \| warning`. Optional `label` slot. Tints per the `color-mix` recipes above. |
+| FAQ accordion | `src/components/FaqAccordion.astro` | Native `<details>`/`<summary>` (zero-JS). Anchor-linkable `id` per Q&A. Print stylesheet force-opens every item via UA override. |
+| Sticky TOC | `src/components/StickyToc.astro` | Sticky sidebar ≥1024px; collapsed `<details>` accordion on mobile. `IntersectionObserver` scroll-spy applies `aria-current="location"` to the visible-section link. |
+| Cross-link footer | `src/components/CrossLinkFooter.astro` | Contextual outbound links at the foot of long-form audience pages. `print:hidden`; labels accept trusted HTML via `labelHtml` to embed `<code>` fragments. |
+| Where-hours-go diagram | `src/components/WhereHoursGoDiagram.astro` | `/for-designers` Step 1 figure. Typographic HTML+CSS 6-stage sequence with bleed-tinted stages. Single-surface consumer at v1; promote to a shared figure on the 2nd consumer. |
+| Before/after diagram | `src/components/BeforeAfterDiagram.astro` | `/for-designers` Step 4 figure. Two-card marketecture with SVG arrow between. Side-by-side at `lg:` (≥1024px) only; stacks below. Same single-surface caveat. |
 | Dual-track band | `src/components/DualTrackBand.astro` | Two equal cards, stacked on mobile, side-by-side ≥768px |
 | Dialogue strip | `src/components/DialogueStrip.astro` | Small-caps strip with dividers |
 | Adopters | `src/components/Adopters.astro` | Empty-state at v1, populates from registry data when available |
 | Site footer | `src/components/SiteFooter.astro` | Genesis credential + maintainer credential + repo links + license + copyright |
+
+### Shared libraries
+
+| Module | File | Notes |
+|---|---|---|
+| Clipboard helper | `src/lib/clipboard.ts` | `bindCopyButton({ buttonId, sourceId, statusId, ... })` + `bindAllCopyCards(selector, overrides)` helper. Clipboard API with select-fallback. Idempotent via module-scoped `WeakSet`. |
+| Theme storage key | `src/lib/theme.ts` | Exports `THEME_STORAGE_KEY = 'ulc-theme'` + `ThemeName = 'light' \| 'dark'`. Interpolated into the bootstrap script in `main.astro` via `is:inline define:vars`. |
+| Tier 1 prompt SSOT | `src/content/prompts/tier1-prompts.ts` | Exports `TIER1_PROMPT_RENDER`, `TIER1_PROMPT_COMPARE`, `TIER1_PROMPT_EXTRACT`. Single source of truth; consumed by `/` (`Tier1QuickWin`) and `/for-designers` (3× `PromptBlock`). Verbatim parity is load-bearing per `SECTION_REGISTRY.md`. |
 
 ### Button styles
 
@@ -146,7 +191,16 @@ Audience-aware density: marketing surfaces breathe; docs surfaces are tighter.
 | Secondary | transparent | `1px solid var(--accent-warm)` | `--accent-warm` | bg `--accent-warm`, text `#0a0a0a` |
 | Ghost (icon) | transparent | `1px solid var(--border)` | `--text-muted` | text `--accent-warm` |
 
-Padding: `px-6 py-3.5` for hero CTAs (44px+ touch target). Radius: 6px. Buttons are full-width on mobile and `w-auto` from `sm:` up.
+Padding: `px-6 py-3.5` for hero CTAs (44px+ touch target). Radius: 6px. Buttons are full-width on mobile and `w-auto` from `sm:` up. The `Button` primitive renders `<a>` when `href` is set and `<button>` otherwise; both honor the same variant/size matrix.
+
+### Trusted-HTML contract
+
+Two components currently accept HTML strings rendered via `set:html`:
+
+- `FaqAccordion.items[].answerHtml`
+- `CrossLinkFooter.links[].labelHtml`
+
+The `*Html` suffix is the contract: content MUST be repo-authored (literal strings in page frontmatter or a content collection). Never pass user-supplied input. On the third `set:html` consumer, promote to a `TrustedHtml` branded type in `src/lib/trusted-html.ts` rather than continuing to multiply JSDoc warnings.
 
 ### Focus states
 

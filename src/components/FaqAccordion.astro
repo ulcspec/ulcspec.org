@@ -73,8 +73,14 @@ const { items } = Astro.props;
   .faq-item > summary::-webkit-details-marker {
     display: none;
   }
-  .faq-item > summary:hover .faq-item__q {
+  .faq-item > summary:hover .faq-item__q,
+  .faq-item > summary:focus-visible .faq-item__q {
     color: var(--accent-warm);
+  }
+  .faq-item > summary:focus-visible {
+    outline: 2px solid var(--accent-warm);
+    outline-offset: 4px;
+    border-radius: 4px;
   }
   .faq-item__q {
     font-family: var(--font-display);
@@ -125,8 +131,18 @@ const { items } = Astro.props;
     .faq-item__chev {
       display: none;
     }
-    .faq-item__a {
+    /* Force every <details> open for print. UA stylesheet hides non-summary
+       children when the element is closed; the !important override ensures
+       all answers render regardless of interactive state. */
+    .faq-item > *:not(summary) {
+      display: block !important;
+    }
+    .faq-item > summary {
+      cursor: default;
       padding-bottom: 0.5rem;
+    }
+    .faq-item__a {
+      padding-bottom: 0.75rem;
     }
   }
 </style>

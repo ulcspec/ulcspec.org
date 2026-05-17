@@ -115,7 +115,7 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
   </section>
 
   {/* Body: 2-col on desktop with sticky TOC sidebar, single-col on mobile */}
-  <div class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12">
+  <div class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-14 xl:gap-16">
     <div class="lg:pt-12">
       <StickyToc items={tocItems} />
     </div>
@@ -843,6 +843,15 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
     color: var(--accent-warm);
     border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
     background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  }
+  /* Light theme: the "Available now" pill contains visible text, so WCAG 2.2
+     AA 4.5:1 applies (text contrast), not the 3:1 non-text-UI floor. Deepen
+     the foreground to amber-700 and lift the tint to 12% on white so the
+     pill clears 4.5:1 in axe. */
+  :root[data-theme="light"] .status-pill--available {
+    color: var(--accent-warm-deep);
+    background: color-mix(in srgb, var(--accent-warm) 12%, var(--bg-elevated));
+    border-color: color-mix(in srgb, var(--accent-warm) 40%, var(--border));
   }
   .status-pill--pending {
     color: var(--text-subtle);

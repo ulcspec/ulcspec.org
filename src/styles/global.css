@@ -180,6 +180,17 @@ body {
   overflow-x: auto;
   user-select: text;
   -webkit-overflow-scrolling: touch;
+  /* iOS Safari hides scrollbars by default; telegraph horizontal-scroll
+     affordance via a narrow right-edge gradient mask so users know the
+     prompt extends past the visible edge. 6px fade is wide enough to
+     read as scroll-affordance on iOS but narrow enough that non-overflowing
+     prompts don't show visible trailing-character softening. */
+  mask-image: linear-gradient(to right, black calc(100% - 6px), transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 6px),
+    transparent
+  );
 }
 .prompt-block:focus-visible {
   outline-offset: 4px;
