@@ -27,6 +27,12 @@ import {
 const RAW_HOST = 'https://raw.githubusercontent.com';
 const RETRY_ATTEMPTS = 3;
 const RETRY_BACKOFF_MS = 500;
+// Per-attempt fetch timeout. Matches REQUEST_TIMEOUT_MS in
+// src/lib/github-releases.ts so the two build-time fetchers fail-fast on
+// the same wall. Without this, a stalled raw.githubusercontent.com
+// connection would let the retry loop wait forever and hang the entire
+// Cloudflare Pages build until the runner's outer watchdog fires.
+const FETCH_TIMEOUT_MS = 10_000;
 const CACHE_DIR = '.astro/cache/spec-sync';
 
 function cacheKeyHash(commit: string, path: string): string {
@@ -54,8 +60,13 @@ async function fetchWithRetry(
 
   let lastError: Error | undefined;
   for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt += 1) {
+    // Fresh controller per attempt so an AbortError from the previous
+    // attempt cannot leak across iterations. Treated as a retryable
+    // failure by the catch below, just like any other network error.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-      const res = await fetch(url, { headers });
+      const res = await fetch(url, { headers, signal: controller.signal });
       if (!res.ok) {
         throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
       }
@@ -69,6 +80,8 @@ async function fetchWithRetry(
         );
         await sleep(backoff);
       }
+    } finally {
+      clearTimeout(timer);
     }
   }
   throw new Error(

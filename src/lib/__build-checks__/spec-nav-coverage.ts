@@ -36,6 +36,13 @@ const SIDEBAR_TEMPLATES_AND_PIM_ROUTES = [
   ...SIDEBAR_PIM_ROUTES,
 ];
 
+/**
+ * Drift check is intentionally scoped to /spec/templates/* and /spec/pim/*.
+ * Future /spec/crosswalks/* manifest entries are not covered here; the
+ * crosswalks index renders SectionCard links directly from a separate
+ * source-of-truth in /spec/crosswalks/index.astro. Broaden this predicate
+ * when crosswalk sub-routes are wired in PR-1b.
+ */
 function isTemplatesOrPim(route: string): boolean {
   return route.startsWith('/spec/templates/') || route.startsWith('/spec/pim/');
 }
