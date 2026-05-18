@@ -53,8 +53,7 @@ jobs:
           set -euo pipefail
           BUILD=dist/index.html
           test -f "$BUILD" || (echo "no dist/index.html"; exit 1)
-          grep -F "Designers spec faster when manufacturers publish ULC." "$BUILD"
-          grep -F "Manufacturers reach designers who specify ULC-readable products." "$BUILD"
+          grep -F "ULC is the open machine-readable standard for luminaire cutsheets. The layer designers' tools read and manufacturers publish alongside their existing PDF, IES, and LDT." "$BUILD"
           grep -F "In active dialogue with industry-leading organizations" "$BUILD"
           grep -F "The list will populate as manufacturers publish" "$BUILD"
           grep -F "Luminaire product data today is fragmented" "$BUILD"
@@ -74,10 +73,6 @@ jobs:
           fi
           if grep -F "Unified Luminaire Cut-sheet" "$BUILD"; then
             echo "FAIL: legacy 'Unified Luminaire Cut-sheet' string leaked into build output"
-            exit 1
-          fi
-          if grep -F "ULC is the open machine-readable standard for luminaire" "$BUILD"; then
-            echo "FAIL: dropped hero sub-paragraph leaked into build output"
             exit 1
           fi
 
@@ -114,7 +109,17 @@ jobs:
             grep -rliE "cut[ -]sheet" dist/
             exit 1
           fi
-          echo "OK: no legacy cut-sheet terminology in dist/."
+          # Source-side scan catches residue in non-HTML assets (SVG aria-labels,
+          # JSON metadata) that the dist/ scan misses because dist/ only contains
+          # rasterized PNGs of those sources. docs/growth/ is design-time copy
+          # input intentionally allowlisted; runtime code under src/ + public/
+          # must be clean.
+          if grep -riEq "cut[ -]sheet" src/ public/ 2>/dev/null; then
+            echo "FAIL: 'cut sheet' or 'cut-sheet' present in source assets. Affected files:"
+            grep -rliE "cut[ -]sheet" src/ public/ 2>/dev/null
+            exit 1
+          fi
+          echo "OK: no legacy cut-sheet terminology in dist/ or src/+public/."
 
       - name: Verify all v1 routes built
         run: |
