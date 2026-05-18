@@ -10,7 +10,6 @@
 import PageShell from '../components/PageShell.astro';
 import StickyToc from '../components/StickyToc.astro';
 import PromptBlock from '../components/PromptBlock.astro';
-import Callout from '../components/Callout.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 import WhereHoursGoDiagram from '../components/WhereHoursGoDiagram.astro';
 import BeforeAfterDiagram from '../components/BeforeAfterDiagram.astro';
@@ -22,11 +21,10 @@ import {
 
 const tocItems = [
   { href: '#insight', label: 'Where the hours go' },
-  { href: '#alternatives', label: 'What designers do today' },
-  { href: '#perfect-world', label: 'What a working layer looks like' },
   { href: '#introduction', label: 'What ULC is' },
   { href: '#try-ulc-today', label: 'Try ULC today' },
-  { href: '#themes', label: 'Differentiated value' },
+  { href: '#differentiated-value', label: 'Differentiated value' },
+  { href: '#the-ask', label: 'The Ask' },
 ];
 
 const crossLinks = [
@@ -86,92 +84,6 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
         <WhereHoursGoDiagram />
       </section>
 
-      {/* ── 2. ALTERNATIVES ────────────────────────────────────────────── */}
-      <section id="alternatives" aria-labelledby="alternatives-heading">
-        <p class="step-num">Step 2</p>
-        <h2 id="alternatives-heading">What designers do today</h2>
-        <p>
-          If ULC did not exist, the alternatives are the things designers already do that are not working. There are three. There is no direct alternative to ULC. There is no other open machine-readable cutsheet standard. The companion formats GLDF and ETIM live at different layers and coexist with ULC; the crosswalk to GLDF is planned.
-        </p>
-
-        <table class="alt-table">
-          <thead>
-            <tr>
-              <th scope="col">Approach</th>
-              <th scope="col">Pros for the designer</th>
-              <th scope="col">Cons for the designer</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Manual PDF extraction during spec-writing</th>
-              <td>Zero new tooling. The workflow every designer already runs.</td>
-              <td>Six hours bleeding into a single luminaire-schedule line. Extraction errors are a non-zero rate. Cross-CRI / CCT / accessory comparison reduces to copy-paste across twelve PDFs at once.</td>
-            </tr>
-            <tr>
-              <th scope="row">Personal or firm reference library</th>
-              <td>Faster lookup for products already in the library. Internal cheat sheets compound over years.</td>
-              <td>Drift-prone: manufacturers update products; the library does not. Private to one firm. Labor-intensive to maintain at scale.</td>
-            </tr>
-            <tr>
-              <th scope="row">Lean on manufacturer rep relationships</th>
-              <td>The rep knows things the PDF does not. Direct line for the questions PDFs do not answer.</td>
-              <td>The rep is a human bottleneck for accuracy. Depends on the rep's knowledge and availability. Does not scale across twelve manufacturers in one schedule line.</td>
-            </tr>
-            <tr class="alt-row--empty">
-              <th scope="row">Direct alternatives</th>
-              <td colspan="2">
-                <strong class="text-[var(--text)]">None.</strong> ULC is category-creating. There is no other open, lightweight, machine-readable cutsheet standard today.
-              </td>
-            </tr>
-            <tr class="alt-row--companion">
-              <th scope="row">Companion formats (GLDF, ETIM)</th>
-              <td colspan="2">
-                Not competitors. GLDF is a more complex XML format focused on photometric planning, DIAL-stewarded, mature in continental Europe, consumed by DIALux and RELUX. A different layer. ETIM and other taxonomies are classification layers. ULC and GLDF coexist; crosswalk to GLDF is planned.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p>
-          These are the three. ULC is a fourth option: an open machine-readable cutsheet standard that consumes JSON instead of bleeding hours.
-        </p>
-      </section>
-
-      {/* ── 3. PERFECT WORLD ───────────────────────────────────────────── */}
-      <section id="perfect-world" aria-labelledby="perfect-heading">
-        <p class="step-num">Step 3</p>
-        <h2 id="perfect-heading">What a working cutsheet layer would look like</h2>
-        <p>A working cutsheet layer for designers, in three criteria.</p>
-
-        <ol class="criteria-list">
-          <li>
-            <h3>Every attribute accurate by construction.</h3>
-            <p>
-              Apples-to-apples comparison across CRI, CCT, wattage, optical accessories, mounting. VE review collapses from hours to seconds against your original design intent. Luminaire schedules generate from a list of files instead of from twelve PDFs by hand.
-            </p>
-          </li>
-          <li>
-            <h3>Built and shaped by lighting designers through an open process.</h3>
-            <p>
-              The data layer your specifications run on cannot be captured by a single vendor's product roadmap. Long-term trust that does not have to be re-earned every quarter.
-            </p>
-          </li>
-          <li>
-            <h3>Something you can act on this quarter, not someday.</h3>
-            <p>
-              Adoption you can see. Tools you already use today (your generic LLM, your BIM plugin, your firm's internal viewer) without waiting for ecosystem maturity in private.
-            </p>
-          </li>
-        </ol>
-
-        <Callout intent="accent">
-          <p>
-            If these three feel right, ULC is the layer you have been waiting for. If you reject one of them, ULC is not the right standard for your work; that is a real answer, not a failure.
-          </p>
-        </Callout>
-      </section>
-
       {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
       <section id="introduction" aria-labelledby="introduction-heading">
         <p class="step-num">Step 4</p>
@@ -217,91 +129,46 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
             Try a sample <code>.ulc</code> file <span aria-hidden="true">→</span>
           </a>
         </p>
-
-        <Callout>
-          <p>
-            Lighting-domain specialty tools add on-demand fetching of the linked IES / LDT photometric files and built-in resolution for industry-shorthand glossary: L90, TM-21, CCR, SVM, melanopic DER, IES-C, CIE 97 maintenance-factor tables. One specialty tool, LightingAgent.AI, is in development today. Both tiers work; the difference is depth of lighting-domain support, not whether ULC is consumable. You pick the tool you trust; ULC is the substrate underneath.
-          </p>
-          <p>
-            <a href="/docs#how-to-use-today" class="link">
-              More on the two-tier consumption model <span aria-hidden="true">→</span>
-            </a>
-          </p>
-        </Callout>
       </section>
 
-      {/* ── 6. DIFFERENTIATED VALUE (3 themes) ─────────────────────────── */}
-      <section id="themes" aria-labelledby="themes-heading">
+      {/* ── 6. DIFFERENTIATED VALUE (3 bullets) ────────────────────────── */}
+      <section id="differentiated-value" aria-labelledby="differentiated-value-heading">
         <p class="step-num">Step 5</p>
-        <h2 id="themes-heading">Differentiated value, three themes</h2>
+        <h2 id="differentiated-value-heading">What difference a ULC file makes</h2>
+        <p>
+          A ULC database changes what designers can do in one afternoon versus a week.
+        </p>
 
-        {/* Theme 1 */}
-        <section id="theme-1" class="theme" aria-labelledby="theme-1-heading">
-          <p class="theme__num">Theme 1</p>
-          <h3 id="theme-1-heading">Specifications accurate by construction. Save time. Profit more.</h3>
-          <p>
-            ULC delivers cutsheet data that is accurate by construction. Apples-to-apples comparison across fixtures, in your existing tools, with every attribute traceable back to the manufacturer's source file by SHA-256 hash. The six-hour PDF cross-referencing pass collapses. VE review in seconds against your original design intent, not hours. Luminaire schedules generate from the list. The hours come back to design, or to more projects.
-          </p>
-          <Callout intent="default" label="Demo callback">
-            <p>
-              You saw this happen if you ran the prompt above. The comparison move that today eats six hours collapses to seconds in the LLM. That is what "accurate by construction" looks like in your existing tool stack.
-            </p>
-          </Callout>
-          <Callout intent="default" label="Per-field provenance">
-            <p>
-              Every measured value in a ULC record carries a pointer back to the source PDF, IES, or LDT it came from, with a SHA-256 hash of that source file. The LLM is not paraphrasing off a PDF. It is reading the manufacturer's authoritative attribute, with the source verifiable.
-            </p>
-          </Callout>
-          <p class="return-line">
-            That is how ULC gets you specifications accurate by construction, and gets the hours back.
-          </p>
-        </section>
+        <ul class="value-list">
+          <li>
+            <strong>Find the right luminaire in seconds.</strong> Search a hyperfocused criteria string like "recessed in gyp ceiling, tunable white, 2-inch aperture downlight, 95+ CRI, UGR under 16" and get a list of matching luminaires from a database of ULC files in seconds.
+          </li>
+          <li>
+            <strong>Generate a luminaire schedule autonomously.</strong> Save your luminaire package as ULC files, hand AI tools a template and the right prompt, and the schedule writes itself in seconds.
+          </li>
+          <li>
+            <strong>Review a 100-luminaire VE package against the basis of design in minutes.</strong> Compare an 800-page value engineering submittal against your design intent in minutes instead of hours, with human error squeezed out of the loop.
+          </li>
+        </ul>
+      </section>
 
-        {/* Theme 2 */}
-        <section id="theme-2" class="theme" aria-labelledby="theme-2-heading">
-          <p class="theme__num">Theme 2</p>
-          <h3 id="theme-2-heading">Designers built it. Designers shape how it evolves.</h3>
-          <p>
-            ULC was built by lighting designers. The schema decisions came from how designers actually write specs, not from a software vendor's product roadmap, not from a planning-software body's priorities. When your workflow surfaces a gap (a missing field, an ambiguous enum, a constraint that does not match how spec-writing actually works), you propose a change on GitHub through the open Schema Change Proposal process. The community decides.
-          </p>
-          <Callout intent="accent">
-            <p>
-              The data layer your specifications run on cannot be captured by a single vendor's product roadmap. Long-term trust that does not have to be re-earned every quarter.
-            </p>
-          </Callout>
-          <Callout intent="default" label="Open license + governance">
-            <p>
-              The repository is at <code>github.com/ulcspec/ULC</code>. MIT license. <code>GOVERNANCE.md</code> defines who maintains, how decisions flow, how stewardship transitions. The Schema Change Proposal process is documented in <code>CONTRIBUTING.md</code>. Anyone can fork. Anyone can submit an SCP. Anyone can implement a competing consumer.
-            </p>
-          </Callout>
-          <Callout intent="default" label="How an SCP works">
-            <p>
-              An SCP is a problem statement, a proposed change, and a rationale. The community reviews. Pre-1.0 changes are additive-only per the ROADMAP, which means the records you produce or consume today do not get invalidated when the schema grows.
-            </p>
-          </Callout>
-          <p class="return-line">
-            That is how ULC stays the designers' standard, built and shaped by the people who use it.
-          </p>
-        </section>
-
-        {/* Theme 3 */}
-        <section id="theme-3" class="theme" aria-labelledby="theme-3-heading">
-          <p class="theme__num">Theme 3</p>
-          <h3 id="theme-3-heading">Visible adoption you can use today.</h3>
-          <p>
-            You do not have to wait for ecosystem maturity behind closed doors. Check the adopters section on the homepage to see which manufacturers have adopted ULC. Consume the four canonical reference records (ERCO Quintessence, Vode Nexa, Selux Aya, Lumenpulse Lumenfacade) in any tool you already use today.
-          </p>
-          <p>
-            The framing matters here and is matter-of-fact, not a sell. Generic LLMs (ChatGPT, Claude, Gemini) parse a ULC file natively. You saw that two sections ago. For lighting-domain-tuned consumption (on-demand IES / LDT fetching, built-in industry-shorthand glossary), lighting-domain specialty tools exist today. Both work; the difference is depth, not whether ULC is consumable. You pick the tool you trust; ULC is the substrate underneath.
-          </p>
-          <div class="theme__links">
-            <a href="/#adopters" class="link">See the current adopters <span aria-hidden="true">→</span></a>
-            <a href="/downloads#examples" class="link">Download the four canonical reference records <span aria-hidden="true">→</span></a>
-          </div>
-          <p class="return-line">
-            That is how ULC gives you visible adoption you can use today, in the tools you already trust.
-          </p>
-        </section>
+      {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
+      <section id="the-ask" aria-labelledby="the-ask-heading">
+        <p class="step-num">Step 6</p>
+        <h2 id="the-ask-heading">The Ask</h2>
+        <p>
+          ULC is a new open-source standard proposed by practicing lighting designers. The activation mechanic turns when designers start asking manufacturers for ULC files.
+        </p>
+        <p>
+          The Ask is one specific commitment: a 90-day channel advocacy. Ask your top 5 preferred manufacturer reps for ULC files in the next 90 days.
+        </p>
+        <p>
+          If you code, consider contributing on <a
+            href="https://github.com/ulcspec/ULC"
+            target="_blank"
+            rel="noopener external"
+          >GitHub</a>.
+        </p>
       </section>
 
     </article>
@@ -576,6 +443,28 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
     flex-direction: column;
     gap: 0.5rem;
     font-size: 0.9375rem;
+  }
+
+  /* ── Differentiated-value bullets ─────────────────────────────────── */
+  .value-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .value-list > li {
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+  .value-list > li strong {
+    color: var(--text);
+    font-weight: 600;
   }
 
   .link {

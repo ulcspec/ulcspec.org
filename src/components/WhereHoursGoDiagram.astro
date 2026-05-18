@@ -17,7 +17,7 @@ const stages = [
   'PDF cross-referencing',
   'Reference-library lookup',
   'Rep ping',
-  'Spec writing',
+  'Writing Luminaire Schedule',
   'VE review (repeat)',
 ];
 ---
@@ -26,7 +26,7 @@ const stages = [
   <div
     class="wh-grid"
     role="img"
-    aria-label="Today's spec workflow: design intent moves through PDF cross-referencing, reference-library lookup, rep ping, spec writing, and VE review, with hours bleeding into the cross-referencing and rep ping stages."
+    aria-label="Today's spec workflow: design intent moves through PDF cross-referencing, reference-library lookup, rep ping, writing the luminaire schedule, and VE review, with hours bleeding into the cross-referencing and rep ping stages."
   >
     {stages.map((stage, i) => (
       <div class={`wh-stage ${(i === 1 || i === 3) ? 'wh-stage--bleed' : ''}`}>

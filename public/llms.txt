@@ -25,7 +25,7 @@ Generic LLMs (ChatGPT, Claude, Gemini) parse `.ulc.json` files natively. Drag an
 
 ## Stewardship
 
-ULC is stewarded by Foad Shafighi, MIES IALD CLD, a practicing lighting designer. Genesis: National Lighting Bureau AI Think Tank 2026, New York. In active dialogue with DIAL, LIA, IES.
+ULC is stewarded by Foad Shafighi, MIES IALD CLD. Genesis: National Lighting Bureau AI Think Tank 2026, New York. In active dialogue with DIAL, LIA, IES.
 
 ## License
 

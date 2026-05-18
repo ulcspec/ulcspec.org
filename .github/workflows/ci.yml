@@ -76,6 +76,45 @@ jobs:
             echo "FAIL: legacy 'Unified Luminaire Cut-sheet' string leaked into build output"
             exit 1
           fi
+          if grep -F "ULC is the open machine-readable standard for luminaire" "$BUILD"; then
+            echo "FAIL: dropped hero sub-paragraph leaked into build output"
+            exit 1
+          fi
+
+      - name: Verify /for-designers locked copy + dropped sections
+        run: |
+          set -euo pipefail
+          PAGE=dist/for-designers/index.html
+          test -f "$PAGE" || (echo "no $PAGE"; exit 1)
+          grep -F "Writing Luminaire Schedule" "$PAGE"
+          grep -F "What difference a ULC file makes" "$PAGE"
+          grep -F "Find the right luminaire in seconds" "$PAGE"
+          grep -F "Generate a luminaire schedule autonomously" "$PAGE"
+          grep -F "Review a 100-luminaire VE package" "$PAGE"
+          grep -F "The Ask" "$PAGE"
+          grep -F "90-day channel advocacy" "$PAGE"
+          if grep -F "What designers do today" "$PAGE"; then
+            echo "FAIL: dropped 'What designers do today' section still present"
+            exit 1
+          fi
+          if grep -F "What a working cutsheet layer" "$PAGE"; then
+            echo "FAIL: dropped 'What a working cutsheet layer' section still present"
+            exit 1
+          fi
+          if grep -F "Lighting-domain specialty tools" "$PAGE"; then
+            echo "FAIL: dropped 'Lighting-domain specialty tools' Callout still present"
+            exit 1
+          fi
+
+      - name: Verify cutsheet canonicalization (no 'cut sheet' / 'cut-sheet' anywhere)
+        run: |
+          set -euo pipefail
+          if grep -riEq "cut[ -]sheet" dist/; then
+            echo "FAIL: 'cut sheet' or 'cut-sheet' present in built output. Affected files:"
+            grep -rliE "cut[ -]sheet" dist/
+            exit 1
+          fi
+          echo "OK: no legacy cut-sheet terminology in dist/."
 
       - name: Verify all v1 routes built
         run: |
