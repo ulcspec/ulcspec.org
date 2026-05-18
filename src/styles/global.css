@@ -134,7 +134,7 @@ body {
   pointer-events: none;
   background-image: radial-gradient(
     circle at 1px 1px,
-    rgba(252, 211, 77, 0.18) 1px,
+    rgba(252, 211, 77, 0.35) 1px,
     transparent 0
   );
   background-size: 16px 16px;
