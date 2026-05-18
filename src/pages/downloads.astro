@@ -45,15 +45,20 @@ interface ExampleRecord {
   patternRole: string;
   filename: string;
   url: string;
+  downloadAs: string;
 }
 
-// Direct download links into the upstream spec repository's `examples/`
-// folder. The raw.githubusercontent.com URLs serve the file with
-// Content-Type: text/plain so the browser inlines them; that is acceptable
-// at v1 — designers right-click "Save Link As" or download via the LLM
-// upload UI in the next tab. If inline-rendering becomes a friction point,
-// route through a /api/example/<pattern> short-link that 302s to the raw
-// URL with a Content-Disposition: attachment header.
+// Local same-origin links into public/examples/. The HTML download
+// attribute (added at render site) forces the browser to save the file
+// with the canonical product-model filename (downloadAs field) instead
+// of rendering it inline. download is honored only for same-origin URLs,
+// which is why these point at /examples/* and not raw.githubusercontent.com.
+//
+// Source of truth: public/examples/pattern-{a..d}-*.ulc.json. These are
+// byte-identical to ulcspec/ULC/examples/<product-model>.ulc. Naming
+// divergence is intentional: pattern-prefixed for the validator sample
+// picker (src/components/ValidatorIsland.astro); product-model-prefixed
+// at download save-time for users.
 const exampleRecords: readonly ExampleRecord[] = [
   {
     pattern: 'A',
@@ -62,7 +67,8 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'recessed downlight',
     patternRole: 'Single-SKU cutsheet model.',
     filename: 'erco-quintessence-30416-023.ulc',
-    url: 'https://raw.githubusercontent.com/ulcspec/ULC/main/examples/erco-quintessence-30416-023.ulc',
+    url: '/examples/pattern-a-erco-quintessence.ulc.json',
+    downloadAs: 'erco-quintessence-30416-023.ulc',
   },
   {
     pattern: 'B',
@@ -72,7 +78,8 @@ const exampleRecords: readonly ExampleRecord[] = [
     patternRole:
       'Configurator with applicability blocks; 54,000 SKUs compressed into 21 records.',
     filename: 'selux-aya-pole-sr-ho-3000k.ulc',
-    url: 'https://raw.githubusercontent.com/ulcspec/ULC/main/examples/selux-aya-pole-sr-ho-3000k.ulc',
+    url: '/examples/pattern-b-selux-aya.ulc.json',
+    downloadAs: 'selux-aya-pole-sr-ho-3000k.ulc',
   },
   {
     pattern: 'C',
@@ -82,7 +89,8 @@ const exampleRecords: readonly ExampleRecord[] = [
     patternRole:
       'Per-IES model with provenance classes for measured, simulated, and extended-photometry records.',
     filename: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
-    url: 'https://raw.githubusercontent.com/ulcspec/ULC/main/examples/lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
+    url: '/examples/pattern-c-lumenpulse-lumenfacade.ulc.json',
+    downloadAs: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
   },
   {
     pattern: 'D',
@@ -91,7 +99,8 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'suspended linear pendant',
     patternRole: 'Per-foot linear-scaling model.',
     filename: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
-    url: 'https://raw.githubusercontent.com/ulcspec/ULC/main/examples/vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
+    url: '/examples/pattern-d-vode-nexa.ulc.json',
+    downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
   },
 ];
 
@@ -226,8 +235,7 @@ function formatAssetSize(bytes: number): string {
               <a
                 class="example-card__link link"
                 href={r.url}
-                download={r.filename}
-                rel="noopener"
+                download={r.downloadAs}
               >
                 Download <code class="example-card__filename">{r.filename}</code> →
               </a>
