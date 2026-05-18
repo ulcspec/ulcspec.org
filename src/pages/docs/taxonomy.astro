@@ -6,33 +6,31 @@ import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import Callout from '../../components/Callout.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
 
-const entry = manifestEntryForRouteOrThrow('/spec/schema');
+const entry = manifestEntryForRouteOrThrow('/docs/taxonomy');
 const upstreamPath = entry.upstreamPath;
 ---
 
 <PageShell
-  title="Schema reference - ULC specification"
-  description="ULC JSON Schema (Draft 2020-12). Every field documented with type, required or optional status, description, allowed values, and example."
+  title="Taxonomy - ULC specification"
+  description="ULC's closed-enum taxonomies. Luminaire categories, mounting types, optical accessories, attestation programs, dimming protocols, source-file types, provenance sources."
 >
   <SpecDocsLayout>
     <p class="page-eyebrow"><SpecVersionBadge /></p>
-    <h1 class="page-h1">Schema reference.</h1>
+    <h1 class="page-h1">Taxonomy.</h1>
     <p class="page-intro">
-      ULC's JSON Schema (Draft 2020-12) defines every field, type,
-      constraint, and enumeration in the format. Each field is documented
-      with type, required or optional status, description, allowed values,
-      and an example. The schema file itself is served at
-      <code>/schema/ulc.json</code> with the
-      <code>application/schema+json</code> content-type.
+      Closed-enum taxonomies cover luminaire categories, mounting types,
+      optical accessories, attestation programs, dimming protocols,
+      source-file types, and provenance sources. Each enum is referenced
+      by the schema fields that consume it. Adding a new enum value goes
+      through the Schema Change Proposal process.
     </p>
 
     <Callout intent="default" label="Content sync">
       <p>
-        Field-by-field reference cards are generated at build from
-        <code>{`ulcspec/ULC/${upstreamPath}`}</code>. The generator
-        walks the JSON Schema tree and emits one anchor per field
-        (type · required · description · allowed values · example).
-        Generator + first batch land with the spec-sync content loader.
+        Enum groups rendered at build from
+        <code>{`ulcspec/ULC/${upstreamPath}`}</code>. Each group lists its
+        values with cross-links to the schema fields that consume them.
+        Generator lands alongside the schema-reference generator in PR-2.
       </p>
     </Callout>
 

@@ -15,7 +15,7 @@ const links = [
   { href: '/for-designers', label: 'For Designers' },
   { href: '/for-manufacturers', label: 'For Manufacturers' },
   { href: '/validator', label: 'Validator' },
-  { href: '/spec', label: 'Spec' },
+  { href: '/docs', label: 'Docs' },
   { href: '/governance', label: 'Governance' },
   { href: '/downloads', label: 'Downloads' },
 ] as const;
@@ -40,14 +40,14 @@ const isActive = (href: string) =>
     >
       <Image
         src={logo}
-        width={40}
-        height={40}
+        width={50}
+        height={50}
         alt=""
         loading="eager"
         decoding="async"
         densities={[1, 2]}
         format="webp"
-        class="h-10 w-10 rounded-full"
+        class="h-[50px] w-[50px] rounded-full"
       />
     </a>
 

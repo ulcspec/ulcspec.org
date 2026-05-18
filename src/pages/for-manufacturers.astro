@@ -12,7 +12,6 @@
 import PageShell from '../components/PageShell.astro';
 import StickyToc from '../components/StickyToc.astro';
 import Callout from '../components/Callout.astro';
-import FaqAccordion from '../components/FaqAccordion.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 import DiscoveryLoopDiagram from '../components/DiscoveryLoopDiagram.astro';
 import ManufacturerFlowDiagram from '../components/ManufacturerFlowDiagram.astro';
@@ -24,93 +23,12 @@ const tocItems = [
   { href: '#perfect-world', label: 'What winning looks like' },
   { href: '#introduction', label: 'What ULC is' },
   { href: '#themes', label: 'Differentiated value' },
-  { href: '#proof', label: 'Proof' },
-  { href: '#objections', label: 'Common objections' },
-  { href: '#the-pilot', label: 'The Pilot' },
-];
-
-const faqItems = [
-  {
-    id: 'q-longevity',
-    question: 'Will this be around in 5 years?',
-    answerHtml: `<p>Three structural answers. One, MIT license, so the standard cannot be captured by any single party. Two, neutral stewardship by a practicing designer with MIES, IALD, and CLD credentials, not a software vendor with a roadmap. Three, <code>GOVERNANCE.md</code> plus the Schema Change Proposal process, which means future schema changes go through open review.</p><p>If the original steward steps away, the standard is structurally able to continue. The trajectory points the same direction the industry is already moving; if anything, the question is whether you adopt early enough to shape it.</p>`,
-  },
-  {
-    id: 'q-cost',
-    question: "Won't this be expensive to publish?",
-    answerHtml: `<p>Per-category authoring templates ship today for downlight, pendant, wall-pack, high-bay, bollard, and sconce. PIM mapping guides ship today for Salsify, Akeneo, SAP, and custom in-house PIMs. The reference validator is a single-file Go binary; your engineering lead can run it in minutes.</p><p>The pilot scope is 5 to 10 SKUs over 1 to 3 months, sized so one engineer or product-data lead can deliver it without disrupting the broader catalog publishing workflow. The investment is bounded and recoverable in brand value.</p>`,
-  },
-  {
-    id: 'q-ip',
-    question: 'Do we have to give up our IP?',
-    answerHtml: `<p>No. ULC is metadata-only by architectural decision, shaped by LIA dialogue. The ULC record references your source files (PDF, IES, LDT) by SHA-256 hash and URL. It does not embed, redistribute, or claim ownership of source content.</p><p>Your PDF stays your PDF. Your IES stays your IES. The IP framing is settled at the architecture layer, not negotiated per pilot.</p>`,
-  },
-  {
-    id: 'q-gldf',
-    question: 'Why not just wait for GLDF to add JSON?',
-    answerHtml: `<p>GLDF is governed by DIAL, which has commercial planning-software products (DIALux, RELUX-adjacent) coupled to it. GLDF's design center of gravity is photometric planning, in XML. If GLDF adds JSON, it will likely still be planning-centric, not AI-consumption-centric, and the steward will still be a software-vendor body.</p><p>ULC is designed for AI, web, and spec-database consumption from the ground up, in JSON, neutrally stewarded by a practicing designer. They can co-exist; the planned GLDF crosswalk is the explicit answer. Waiting for GLDF to do this work means waiting on a roadmap that may not match the consumption model you actually need.</p>`,
-  },
-  {
-    id: 'q-signed-up',
-    question: 'Who else has signed up?',
-    answerHtml: `<p>Honest answer: no manufacturer has published a ULC record yet. ULC is at the stage where pilot conversations are underway and the artifacts (templates, validator, mapping guides, governance) are in place.</p><p>The opportunity, and the reason this conversation matters now, is exactly that: the earliest pilots are the ones whose feedback shapes the schema through the Schema Change Proposal process. Once 10 manufacturers have published, the standard is shaped; the earlier you come in, the more your needs shape it.</p><p>If your read is that you would rather see five logos first, that is a reasonable read; the trade-off is showing up after the schema choices that affect your product line have already been made by others.</p>`,
-  },
-  {
-    id: 'q-pim',
-    question: 'What if this conflicts with our existing PIM workflow?',
-    answerHtml: `<p>The PIM mapping guides for Salsify, Akeneo, SAP, and custom in-house PIMs are designed to add a ULC export path alongside your existing exports, not replace anything. The pilot scope is 5 to 10 SKUs, so the PIM workflow change is bounded. We can walk your PIM lead through the relevant guide in a follow-up working session.</p>`,
-  },
-  {
-    id: 'q-lightingagent',
-    question: "Is this just LightingAgent's data layer with the serial numbers filed off?",
-    answerHtml: `<p>Three structural answers. One, the repo is at <code>github.com/ulcspec/ULC</code>, not under a LightingAgent organization. Two, MIT license and open governance, anyone can fork, anyone can submit Schema Change Proposals, anyone can implement a competing consumer. Three, LightingAgent.AI is the first consumer because the same founder built both, and the founder is upfront about that.</p><p>The structural choice was to ship the standard in a neutrally stewarded repo with open governance, not as a LightingAgent-owned format. That choice is permanent at the license layer.</p>`,
-  },
-];
-
-type ProofStatus = 'available' | 'available-caveat' | 'pending';
-type ProofTheme = 'T1' | 'T2' | 'T3' | 'X';
-
-interface ProofRow {
-  theme: ProofTheme;
-  proof: string;
-  status: ProofStatus;
-}
-
-// Exhaustive Record lookup so a new ProofStatus variant fails the type-check
-// until a label is added. Mirrors the pattern in StandardsTimelineDiagram.
-// The "with caveat" variant gets a leading "∗" glyph via CSS (.status-pill--
-// available-caveat::before) — keeps presentation in CSS, data clean.
-const statusLabels: Record<ProofStatus, string> = {
-  available: 'Available now',
-  'available-caveat': 'With caveat',
-  pending: 'Pending',
-};
-// Identity-mapping for three of four ProofTheme variants is noise; inline
-// the single "X → Cross" ternary at the render site. The ProofTheme union
-// itself still enforces exhaustiveness at the data-declaration site.
-
-const proofRows: readonly ProofRow[] = [
-  { theme: 'T1', proof: 'Four canonical reference records, drafted from real spec-grade manufacturer spec sheets', status: 'available' },
-  { theme: 'T1', proof: 'Reference validator: ulc validate, single-file Go binary CLI', status: 'available' },
-  { theme: 'T1', proof: 'First production AI consumer of ULC: LightingAgent.AI (same-founder conflict disclosed)', status: 'available-caveat' },
-  { theme: 'T1', proof: 'Second independent AI tool consuming ULC', status: 'pending' },
-  { theme: 'T2', proof: 'Architectural artifact: metadata-only constraint, SHA-256 source-file hashes, validator', status: 'available' },
-  { theme: 'T2', proof: 'LIA dialogue validating the metadata-only constraint', status: 'available' },
-  { theme: 'T2', proof: 'First published pilot manufacturer', status: 'pending' },
-  { theme: 'T3', proof: 'NLB AI Think Tank 2026 New York genesis credential', status: 'available' },
-  { theme: 'T3', proof: 'Active dialogue with DIAL, LIA, and IES', status: 'available' },
-  { theme: 'T3', proof: 'Open governance: MIT license, GOVERNANCE.md, SCP process, neutral designer-led stewardship', status: 'available' },
-  { theme: 'T3', proof: 'Founder credentials: MIES, IALD, CLD; practicing lighting designer', status: 'available' },
-  { theme: 'T3', proof: 'Crosswalks to GLDF and ETIM landed', status: 'pending' },
-  { theme: 'T3', proof: 'Pilot manufacturers publicly named', status: 'pending' },
-  { theme: 'X', proof: 'PIM mapping guides: Salsify, Akeneo, SAP, custom', status: 'available' },
-  { theme: 'X', proof: 'Drift-guard CI tooling', status: 'available' },
 ];
 
 const crossLinks = [
   { href: '/validator', labelHtml: 'Try the validator on a candidate <code>.ulc</code> file' },
-  { href: '/spec', labelHtml: 'Authoring patterns and PIM mapping guides' },
-  { href: '/spec#how-to-use-today', labelHtml: 'Two-tier consumption deep dive' },
+  { href: '/docs', labelHtml: 'Authoring patterns and PIM mapping guides' },
+  { href: '/docs#how-to-use-today', labelHtml: 'Two-tier consumption deep dive' },
   { href: '/governance', labelHtml: 'Stewardship and open license' },
   { href: '/#adopters', labelHtml: 'See current adopters' },
   { href: '/for-designers', labelHtml: 'Demand side: the designer track' },
@@ -133,7 +51,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       <h1
         class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
       >
-        For luminaire manufacturers.
+        For lighting manufacturers
       </h1>
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
@@ -421,128 +339,6 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
         </section>
       </section>
 
-      {/* ── 6. PROOF ───────────────────────────────────────────────────── */}
-      <section id="proof" aria-labelledby="proof-heading">
-        <p class="step-num">Step 6</p>
-        <h2 id="proof-heading">Proof</h2>
-        <p>
-          ULC is at the pre-launch stage. No manufacturer has yet published a ULC record. The proof matrix below names what exists today and what is honestly pending.
-        </p>
-
-        <table class="proof-table" aria-label="ULC manufacturer-track proof matrix">
-          <thead>
-            <tr>
-              <th scope="col">Theme</th>
-              <th scope="col">Proof</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {proofRows.map((row) => (
-              <tr>
-                <td class="proof-theme">{row.theme === 'X' ? 'Cross' : row.theme}</td>
-                <td>{row.proof}</td>
-                <td>
-                  <span class={`status-pill status-pill--${row.status}`}>
-                    {statusLabels[row.status]}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        <Callout intent="default" label="LightingAgent.AI disclosure">
-          <p>
-            The first production AI consumer of ULC is LightingAgent.AI. The same founder runs LightingAgent.AI and stewards ULC. The first consumer is the same person who built the standard, which is why we wrote it the way we did. The full structural answer to the conflict is in the "Is this just LightingAgent's data layer?" objection below.
-          </p>
-        </Callout>
-      </section>
-
-      {/* ── 7. OBJECTIONS ──────────────────────────────────────────────── */}
-      <section id="objections" aria-labelledby="objections-heading">
-        <p class="step-num">Step 7</p>
-        <h2 id="objections-heading">Common objections</h2>
-        <FaqAccordion items={faqItems} />
-      </section>
-
-      {/* ── 8. THE PILOT ───────────────────────────────────────────────── */}
-      <section id="the-pilot" aria-labelledby="pilot-heading">
-        <p class="step-num">Step 8</p>
-        <h2 id="pilot-heading">The Pilot</h2>
-        <p>
-          A 1 to 3 month pilot publication of 5 to 10 representative SKUs across your most-specified categories. Co-marketing on publication. Early-adopter acknowledgment in ULC's release notes.
-        </p>
-
-        <h3 class="pilot-sub-heading">What a pilot looks like</h3>
-        <ol class="pilot-list">
-          <li>Identify the 5 to 10 SKUs (manufacturer side, with consultation if useful).</li>
-          <li>Confirm IES and LDT files exist for each (anticipated yes for specification-grade).</li>
-          <li>Allocate one engineering or product-data lead, part-time, for 1 to 3 months.</li>
-          <li>Decide hosting path for the ULC files (existing PIM export, existing CDN, new path).</li>
-          <li>60-minute kickoff call: ULC stewardship + manufacturer engineering lead + manufacturer marketing or product lead; CEO sign-off, not necessarily present.</li>
-          <li>Optional: pre-kickoff PIM review session, 30 min with your PIM lead.</li>
-        </ol>
-
-        <h3 class="pilot-sub-heading">What we agree on at kickoff</h3>
-        <ol class="pilot-list pilot-list--criteria">
-          <li>You select 5 to 10 SKUs across the categories most relevant to your specification-grade positioning.</li>
-          <li>You allocate one engineer or product-data lead for the pilot duration.</li>
-          <li>You publish the ULC files on your own infrastructure (under a <code>/.well-known/ulc/</code> path or similar; the exact convention to be agreed in kickoff).</li>
-          <li>ULC stewardship provides authoring support, validator runs, and PIM mapping consultation during the pilot.</li>
-          <li>Both parties agree on the co-marketing scope (joint announcement, conference mention, release-notes acknowledgment) at kickoff.</li>
-        </ol>
-
-        <Callout intent="warning" label="What this is not">
-          <p>
-            A signature on anything. A contract. A platform subscription. A commitment to publish beyond the pilot scope. An exclusive partnership. A commitment to any specific go-public timing. Keep the Ask the size of the Ask.
-          </p>
-        </Callout>
-
-        <p class="pilot-cta">
-          If you are evaluating a pilot, write directly to the steward:{' '}
-          <a
-            href="mailto:contact@ulcspec.org?subject=Manufacturer%20pilot%20inquiry"
-            class="link"
-          >contact@ulcspec.org</a>.
-        </p>
-
-        {/* Forward-to-team affordance — the CEO is not the implementer; one-click
-            copy-link makes the page forwardable to the engineering or product-data
-            lead the Pilot checklist names. Third consumer of src/lib/clipboard.ts
-            (after PromptBlock + QuoteCopyBlock); validates the helper contract at
-            a third surface without introducing a new clipboard primitive. */}
-        <div class="pilot-share">
-          <p class="pilot-share__label">
-            For your engineering or product-data lead:
-          </p>
-          <button
-            type="button"
-            id="pilot-share-btn"
-            class="pilot-share__btn"
-            aria-describedby="pilot-share-status"
-          >
-            <span data-copy-default>Copy link to this page</span>
-            <span data-copy-done class="hidden">Page link copied</span>
-          </button>
-          {/* URL source: populated at hydration with window.location.href so the
-              copied link reflects the host the reader is actually on (preview /
-              staging / prod). Astro.site is not yet set in v1, so we cannot
-              derive an absolute URL at build time. */}
-          <span id="pilot-share-source" class="sr-only">https://ulcspec.org/for-manufacturers</span>
-          <span
-            id="pilot-share-status"
-            class="sr-only"
-            role="status"
-            aria-live="polite"
-          ></span>
-        </div>
-
-        <p class="pilot-cross">
-          Your designers are starting to ask for this.{' '}
-          <a href="/for-designers" class="link-inline">See the designer track <span aria-hidden="true">→</span></a>
-        </p>
-      </section>
     </article>
   </div>
 
@@ -553,7 +349,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
   /* ── Long-form prose, manufacturer-document register ─────────────────
      Matches /for-designers' .long-form so the two audience surfaces share
      a single prose token system. Any change here must land on /for-designers
-     too; the next long-form surface (/spec) consolidates these as
+     too; the next long-form surface (/docs) consolidates these as
      prose-* tokens in DESIGN_SYSTEM.md (deferred to PR-A2 per
      for-designers-plan §10.4). */
   .long-form {
@@ -1197,22 +993,3 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
   }
 </style>
 
-<script>
-  // Forward-to-team share affordance: third consumer of bindCopyButton.
-  // Populates the source span with window.location.href at hydration so
-  // the copied link reflects the canonical host the reader is on
-  // (Astro.site is not yet set in v1).
-  import { bindCopyButton } from '../lib/clipboard';
-
-  const sourceEl = document.getElementById('pilot-share-source');
-  if (sourceEl && typeof window !== 'undefined') {
-    sourceEl.textContent = window.location.href;
-  }
-  bindCopyButton({
-    buttonId: 'pilot-share-btn',
-    sourceId: 'pilot-share-source',
-    statusId: 'pilot-share-status',
-    copiedAnnouncement: 'Page link copied to clipboard',
-    selectFallbackText: 'Link selected. Press Cmd+C / Ctrl+C to copy.',
-  });
-</script>

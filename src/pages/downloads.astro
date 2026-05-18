@@ -113,9 +113,9 @@ const platformLabel: Record<Platform, string> = {
 };
 
 const crossLinks = [
-  { href: '/spec', labelHtml: 'Authoring patterns and schema reference' },
+  { href: '/docs', labelHtml: 'Authoring patterns and schema reference' },
   {
-    href: '/spec#how-to-use-today',
+    href: '/docs#how-to-use-today',
     labelHtml: 'Two-tier consumption deep dive',
   },
   { href: '/for-designers', labelHtml: 'Designer-track pitch' },
@@ -193,7 +193,7 @@ function formatAssetSize(bytes: number): string {
       <section id="prompts" aria-labelledby="prompts-heading">
         <h2 id="prompts-heading">Designer LLM prompt templates</h2>
         <p>
-          Five ready-to-use prompts. Paste a prompt into ChatGPT, Claude, or Gemini, attach a <code>.ulc.json</code> file (download a sample from the <a href="#examples" class="link-inline">next section</a>), and the LLM produces a clean spec sheet, an apples-to-apples comparison, a luminaire-schedule-ready table, a VE sanity check, or a per-attribute source-file provenance trace. The Tier 1 consumption framing is at <a href="/spec#how-to-use-today" class="link-inline">/spec#how-to-use-today</a>.
+          Five ready-to-use prompts. Paste a prompt into ChatGPT, Claude, or Gemini, attach a <code>.ulc.json</code> file (download a sample from the <a href="#examples" class="link-inline">next section</a>), and the LLM produces a clean spec sheet, an apples-to-apples comparison, a luminaire-schedule-ready table, a VE sanity check, or a per-attribute source-file provenance trace. The Tier 1 consumption framing is at <a href="/docs#how-to-use-today" class="link-inline">/spec#how-to-use-today</a>.
         </p>
 
         <Callout intent="accent" label="Compatibility">
@@ -244,7 +244,7 @@ function formatAssetSize(bytes: number): string {
         </ul>
 
         <p class="mt-6">
-          <a href="/spec/authoring-patterns" class="link-inline">
+          <a href="/docs/authoring-patterns" class="link-inline">
             Learn more about the four authoring patterns →
           </a>
         </p>
@@ -277,7 +277,7 @@ function formatAssetSize(bytes: number): string {
         </div>
 
         <p class="mt-6">
-          <a href="/spec/schema" class="link-inline">
+          <a href="/docs/schema" class="link-inline">
             Browse the schema with field-level documentation →
           </a>
         </p>
@@ -398,7 +398,7 @@ function formatAssetSize(bytes: number): string {
 <style>
   /* Long-form prose system. Mirrored from /for-designers and
      /for-manufacturers; any change here must land on both sibling
-     surfaces too. The next long-form consumer (/spec) consolidates
+     surfaces too. The next long-form consumer (/docs) consolidates
      these as `prose-long-form` in DESIGN_SYSTEM.md / global.css per
      PR-A2 (cross-surface graduation). */
   .long-form {

@@ -34,7 +34,7 @@ const categories: readonly { slug: string; title: string; description: string }[
       {categories.map((c) => (
         <li>
           <SectionCard
-            href={`/spec/templates/${c.slug}`}
+            href={`/docs/templates/${c.slug}`}
             title={c.title}
             description={c.description}
             eyebrow="Template"

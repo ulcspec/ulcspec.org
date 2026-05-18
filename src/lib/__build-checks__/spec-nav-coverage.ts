@@ -16,19 +16,19 @@ import { SPEC_SYNC } from '../../../spec-sync.config';
 // SpecSidebar.astro's `sections` data. Sourced manually for editorial
 // integrity; this file is the lock that keeps them in sync.
 const SIDEBAR_TEMPLATES_ROUTES = [
-  '/spec/templates/downlight',
-  '/spec/templates/linear-pendant',
-  '/spec/templates/wall-pack',
-  '/spec/templates/high-bay',
-  '/spec/templates/bollard',
-  '/spec/templates/wall-sconce',
+  '/docs/templates/downlight',
+  '/docs/templates/linear-pendant',
+  '/docs/templates/wall-pack',
+  '/docs/templates/high-bay',
+  '/docs/templates/bollard',
+  '/docs/templates/wall-sconce',
 ] as const;
 
 const SIDEBAR_PIM_ROUTES = [
-  '/spec/pim/salsify',
-  '/spec/pim/akeneo',
-  '/spec/pim/sap',
-  '/spec/pim/custom-pim',
+  '/docs/pim/salsify',
+  '/docs/pim/akeneo',
+  '/docs/pim/sap',
+  '/docs/pim/custom-pim',
 ] as const;
 
 const SIDEBAR_TEMPLATES_AND_PIM_ROUTES = [
@@ -44,7 +44,7 @@ const SIDEBAR_TEMPLATES_AND_PIM_ROUTES = [
  * when crosswalk sub-routes are wired in PR-1b.
  */
 function isTemplatesOrPim(route: string): boolean {
-  return route.startsWith('/spec/templates/') || route.startsWith('/spec/pim/');
+  return route.startsWith('/docs/templates/') || route.startsWith('/docs/pim/');
 }
 
 const manifestTemplatesAndPim: readonly string[] = SPEC_SYNC.files

@@ -13,7 +13,7 @@ import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
 import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
 
-const manifest = manifestEntryForRouteOrThrow('/spec/authoring-patterns');
+const manifest = manifestEntryForRouteOrThrow('/docs/authoring-patterns');
 const entry = await getEntry('spec', 'authoring-patterns');
 
 let Content: Awaited<ReturnType<typeof render>>['Content'] | null = null;

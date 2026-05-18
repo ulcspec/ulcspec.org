@@ -53,11 +53,10 @@ jobs:
           set -euo pipefail
           BUILD=dist/index.html
           test -f "$BUILD" || (echo "no dist/index.html"; exit 1)
-          grep -F "National Lighting Bureau AI Think Tank 2026" "$BUILD"
           grep -F "Designers spec faster when manufacturers publish ULC." "$BUILD"
           grep -F "Manufacturers reach designers who specify ULC-readable products." "$BUILD"
-          grep -F "In active dialogue with DIAL" "$BUILD"
-          grep -F "This list will populate as manufacturers publish" "$BUILD"
+          grep -F "In active dialogue with industry-leading organizations" "$BUILD"
+          grep -F "The list will populate as manufacturers publish" "$BUILD"
           if grep -F "Enlighten Europe" "$BUILD"; then
             echo "FAIL: forbidden 'Enlighten Europe' string leaked into build output"
             exit 1
@@ -66,7 +65,7 @@ jobs:
       - name: Verify all v1 routes built
         run: |
           set -euo pipefail
-          for route in for-designers for-manufacturers validator spec governance downloads; do
+          for route in for-designers for-manufacturers validator docs governance downloads; do
             f="dist/${route}/index.html"
             test -f "$f" || (echo "FAIL: missing $f"; exit 1)
             grep -F "ULC home" "$f" >/dev/null \
@@ -82,7 +81,7 @@ jobs:
           test -f dist/robots.txt || (echo "FAIL: dist/robots.txt missing"; exit 1)
           test -f dist/llms.txt || (echo "FAIL: dist/llms.txt missing"; exit 1)
           grep -F "Sitemap: https://ulcspec.org/sitemap-index.xml" dist/robots.txt
-          for route in for-designers for-manufacturers validator spec governance downloads; do
+          for route in for-designers for-manufacturers validator docs governance downloads; do
             grep -F "https://ulcspec.org/${route}" dist/sitemap-0.xml \
               || (echo "FAIL: sitemap missing route $route"; exit 1)
           done
