@@ -39,7 +39,7 @@ const crossLinks = [
 ];
 
 const pageTitle = 'ULC for lighting designers: the data layer upgrade';
-const pageDescription = 'The open machine-readable standard for luminaire cut sheets. Designers consume ULC today through any LLM. Try the prompts and run the 90-day Ask.';
+const pageDescription = 'The open machine-readable standard for luminaire cutsheets. Designers consume ULC today through any LLM. Try the prompts and run the 90-day Ask.';
 ---
 
 <PageShell title={pageTitle} description={pageDescription}>
@@ -81,7 +81,7 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
           The most error-prone and time-expensive part of project delivery is not design. It is specifying fixtures from PDFs. Six hours cross-referencing CRI, CCT, wattage, and accessory pairings across twelve datasheets for one luminaire-schedule line. Then doing it again on VE round three. The hours bleed into the data layer.
         </p>
         <p>
-          The part that has to upgrade is not the designer's skill or the design tool. It is the data layer underneath, which today is PDF. ULC is that upgrade: an open machine-readable standard for luminaire cut sheets that any tool reading JSON can consume directly.
+          The part that has to upgrade is not the designer's skill or the design tool. It is the data layer underneath, which today is PDF. ULC is that upgrade: an open machine-readable standard for luminaire cutsheets that any tool reading JSON can consume directly.
         </p>
         <WhereHoursGoDiagram />
       </section>
@@ -91,7 +91,7 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
         <p class="step-num">Step 2</p>
         <h2 id="alternatives-heading">What designers do today</h2>
         <p>
-          If ULC did not exist, the alternatives are the things designers already do that are not working. There are three. There is no direct alternative to ULC. There is no other open machine-readable cut-sheet standard. The companion formats GLDF and ETIM live at different layers and coexist with ULC; the crosswalk to GLDF is planned.
+          If ULC did not exist, the alternatives are the things designers already do that are not working. There are three. There is no direct alternative to ULC. There is no other open machine-readable cutsheet standard. The companion formats GLDF and ETIM live at different layers and coexist with ULC; the crosswalk to GLDF is planned.
         </p>
 
         <table class="alt-table">
@@ -121,7 +121,7 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
             <tr class="alt-row--empty">
               <th scope="row">Direct alternatives</th>
               <td colspan="2">
-                <strong class="text-[var(--text)]">None.</strong> ULC is category-creating. There is no other open, lightweight, machine-readable cut-sheet standard today.
+                <strong class="text-[var(--text)]">None.</strong> ULC is category-creating. There is no other open, lightweight, machine-readable cutsheet standard today.
               </td>
             </tr>
             <tr class="alt-row--companion">
@@ -134,15 +134,15 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
         </table>
 
         <p>
-          These are the three. ULC is a fourth option: an open machine-readable cut-sheet standard that consumes JSON instead of bleeding hours.
+          These are the three. ULC is a fourth option: an open machine-readable cutsheet standard that consumes JSON instead of bleeding hours.
         </p>
       </section>
 
       {/* ── 3. PERFECT WORLD ───────────────────────────────────────────── */}
       <section id="perfect-world" aria-labelledby="perfect-heading">
         <p class="step-num">Step 3</p>
-        <h2 id="perfect-heading">What a working cut-sheet layer would look like</h2>
-        <p>A working cut-sheet layer for designers, in three criteria.</p>
+        <h2 id="perfect-heading">What a working cutsheet layer would look like</h2>
+        <p>A working cutsheet layer for designers, in three criteria.</p>
 
         <ol class="criteria-list">
           <li>
@@ -177,11 +177,11 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
         <p class="step-num">Step 4</p>
         <h2 id="introduction-heading">What ULC is</h2>
         <p>
-          ULC is the open machine-readable standard for luminaire cut sheets. The layer your AI, your BIM plugin, your firm's internal tools, and the next tool you'll adopt can read alongside the PDFs and IES files you already work with.
+          ULC is the open machine-readable standard for luminaire cutsheets. The layer your AI, your BIM plugin, your firm's internal tools, and the next tool you'll adopt can read alongside the PDFs and IES files you already work with.
         </p>
         <BeforeAfterDiagram />
         <p>
-          Today, your spec workflow runs through twelve PDFs open at once, a drift-prone firm library, and a rep on speed dial. With ULC, your tools consume the manufacturer's authoritative cut-sheet data directly. Per-field provenance back to the source PDF / IES / LDT by SHA-256 hash. Apples-to-apples comparison in the tools you already use. VE review in seconds. Luminaire schedules generated from the list. The rep stays in the workflow for design and product judgment; ULC takes the data archaeology off the rep's plate too.
+          Today, your spec workflow runs through twelve PDFs open at once, a drift-prone firm library, and a rep on speed dial. With ULC, your tools consume the manufacturer's authoritative cutsheet data directly. Per-field provenance back to the source PDF / IES / LDT by SHA-256 hash. Apples-to-apples comparison in the tools you already use. VE review in seconds. Luminaire schedules generated from the list. The rep stays in the workflow for design and product judgment; ULC takes the data archaeology off the rep's plate too.
         </p>
       </section>
 
@@ -240,7 +240,7 @@ const pageDescription = 'The open machine-readable standard for luminaire cut sh
           <p class="theme__num">Theme 1</p>
           <h3 id="theme-1-heading">Specifications accurate by construction. Save time. Profit more.</h3>
           <p>
-            ULC delivers cut-sheet data that is accurate by construction. Apples-to-apples comparison across fixtures, in your existing tools, with every attribute traceable back to the manufacturer's source file by SHA-256 hash. The six-hour PDF cross-referencing pass collapses. VE review in seconds against your original design intent, not hours. Luminaire schedules generate from the list. The hours come back to design, or to more projects.
+            ULC delivers cutsheet data that is accurate by construction. Apples-to-apples comparison across fixtures, in your existing tools, with every attribute traceable back to the manufacturer's source file by SHA-256 hash. The six-hour PDF cross-referencing pass collapses. VE review in seconds against your original design intent, not hours. Luminaire schedules generate from the list. The hours come back to design, or to more projects.
           </p>
           <Callout intent="default" label="Demo callback">
             <p>

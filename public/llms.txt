@@ -1,6 +1,6 @@
-# ULC — Universal Luminaire Cut Sheet
+# ULC: Universal Luminaire Cutsheet
 
-> ULC is the open, MIT-licensed, machine-readable standard for luminaire cut sheets. Designers spec faster when manufacturers publish ULC. The layer designers' tools read and manufacturers publish alongside their existing PDF, IES, and LDT.
+> ULC is the open, MIT-licensed, machine-readable standard for luminaire cutsheets. Designers spec faster when manufacturers publish ULC. The layer designers' tools read and manufacturers publish alongside their existing PDF, IES, and LDT.
 
 ## Site map
 

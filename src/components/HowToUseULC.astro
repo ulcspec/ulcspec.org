@@ -1,0 +1,83 @@
+---
+// "How to use ULC?" homepage section: one intro paragraph + two audience
+// cards (designers, manufacturers). Copy sourced from the upstream README's
+// "Who uses ULC" framing.
+---
+
+<section class="relative">
+  <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28 lg:py-32">
+    <h2
+      class="font-display text-3xl md:text-4xl font-semibold tracking-tight leading-tight max-w-2xl"
+    >
+      How to use ULC?
+    </h2>
+
+    <p class="mt-6 max-w-3xl text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+      ULC is consumed indirectly through tools that read it. AI agents, design
+      software, specification tools, and data pipelines parse ULC files
+      directly, without preprocessing PDFs, which saves time and money by
+      reducing AI token consumption. Any JSON-aware system can consume the
+      format, including general-purpose LLMs such as ChatGPT and Claude, and
+      domain-specific AI tools such as
+      {' '}<a
+        href="https://www.lightingagent.ai/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-[var(--accent-warm)] hover:text-[var(--accent-warm-deep)] transition-colors underline underline-offset-4"
+      >LightingAgent.AI</a>
+      {' '}and{' '}
+      <a
+        href="https://www.gosourcery.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-[var(--accent-warm)] hover:text-[var(--accent-warm-deep)] transition-colors underline underline-offset-4"
+      >gosourcery.com</a>.
+    </p>
+
+    <div class="mt-12 grid gap-8 md:grid-cols-2 md:gap-10">
+      <article
+        class="border border-token rounded-lg p-8 md:p-10"
+        style="background: var(--bg-elevated);"
+      >
+        <h3 class="small-caps text-xs text-[var(--text-subtle)]">
+          For lighting designers
+        </h3>
+        <p
+          class="mt-3 text-base md:text-lg text-[var(--text)] leading-relaxed"
+        >
+          Consume ULC data through tools that read it. Get fast, accurate,
+          AI-assisted comparisons, luminaire schedules, and value engineering
+          review.
+        </p>
+        <a
+          href="/for-designers"
+          class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-warm)] hover:underline underline-offset-4"
+        >
+          Designer track <span aria-hidden="true">→</span>
+        </a>
+      </article>
+
+      <article
+        class="border border-token rounded-lg p-8 md:p-10"
+        style="background: var(--bg-elevated);"
+      >
+        <h3 class="small-caps text-xs text-[var(--text-subtle)]">
+          For lighting manufacturers
+        </h3>
+        <p
+          class="mt-3 text-base md:text-lg text-[var(--text)] leading-relaxed"
+        >
+          Publish ULC files alongside your datasheet PDFs, IES, and LDT files
+          on your product pages. Gain machine-discoverability by AI systems
+          and improved data fidelity in downstream workflows.
+        </p>
+        <a
+          href="/for-manufacturers"
+          class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent-warm)] hover:underline underline-offset-4"
+        >
+          Manufacturer track <span aria-hidden="true">→</span>
+        </a>
+      </article>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+// "Why ULC" homepage section. Two-paragraph text-only block, grounded in the
+// upstream README's framing of the problem (PDF fragmentation, AI-scale
+// consumption gap). Replaces the prior LLM-prompt quick-win block from v1.
+---
+
+<section
+  class="relative border-t border-token"
+  style="background: var(--bg-elevated);"
+>
+  <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28 lg:py-32">
+    <div class="max-w-3xl">
+      <h2
+        class="font-display text-3xl md:text-4xl font-semibold tracking-tight leading-tight"
+      >
+        Why ULC
+      </h2>
+      <p class="mt-6 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+        Luminaire product data today is fragmented across thousands of PDF
+        datasheets, each formatted differently, alongside decades-old
+        text-based photometric files with inconsistent conventions. That worked
+        while designers read datasheets one by one. It does not work now that
+        AI systems are increasingly expected to consume product data at scale.
+      </p>
+      <p class="mt-5 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+        Structured JSON is orders of magnitude cheaper, faster, and more reliable for AI systems to process than running extraction pipelines over unstructured PDFs. For a specifier evaluating a hundred-luminaire submittal or value engineering package against a hundred-luminaire basis of design (roughly 500 PDF pages each), the gap between structured and unstructured source data is the gap between an instant automated comparison by AI tools and hours of manual reconciliation. ULC closes that gap.
+      </p>
+    </div>
+  </div>
+</section>

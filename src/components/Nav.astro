@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo-cropped.png';
 import Button from './Button.astro';
 import ThemeToggle from './ThemeToggle.astro';
 
@@ -40,14 +40,14 @@ const isActive = (href: string) =>
     >
       <Image
         src={logo}
-        width={50}
-        height={50}
-        alt=""
+        width={213}
+        height={120}
+        alt="ULC: Universal Luminaire Cutsheet"
         loading="eager"
         decoding="async"
         densities={[1, 2]}
         format="webp"
-        class="h-[50px] w-[50px] rounded-full"
+        class="h-[60px] w-auto"
       />
     </a>
 

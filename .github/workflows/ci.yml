@@ -57,8 +57,23 @@ jobs:
           grep -F "Manufacturers reach designers who specify ULC-readable products." "$BUILD"
           grep -F "In active dialogue with industry-leading organizations" "$BUILD"
           grep -F "The list will populate as manufacturers publish" "$BUILD"
+          grep -F "Luminaire product data today is fragmented" "$BUILD"
+          grep -F "Structured JSON is orders of magnitude cheaper" "$BUILD"
+          grep -F "hundred-luminaire submittal or value engineering package" "$BUILD"
+          grep -F "ULC closes that gap" "$BUILD"
+          grep -F "ULC is consumed indirectly through tools that read it" "$BUILD"
+          grep -F "without preprocessing PDFs" "$BUILD"
+          grep -F "LightingAgent.AI" "$BUILD"
+          grep -F "gosourcery.com" "$BUILD"
+          grep -F "Designer track" "$BUILD"
+          grep -F "Manufacturer track" "$BUILD"
+          grep -F "Universal Luminaire Cutsheet" "$BUILD"
           if grep -F "Enlighten Europe" "$BUILD"; then
             echo "FAIL: forbidden 'Enlighten Europe' string leaked into build output"
+            exit 1
+          fi
+          if grep -F "Unified Luminaire Cut-sheet" "$BUILD"; then
+            echo "FAIL: legacy 'Unified Luminaire Cut-sheet' string leaked into build output"
             exit 1
           fi
 
