@@ -56,8 +56,13 @@
   --text-subtle: #737373;
   --border: #e5e5e0;
   --accent-glow: #fbbf24;
-  --accent-warm: #d97706;
-  --accent-warm-deep: #b45309;
+  /* Light-theme amber: amber-700 (5.02:1 vs white) and amber-800 (7.09:1 vs
+     white) clear WCAG AA 4.5:1 for normal text. Earlier values (amber-600
+     #d97706 and amber-700 #b45309) hit only 3.18 / 4.66:1; the first failed
+     Lighthouse accessibility on the light theme. Dark-theme amber stays
+     #fbbf24 (amber-400) where the dark bg is the contrast partner. */
+  --accent-warm: #b45309;
+  --accent-warm-deep: #92400e;
   --accent-cool: #0284c7;
   --on-accent: #0a0a0a;
   --code-bg: #f5f5f0;
