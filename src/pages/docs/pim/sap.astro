@@ -7,7 +7,6 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 ---
 
 <PageShell
@@ -67,7 +66,9 @@ import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
     <p>The actual characteristic <em>values</em> per material live in the AUSP table (KSSK links class-to-material; AUSP holds the values). Plan the emit to query AUSP for characteristic values, not just KSSK for class assignment.</p>
 
-    <p>The <strong>API_CLFN_PRODUCT_SRV</strong> OData service ("Product Master Data Including Classification") is often a better single-entry endpoint than API_PRODUCT_SRV when characteristics inline with product fetch are needed. It returns the product master plus assigned classes plus characteristic values in one navigation graph.</p>
+    <p>
+      Two OData services are commonly used for classification data on S/4HANA. <code>API_CLFN_CHARACTERISTIC_SRV</code> ("Classification System Characteristic", SAP_COM_0163 communication scenario) exposes characteristic definitions and value-sets directly; use it when the emitter needs to walk the characteristic catalog independent of any one material. <code>API_CLFN_PRODUCT_SRV</code> ("Product Master Data Including Classification") is often a better single-entry endpoint than <code>API_PRODUCT_SRV</code> when characteristic values inline with the product fetch are what the emitter needs; it returns the product master plus assigned classes plus characteristic values in one navigation graph.
+    </p>
 
     <h3>Document Info Records (DMS)</h3>
     <div class="pim-map-scroll">
@@ -97,7 +98,5 @@ import EditOnGitHub from '../../../components/EditOnGitHub.astro';
       Full guide with OData endpoint examples, attestation patterns, and ABAP/Python hybrid transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md</code></a>
     </p>
     </div>
-
-    <EditOnGitHub upstreamPath="mappings/pim/sap.md" />
   </SpecDocsLayout>
 </PageShell>

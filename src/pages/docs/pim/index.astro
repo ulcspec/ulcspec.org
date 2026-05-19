@@ -2,7 +2,6 @@
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import SectionCard from '../../../components/SectionCard.astro';
-import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
 const platforms: readonly { slug: string; title: string; description: string }[] = [
   { slug: 'salsify', title: 'Salsify', description: 'Cloud PIM. Consumer brands, retail-syndicated lines, mid-market lighting.' },
@@ -38,8 +37,6 @@ const platforms: readonly { slug: string; title: string; description: string }[]
         </li>
       ))}
     </ul>
-
-    <EditOnGitHub upstreamPath="mappings/pim/README.md" />
   </SpecDocsLayout>
 </PageShell>
 

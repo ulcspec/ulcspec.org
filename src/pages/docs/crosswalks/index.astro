@@ -13,7 +13,6 @@ import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import StatusFlag from '../../../components/StatusFlag.astro';
 import Callout from '../../../components/Callout.astro';
-import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
 interface Crosswalk {
   slug: string;
@@ -93,8 +92,6 @@ const crosswalks: readonly Crosswalk[] = [
         stage; the status flag advances as upstream work progresses.
       </p>
     </Callout>
-
-    <EditOnGitHub upstreamPath="mappings/README.md" />
   </SpecDocsLayout>
 </PageShell>
 

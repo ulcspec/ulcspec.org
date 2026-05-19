@@ -1,7 +1,6 @@
 ---
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import Callout from '../../components/Callout.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
 
@@ -31,8 +30,6 @@ const upstreamPath = entry.upstreamPath;
         Generator lands alongside the schema-reference generator in PR-2.
       </p>
     </Callout>
-
-    <EditOnGitHub upstreamPath={upstreamPath} />
   </SpecDocsLayout>
 </PageShell>
 

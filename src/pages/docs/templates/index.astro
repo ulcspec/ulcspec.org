@@ -2,7 +2,6 @@
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import SectionCard from '../../../components/SectionCard.astro';
-import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
 const categories: readonly { slug: string; title: string; description: string }[] = [
   { slug: 'downlight', title: 'Downlight', description: 'Recessed downlight starter skeleton. Pattern A (per-SKU) baseline.' },
@@ -40,8 +39,6 @@ const categories: readonly { slug: string; title: string; description: string }[
         </li>
       ))}
     </ul>
-
-    <EditOnGitHub upstreamPath="templates/README.md" />
   </SpecDocsLayout>
 </PageShell>
 

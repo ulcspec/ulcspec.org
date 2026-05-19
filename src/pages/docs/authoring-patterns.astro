@@ -7,7 +7,6 @@
 import { getEntry, render } from 'astro:content';
 
 import Callout from '../../components/Callout.astro';
-import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
@@ -55,8 +54,6 @@ if (entry) {
         </Callout>
       )
     }
-
-    <EditOnGitHub upstreamPath={manifest.upstreamPath} />
   </SpecDocsLayout>
 </PageShell>
 
