@@ -15,14 +15,13 @@ import Callout from '../components/Callout.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 import DiscoveryLoopDiagram from '../components/DiscoveryLoopDiagram.astro';
 import ManufacturerFlowDiagram from '../components/ManufacturerFlowDiagram.astro';
-import StandardsTimelineDiagram from '../components/StandardsTimelineDiagram.astro';
 
 const tocItems = [
   { href: '#insight', label: 'Where discovery is going' },
-  { href: '#alternatives', label: 'The four approaches' },
-  { href: '#perfect-world', label: 'What winning looks like' },
   { href: '#introduction', label: 'What ULC is' },
+  { href: '#pilot', label: 'Pilot a publication' },
   { href: '#themes', label: 'Differentiated value' },
+  { href: '#the-ask', label: 'The Ask' },
 ];
 
 const crossLinks = [
@@ -89,89 +88,6 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
         </p>
       </section>
 
-      {/* ── 2. ALTERNATIVES ────────────────────────────────────────────── */}
-      <section id="alternatives" aria-labelledby="alternatives-heading">
-        <p class="step-num">Step 2</p>
-        <h2 id="alternatives-heading">The four approaches</h2>
-        <p>
-          If you have decided to take the AI-mediated discovery shift seriously, there are four approaches. Three are status quo or variants; the fourth is ULC.
-        </p>
-
-        <table class="alt-table">
-          <thead>
-            <tr>
-              <th scope="col">Approach</th>
-              <th scope="col">Pros</th>
-              <th scope="col">Cons</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Status quo: PDF + IES + LDT alone</th>
-              <td>Zero new investment. The publishing workflow you already run.</td>
-              <td>Extraction is wrong on attributes that matter (CCT, CRI, optical accessories, IP rating). The aggregator's interpretation, not your authoritative file, becomes what the designer's tool reads.</td>
-            </tr>
-            <tr>
-              <th scope="row">Outsource to aggregators and PIM platforms</th>
-              <td>Someone else does the structured publishing. Predictable cost.</td>
-              <td>The aggregator becomes the data layer between you and the designer's tool. You are paying to be re-interpreted. Hashes, provenance, and corrections all live downstream of your file.</td>
-            </tr>
-            <tr>
-              <th scope="row">Proprietary in-house JSON or API</th>
-              <td>Maximum control over format and timing. No standards-committee work.</td>
-              <td>Every AI consumer needs a per-OEM parser. Does not scale: the consumer-side cost is multiplied by the number of manufacturers. No interoperability dividend.</td>
-            </tr>
-            <tr>
-              <th scope="row">GLDF (XML, DIAL ecosystem)</th>
-              <td>Mature in continental Europe. Embedded in DIALux planning workflows.</td>
-              <td>XML. Planning-centric, not AI-consumption-centric. Steward is a software-vendor body with commercial planning tools. JSON support and AI-consumption framing are not on the roadmap today.</td>
-            </tr>
-            <tr class="alt-row--companion">
-              <th scope="row">The fifth row: ULC</th>
-              <td colspan="2">
-                Open, JSON, AI-consumption-first. Metadata-only with hash-referenced source files. Neutrally stewarded. See the themes section below for what it delivers and The Pilot for what it costs.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      {/* ── 3. PERFECT WORLD ───────────────────────────────────────────── */}
-      <section id="perfect-world" aria-labelledby="perfect-heading">
-        <p class="step-num">Step 3</p>
-        <h2 id="perfect-heading">What "winning the AI-mediated discovery layer" looks like</h2>
-        <p>
-          A CEO who wants their brand to win in the AI-mediated discovery layer is committing to three criteria.
-        </p>
-
-        <ol class="criteria-list">
-          <li>
-            <h3>Your products surface in the answer set with accurate attributes.</h3>
-            <p>
-              When a designer asks an AI which 2700K downlight under 40W fits a project, you are in the answer with the right CCT, the right CRI, the right optical accessories, the right IP rating. Not whatever the extraction layer guessed off your PDF.
-            </p>
-          </li>
-          <li>
-            <h3>The data the designer's tool consumes comes from you, verifiable to your source files.</h3>
-            <p>
-              No aggregator's interpretation, no spec database's re-extraction sitting in the middle. You own the data relationship at the data layer. Your existing rep, distributor, and aggregator relationships stay where they are.
-            </p>
-          </li>
-          <li>
-            <h3>The format you publish in is an open industry standard you helped shape.</h3>
-            <p>
-              Not a vendor's proprietary platform. Not an aggregator's schema. Neutrally stewarded, with a clear path to becoming the table-stakes layer the whole industry adopts, and a seat at the table while it is being shaped.
-            </p>
-          </li>
-        </ol>
-
-        <Callout intent="accent">
-          <p>
-            If these three feel right, ULC is the layer you have been waiting for. If you reject one of them, ULC is not the right standard for your brand. That is a real answer, not a failure.
-          </p>
-        </Callout>
-      </section>
-
       {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
       <section id="introduction" aria-labelledby="introduction-heading">
         <p class="step-num">Step 4</p>
@@ -196,147 +112,61 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
         </Callout>
       </section>
 
-      {/* ── 5. DIFFERENTIATED VALUE (3 themes) ─────────────────────────── */}
+      {/* ── 5. PILOT A PUBLICATION ─────────────────────────────────────── */}
+      <section id="pilot" aria-labelledby="pilot-heading">
+        <p class="step-num">Activation</p>
+        <h2 id="pilot-heading">Pilot a publication</h2>
+        <p>
+          The lowest-cost way to see what ULC means for your brand is to publish 1-3 SKUs from one product line. The four canonical example records in <code>ulcspec/ULC/examples/</code> show what a finished <code>.ulc</code> file looks like across the four authoring patterns: single-SKU cutsheet, configurator with applicability blocks, per-IES with provenance classes, and per-foot linear scaling.
+        </p>
+        <p>
+          Run a candidate file through the <a href="/validator" class="link-inline">validator</a> to catch schema errors before publication. Walk through the PIM mapping guides at <a href="/docs" class="link-inline">/docs</a> for Salsify, Akeneo, SAP, and custom systems. Compare what an LLM extracts from your existing PDF today against what it consumes from the matching <code>.ulc</code> record. The gap is the discovery layer ULC closes.
+        </p>
+        <p class="sample-link">
+          <a href="/downloads#examples">
+            Download the four canonical samples <span aria-hidden="true">→</span>
+          </a>
+        </p>
+      </section>
+
+      {/* ── 6. WHAT DIFFERENCE A ULC FILE MAKES (3 bullets) ────────────── */}
       <section id="themes" aria-labelledby="themes-heading">
         <p class="step-num">Step 5</p>
-        <h2 id="themes-heading">Differentiated value, three themes</h2>
+        <h2 id="themes-heading">What difference a ULC file makes</h2>
+        <p>
+          ULC turns your product data into a layer AI tools, design tools, and spec databases consume natively. Three concrete shifts.
+        </p>
 
-        {/* Theme 1 */}
-        <section id="theme-1" class="theme" aria-labelledby="theme-1-heading">
-          <p class="theme__num">Theme 1</p>
-          <h3 id="theme-1-heading">Found in AI-mediated specifier discovery.</h3>
-          <p>
-            ULC delivers inclusion in AI-mediated specifier workflows for specification-grade luminaire manufacturers. When a designer asks an AI which 2700K downlight under 40W with a specific optic and CRI fits a project, you are in the answer set with accurate attributes. Not whatever the extraction layer guessed off your PDF.
-          </p>
+        <ul class="value-list">
+          <li>
+            <strong>Found in AI-mediated specifier discovery with correct attributes.</strong> When a designer asks an AI which 2700K downlight under 40W fits a project, your products are in the answer set with the right CCT, CRI, optical accessories, and IP rating, sourced from you, not whatever the extraction layer guessed off your PDF.
+          </li>
+          <li>
+            <strong>Direct data channel from you to the designer's tool, hash-verifiable.</strong> The designer's AI agent, design tool, and spec database fetch your authoritative <code>.ulc</code> record from your infrastructure, verify it against your source files by SHA-256 hash, and parse it natively. No aggregator's interpretation sitting in the middle. Your rep, distributor, and aggregator relationships stay where they are.
+          </li>
+          <li>
+            <strong>Early-mover position in the standard your peers will adopt.</strong> Open, MIT-licensed, neutrally stewarded, with active dialogue with DIAL, LIA, and IES, and pilot conversations underway. The first manufacturers to publish are the ones the industry remembers as having defined the layer.
+          </li>
+        </ul>
+      </section>
 
-          <Callout intent="default" label="One canonical record">
-            <p>
-              One of the four canonical reference records in <code>ulcspec/ULC/examples/</code> is Pattern B, the Selux Aya pole. A single product cutsheet covering 54,000 SKUs across configurator axes and CCT multipliers compressed into 21 ULC records via the <code>applicability</code> block.
-            </p>
-            <p>
-              The PDF stays beautiful for the human reader. The 21 ULC records make every configurator axis machine-visible.
-            </p>
-          </Callout>
-
-          <div class="contrast">
-            <div class="contrast__col">
-              <p class="contrast__label">From PDF extraction today</p>
-              <ul class="contrast__list">
-                <li>Paraphrased CCT</li>
-                <li>Missing optical accessories</li>
-                <li>Occasionally wrong CRI</li>
-                <li>Mounting unclear</li>
-                <li>IP rating depending on which footnote was read</li>
-              </ul>
-            </div>
-            <div class="contrast__col contrast__col--gain">
-              <p class="contrast__label">From a ULC record</p>
-              <ul class="contrast__list">
-                <li>Typed fields</li>
-                <li>Taxonomy-conformant values</li>
-                <li>Explicit-missing-fields surfacing</li>
-                <li>Source-file hash verification</li>
-                <li>Same product, machine-visible</li>
-              </ul>
-            </div>
-          </div>
-          <p class="contrast-note">
-            Same product. Two completely different consumption paths.
-          </p>
-
-          <Callout intent="accent" label="Upward pitch">
-            <p>
-              "When a designer asks an AI which 2700K downlight under 40W to spec, we are in the answer. Our competitors who publish only PDFs are not."
-            </p>
-          </Callout>
-
-          <p class="return-line">
-            That is how ULC gets you found in AI-mediated specifier discovery, with your attributes correct, sourced from you, verifiable.
-          </p>
-        </section>
-
-        {/* Theme 2 */}
-        <section id="theme-2" class="theme" aria-labelledby="theme-2-heading">
-          <p class="theme__num">Theme 2</p>
-          <h3 id="theme-2-heading">Direct specifier-to-manufacturer data channel.</h3>
-          <p>
-            ULC delivers a direct data channel between you and the designer's tool. The AI agent, the design tool, the spec database fetches your authoritative ULC file from your infrastructure, verifies it against your source files by SHA-256 hash, and parses it natively. The aggregator's interpretation is no longer the data layer the designer sees.
-          </p>
-          <p>
-            Your rep relationships, your distributor relationships, your aggregator listings, all stay where they are. The change is at the data layer, not the commercial layer.
-          </p>
-
-          <Callout intent="default" label="Hash verification, briefly">
-            <p>
-              The <code>sources[]</code> block in a ULC record references your PDF, your IES, and your LDT by URL and SHA-256 hash. Any consumer can re-hash the source file and prove they are reading the exact artifact you published. No embedding. No redistribution. Just verification.
-            </p>
-          </Callout>
-
-          <pre class="code-block" aria-label="Example sources block from a ULC record"><code>{`{
-  "sources": [
-    {
-      "type": "datasheet_pdf",
-      "url": "https://example-manufacturer.com/products/spec-sheet.pdf",
-      "sha256": "a3f5b8…"
-    },
-    {
-      "type": "ies",
-      "url": "https://example-manufacturer.com/products/photometric.ies",
-      "sha256": "c8e2a1…"
-    }
-  ]
-}`}</code></pre>
-
-          <Callout intent="default" label="IP safety, at the architecture layer">
-            <p>
-              The ULC record is metadata only. It references your source files by hash and URL. It does not embed them. Your PDF stays your PDF. Your IES stays your IES. Your LDT stays your LDT. The IP framing is settled at the architecture layer, not negotiated per pilot.
-            </p>
-          </Callout>
-
-          <Callout intent="accent" label="Upward pitch">
-            <p>
-              "For the first time, the designer's tools fetch our spec data directly from us. Not a rep agency's interpretation, not a spec database's re-extraction."
-            </p>
-          </Callout>
-
-          <p class="return-line">
-            That is how ULC gives you a direct data channel to the designer's tools without disturbing the commercial relationships you already have.
-          </p>
-        </section>
-
-        {/* Theme 3 */}
-        <section id="theme-3" class="theme" aria-labelledby="theme-3-heading">
-          <p class="theme__num">Theme 3</p>
-          <h3 id="theme-3-heading">Lead the industry's transition to machine-readable product data.</h3>
-          <p>
-            ULC delivers early-mover positioning for the manufacturers who publish first and help shape the standard. ULC is on an open-standard trajectory: MIT-licensed, neutrally stewarded by a practicing designer with MIES, IALD, and CLD credentials, with active dialogue with DIAL (DIALux, GLDF), LIA, and IES, planned crosswalks to GLDF and ETIM, and pilot conversations underway.
-          </p>
-          <p>
-            The first manufacturers to publish are the ones the industry will remember as having defined the layer. Later adopters get the standard once it is table-stakes; early adopters get to shape it.
-          </p>
-
-          <StandardsTimelineDiagram />
-
-          <Callout intent="default" label="Governance and license">
-            <p>
-              MIT license. <code>GOVERNANCE.md</code> documents who maintains, how decisions flow, how stewardship transitions. The Schema Change Proposal process means schema evolution does not depend on one party. The steward is a lighting professional, not a software-vendor body with a commercial roadmap.
-            </p>
-          </Callout>
-
-          <p class="dialogue-strip" aria-label="ULC is in active dialogue with DIAL, LIA, and IES">
-            In active dialogue with <strong>DIAL</strong> <span aria-hidden="true">·</span> <strong>LIA</strong> <span aria-hidden="true">·</span> <strong>IES</strong>
-          </p>
-
-          <Callout intent="accent" label="Upward pitch">
-            <p>
-              "We helped define the standard our peers will all adopt by 2030. We are not adopting it, we are shaping it."
-            </p>
-          </Callout>
-
-          <p class="return-line">
-            That is how ULC lets you lead the industry's transition to machine-readable product data, instead of catching up to it.
-          </p>
-        </section>
+      {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
+      <section id="the-ask" aria-labelledby="the-ask-heading">
+        <p class="step-num">Step 6</p>
+        <h2 id="the-ask-heading">The Ask</h2>
+        <p>
+          ULC is a new open-source standard. The activation mechanic turns when forward-leaning manufacturers pilot the publication shape and tell us what breaks.
+        </p>
+        <p>
+          The Ask is one specific commitment: pilot 1-3 SKUs as <code>.ulc</code> files in the next 90 days. The validator catches the easy issues. The conversations that follow shape what the standard becomes.
+        </p>
+        <p>
+          Open an issue or contribute on <a
+            href="https://github.com/ulcspec/ULC"
+            target="_blank"
+            rel="noopener external"
+          >GitHub</a>.
+        </p>
       </section>
 
     </article>
@@ -746,6 +576,41 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
   }
   .link-inline:hover {
     color: var(--accent-warm-deep);
+  }
+
+  /* ── Differentiated-value bullets ──────────────────────────────────
+     Mirrors src/pages/for-designers.astro `.value-list`. Keep the two in
+     sync until a shared prose token system lands per DESIGN_SYSTEM.md. */
+  .value-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .value-list > li {
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+  .value-list > li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── Sample-link (matches /for-designers Try-ULC-today extra) ──────── */
+  .sample-link {
+    margin-top: 1.25rem !important;
+    font-size: 0.9375rem;
+  }
+  .sample-link a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
   }
 
   /* ── Proof matrix ─────────────────────────────────────────────────── */

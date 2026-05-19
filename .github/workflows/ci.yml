@@ -101,6 +101,31 @@ jobs:
             exit 1
           fi
 
+      - name: Verify /for-manufacturers locked copy + dropped sections
+        run: |
+          set -euo pipefail
+          PAGE=dist/for-manufacturers/index.html
+          test -f "$PAGE" || (echo "no $PAGE"; exit 1)
+          grep -F "Pilot a publication" "$PAGE"
+          grep -F "What difference a ULC file makes" "$PAGE"
+          grep -F "The Ask" "$PAGE"
+          grep -F "pilot 1-3 SKUs as" "$PAGE"
+          grep -F "Found in AI-mediated specifier discovery with correct attributes" "$PAGE"
+          grep -F "Direct data channel from you to the designer's tool" "$PAGE"
+          grep -F "Early-mover position in the standard your peers will adopt" "$PAGE"
+          if grep -F "The four approaches" "$PAGE"; then
+            echo "FAIL: dropped 'The four approaches' section still present"
+            exit 1
+          fi
+          if grep -F "winning the AI-mediated discovery layer" "$PAGE"; then
+            echo "FAIL: dropped 'What winning looks like' section still present"
+            exit 1
+          fi
+          if grep -F "Differentiated value, three themes" "$PAGE"; then
+            echo "FAIL: dropped verbose 3-themes H2 still present"
+            exit 1
+          fi
+
       - name: Verify cutsheet canonicalization (no 'cut sheet' / 'cut-sheet' anywhere)
         run: |
           set -euo pipefail
