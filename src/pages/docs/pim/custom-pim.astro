@@ -7,7 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 ---
 
 <PageShell
@@ -15,29 +15,30 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
   description="Field-by-field mapping patterns from a custom or in-house product-master database to a ULC record. Identity, category, dimensional, scenario expansion, asset hashing, attestation mapping; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
-    <h1 class="page-h1">Custom / in-house PIM mapping.</h1>
-
     <div class="pim-mapping-page">
+    <h1 class="page-h1">Custom / in-house PIM mapping.</h1>
     <p class="page-intro">
-      Traditional lighting manufacturers often run a home-grown product-master database rather than a commercial PIM. Typical stacks are Oracle or PostgreSQL with a web admin in Django, Rails, Spring, or .NET. This guide describes the patterns that apply to any in-house schema.
+      The custom or in-house path applies to manufacturers without a commercial PIM. In the lighting industry this is typically sub-$50M brands, OEM/ODM suppliers, and family-owned specialty manufacturers. At the &gt;$100M tier (Signify, Acuity, Hubbell, GE Current, Louis Poulsen), the actual product master is typically SAP MM material master or a commercial PIM (Stibo, Pimcore): see the SAP and Salsify / Akeneo guides for those paths. This guide describes patterns that apply when the master is a custom relational database.
     </p>
 
     <h2>Typical in-house data model</h2>
     <ul>
       <li><strong>Products table</strong>: one row per SKU or family, with columns for identity, category, basic dimensions, rating.</li>
-      <li><strong>Attributes table</strong> (key/value or EAV): for values that vary per product or per scenario, often stored as a property bag.</li>
+      <li><strong>Attributes table</strong> (typed columns or a key/value extension): for values that vary per product. Typed-column schemas (one column per attribute, strongly typed) are preferred where the attribute set is stable. EAV (entity-attribute-value) patterns are common in legacy lighting databases but introduce per-query joins and complicate type validation. ETIM's typed feature model (Alphanumeric, Numeric, Range, Logical) is the dominant industry approach for electrotechnical product attributes; consider it as the data-shape target whether or not your internal storage uses EAV.</li>
       <li><strong>Categories table</strong>: hierarchical or flat.</li>
       <li><strong>Files / assets table</strong>: cutsheet PDFs, IES, LDT; with a file-storage pointer (S3 key, SAN path) rather than the bytes.</li>
       <li><strong>Relationships table</strong>: accessory compatibility, replacement chains, kit composition.</li>
       <li><strong>Test reports table</strong> (sometimes): lab attestations with doc references.</li>
     </ul>
 
+    <p>Typical stacks vary by manufacturer vintage: 1990s-era industrial lighting brands often use IBM i (AS/400 / iSeries) with RPG or COBOL underneath, with newer web admins in Java or .NET. Mid-2000s-era brands typically use Oracle or PostgreSQL with Spring (.NET) or Django / Rails admins. The pseudocode in this guide is shown in Python for readability: adapt to whichever language your team owns.</p>
+
     <p>Sometimes the schema is fully normalized (one column per attribute); sometimes a "products + JSON blob" hybrid. Both work.</p>
 
     <h2>Core mapping patterns</h2>
 
     <h3>Identity</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">SQL / ORM column</th><th scope="col">ULC path</th></tr></thead>
       <tbody>
@@ -48,9 +49,11 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
       </tbody>
     </table>
+    </div>
 
     <h3>Category</h3>
     <p>Maintain a mapping table from the in-house <code>category_id</code> to ULC enum values. Store as a version-controlled config file, not as a database table; ULC enums change with schema releases and should track the spec version. Example mapping:</p>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">In-house category</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
       <tbody>
@@ -61,9 +64,15 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>bollard_outdoor</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
       </tbody>
     </table>
+    </div>
+
+    <h3>ETIM classification cross-walk</h3>
+    <p>Many lighting product-master schemas in the European market reference ETIM class codes (for example, <code>EC002643</code> for downlights) and feature codes (for example, <code>EF001596</code> for housing material). ULC's <code>primary_category</code> enum and many of its individual fields cite ETIM feature identifiers inline in the schema descriptions where a direct correspondence exists. If your in-house PIM stores ETIM codes, use them as the bridge to ULC enums: the mapping is typically 1:1 at the class level and per-feature at the attribute level.</p>
+    <p>ETIM North America is expanding adoption in US and Canadian distribution channels; ETIM UK and Continental Europe are well-established. See <code>mappings/etim-crosswalk.md</code> (planned in the upstream repo) for the full field-level table.</p>
 
     <h3>Dimensional fields</h3>
     <p>In-house PIMs usually store dimensions in a single authoritative unit. Convert at emit time to dual-unit. Common columns:</p>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">DB column</th><th scope="col">ULC path</th></tr></thead>
       <tbody>
@@ -73,6 +82,10 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>weight_kg</code></td><td><code>product_family.physical_dimensions.luminaire_mass</code></td></tr>
       </tbody>
     </table>
+    </div>
+
+    <h3>Attestations</h3>
+    <p>Common attestation programs the in-house schema should track: DLC QPL (DesignLights Consortium Qualified Products List, a lighting-specific energy attestation), ENERGY STAR Luminaires V2.0+, UL listings (UL 1598 and similar), and lumen-maintenance attestations (LM-80 / TM-21 derived L70 / L80 / L90 hours). The emitter maps each to a ULC <code>attestations[]</code> entry with <code>program</code>, <code>status</code>, <code>value_type</code>, and <code>verification</code> populated per the schema.</p>
 
     <h2>Gotchas</h2>
     <ol>
@@ -87,5 +100,7 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
       Full guide with scenario expansion SQL, S3 streaming patterns, migration path to a commercial PIM, and Python + SQLAlchemy transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md</code></a>
     </p>
     </div>
+
+    <EditOnGitHub upstreamPath="mappings/pim/custom-pim.md" />
   </SpecDocsLayout>
 </PageShell>

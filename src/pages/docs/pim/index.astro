@@ -1,7 +1,6 @@
 ---
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 import SectionCard from '../../../components/SectionCard.astro';
 import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
@@ -18,7 +17,6 @@ const platforms: readonly { slug: string; title: string; description: string }[]
   description="How to add a ULC export path alongside existing exports for Salsify, Akeneo, SAP, and custom / in-house PIMs."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">PIM mapping guides.</h1>
     <p class="page-intro">
       Mapping guides translate ULC's field model into the field models
@@ -46,7 +44,6 @@ const platforms: readonly { slug: string; title: string; description: string }[]
 </PageShell>
 
 <style>
-  .page-eyebrow { margin: 0 0 1.25rem 0; }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;
@@ -70,6 +67,7 @@ const platforms: readonly { slug: string; title: string; description: string }[]
     padding: 0;
     display: grid;
     grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
     gap: 1rem;
     align-items: stretch;
   }

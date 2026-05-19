@@ -1,7 +1,6 @@
 ---
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
 import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import Callout from '../../components/Callout.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
@@ -15,7 +14,6 @@ const upstreamPath = entry.upstreamPath;
   description="ULC's closed-enum taxonomies. Luminaire categories, mounting types, optical accessories, attestation programs, dimming protocols, source-file types, provenance sources."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Taxonomy.</h1>
     <p class="page-intro">
       Closed-enum taxonomies cover luminaire categories, mounting types,
@@ -39,7 +37,6 @@ const upstreamPath = entry.upstreamPath;
 </PageShell>
 
 <style>
-  .page-eyebrow { margin: 0 0 1.25rem 0; }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;

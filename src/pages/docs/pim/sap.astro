@@ -7,7 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 ---
 
 <PageShell
@@ -15,10 +15,8 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
   description="Field-by-field mapping from SAP MM material master (or S/4HANA OData) to a ULC record. Classification characteristics, DMS document linkage, variant axes, attestation mapping; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
-    <h1 class="page-h1">SAP PIM mapping.</h1>
-
     <div class="pim-mapping-page">
+    <h1 class="page-h1">SAP PIM mapping.</h1>
     <p class="page-intro">
       SAP ERP and adjacent SAP master-data products (MDG, PLM) hold the product data for most large-enterprise luminaire manufacturers. This guide describes how ULC records can be emitted from a typical SAP landscape.
     </p>
@@ -30,12 +28,13 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
       <li><strong>SAP MDG</strong> is the enterprise governance layer on top, enforcing data quality and approval gates.</li>
       <li><strong>Classification System (CA-CL)</strong> holds characteristics (CABN) and classes (KLAH). Luminaire-specific attributes like <code>BEAM_ANGLE</code>, <code>CCT_K</code>, <code>INPUT_POWER_W</code> live here.</li>
       <li><strong>Document Info Records (DMS)</strong> hold cutsheet PDFs, IES, LDT linked to materials.</li>
-      <li><strong>Integration paths:</strong> legacy ECC uses IDocs (XML envelopes); S/4HANA exposes OData (REST/JSON). OData is preferred for new work.</li>
+      <li><strong>Integration paths:</strong> Legacy ECC integration is primarily IDoc-based (XML envelopes). S/4HANA exposes OData (REST/JSON) services for the same master-data domains and is the strategic path for new work, but IDocs remain fully supported on S/4HANA on-premise and Private Cloud (only S/4HANA Public Cloud blocks them). Choose OData for new emit integrations; preserve IDoc as a fallback if your landscape has constraints.</li>
     </ul>
 
     <h2>Core mapping</h2>
 
     <h3>Identity (MM material master)</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">SAP field (OData)</th><th scope="col">ULC path</th></tr></thead>
       <tbody>
@@ -46,9 +45,11 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>ProductHierarchy</code></td><td><code>product_family.catalog_line</code></td></tr>
       </tbody>
     </table>
+    </div>
 
     <h3>Classification characteristics</h3>
     <p>SAP characteristics carry typed values with unit of measure. The emitter reads characteristics assigned to a material and maps them to ULC fields:</p>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">SAP characteristic</th><th scope="col">ULC path</th></tr></thead>
       <tbody>
@@ -62,8 +63,14 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>DRIVER_PROTOCOL</code> (CHAR enum)</td><td><code>electrical.driver_protocol</code></td></tr>
       </tbody>
     </table>
+    </div>
+
+    <p>The actual characteristic <em>values</em> per material live in the AUSP table (KSSK links class-to-material; AUSP holds the values). Plan the emit to query AUSP for characteristic values, not just KSSK for class assignment.</p>
+
+    <p>The <strong>API_CLFN_PRODUCT_SRV</strong> OData service ("Product Master Data Including Classification") is often a better single-entry endpoint than API_PRODUCT_SRV when characteristics inline with product fetch are needed. It returns the product master plus assigned classes plus characteristic values in one navigation graph.</p>
 
     <h3>Document Info Records (DMS)</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">SAP DMS doc type</th><th scope="col">ULC <code>source_files[].file_type</code></th></tr></thead>
       <tbody>
@@ -74,19 +81,23 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>LAB_REPORT</code></td><td>(referenced via <code>attestations[].source_document_ref</code>)</td></tr>
       </tbody>
     </table>
+    </div>
 
     <h2>Gotchas</h2>
     <ol>
       <li><strong>IDoc vs OData.</strong> Legacy ECC without S/4HANA exposes data via IDocs (MATMAS, CLFMAS, DOCMAS). Mapping is conceptually identical; the engineer handles XML instead of JSON.</li>
       <li><strong>Language keys.</strong> SAP descriptions are per-language (SPRAS). Choose a canonical language key (typically <code>EN</code>) and record it in the integration config.</li>
-      <li><strong>Change-document tracking.</strong> Skip materials with active change documents (ECR/ECO in progress) from export until the change closes. Do not paper over draft state by lowering <code>conformance_level</code>.</li>
+      <li><strong>Change-master tracking.</strong> Skip materials with active engineering change records (AENR, referenced by change-master transaction CC02) from export until the change closes. The relevant artifacts are the change number (ECN) and change-master, not just generic "ECR/ECO": name them precisely so the integration engineer can map the skip-condition to the actual SAP table. Do not paper over draft state by lowering <code>conformance_level</code>.</li>
       <li><strong>Classification sparseness.</strong> Not every luminaire will have every expected characteristic populated. Skip or fail the export when a required characteristic is missing.</li>
       <li><strong>Unit rounding errors.</strong> SAP often stores dimensions at coarse precision (integer mm). Preserve decimal precision when computing the Imperial companion.</li>
+      <li><strong>IDoc serialization ordering.</strong> When emitting a material with classification, callers must send MATMAS first (material master) then CLFMAS (classification). The serialization group BD44 enforces this; ULC emit pipelines that batch must respect the order.</li>
     </ol>
 
     <p class="full-guide-link">
       Full guide with OData endpoint examples, attestation patterns, and ABAP/Python hybrid transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md</code></a>
     </p>
     </div>
+
+    <EditOnGitHub upstreamPath="mappings/pim/sap.md" />
   </SpecDocsLayout>
 </PageShell>

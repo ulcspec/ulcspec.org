@@ -481,6 +481,12 @@ function formatAssetSize(bytes: number): string {
     color: var(--accent-warm);
     text-decoration: underline;
     text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .link-inline code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
   .link-inline:hover {
     color: var(--accent-warm-deep);

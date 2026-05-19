@@ -1,7 +1,6 @@
 ---
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 import SectionCard from '../../../components/SectionCard.astro';
 import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 
@@ -20,7 +19,6 @@ const categories: readonly { slug: string; title: string; description: string }[
   description="Authoring templates for six luminaire categories: downlight, linear-pendant, wall-pack, high-bay, bollard, wall-sconce."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Per-category templates.</h1>
     <p class="page-intro">
       Authoring templates ship for six luminaire categories: downlight,
@@ -48,7 +46,6 @@ const categories: readonly { slug: string; title: string; description: string }[
 </PageShell>
 
 <style>
-  .page-eyebrow { margin: 0 0 1.25rem 0; }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;

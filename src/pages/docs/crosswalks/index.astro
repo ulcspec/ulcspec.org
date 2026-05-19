@@ -11,7 +11,6 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 import StatusFlag from '../../../components/StatusFlag.astro';
 import Callout from '../../../components/Callout.astro';
 import EditOnGitHub from '../../../components/EditOnGitHub.astro';
@@ -60,7 +59,6 @@ const crosswalks: readonly Crosswalk[] = [
   description="Field-by-field mapping from ULC to adjacent standards: GLDF, ETIM, IES LM-63, EULUMDAT. All four planned at v1."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Crosswalks.</h1>
     <p class="page-intro">
       Crosswalks translate ULC fields into the field models of adjacent
@@ -101,7 +99,6 @@ const crosswalks: readonly Crosswalk[] = [
 </PageShell>
 
 <style>
-  .page-eyebrow { margin: 0 0 1.25rem 0; }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;

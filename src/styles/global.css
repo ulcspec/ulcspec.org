@@ -219,6 +219,20 @@ body {
    to the rendered MDX body. Keep in sync with the per-page
    .spec-prose treatment in /docs/authoring-patterns.
    ============================================================ */
+.pim-mapping-page .page-h1 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 1.25rem 0;
+}
+@media (min-width: 768px) {
+  .pim-mapping-page .page-h1 {
+    font-size: 2.75rem;
+  }
+}
 .pim-mapping-page .page-intro {
   font-size: 1.0625rem;
   line-height: 1.65;
@@ -281,10 +295,19 @@ body {
 }
 
 /* Inline mapping tables used in /docs/pim/* inner pages */
+.pim-map-scroll {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+.pim-map-scroll > .pim-map {
+  margin: 0;
+  min-width: 32rem;
+}
 .pim-map {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5rem 0;
   font-size: 0.9375rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -329,9 +352,13 @@ body {
   color: var(--accent-warm);
   text-decoration: underline;
   text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .full-guide-link code {
   font-family: var(--font-mono);
   font-size: 0.95em;
   color: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

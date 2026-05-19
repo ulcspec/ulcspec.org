@@ -13,7 +13,6 @@
 
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
 import SectionCard from '../../components/SectionCard.astro';
 import TwoTierConsumption from '../../components/TwoTierConsumption.astro';
 
@@ -86,9 +85,6 @@ const navCards: readonly NavCard[] = [
 <PageShell title={pageTitle} description={pageDescription}>
   <SpecDocsLayout>
     <header class="spec-landing__header">
-      <p class="spec-landing__eyebrow">
-        <SpecVersionBadge />
-      </p>
       <h1 class="spec-landing__h1">The ULC specification.</h1>
       <p class="spec-landing__sub">
         Schema, taxonomy, authoring patterns, per-category templates, and
@@ -133,9 +129,6 @@ const navCards: readonly NavCard[] = [
 <style>
   .spec-landing__header {
     margin-bottom: 3rem;
-  }
-  .spec-landing__eyebrow {
-    margin: 0 0 1.25rem 0;
   }
   .spec-landing__h1 {
     font-family: var(--font-display);

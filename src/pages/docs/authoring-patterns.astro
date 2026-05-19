@@ -10,7 +10,6 @@ import Callout from '../../components/Callout.astro';
 import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
 
 const manifest = manifestEntryForRouteOrThrow('/docs/authoring-patterns');
@@ -35,7 +34,6 @@ if (entry) {
   description="The four real-world manufacturer publishing shapes ULC supports: per-SKU, per-photometric-scenario, per-IES with provenance, per-foot linear scaling."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Authoring patterns.</h1>
 
     {
@@ -63,9 +61,6 @@ if (entry) {
 </PageShell>
 
 <style>
-  .page-eyebrow {
-    margin: 0 0 1.25rem 0;
-  }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;

@@ -1,7 +1,6 @@
 ---
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../components/SpecVersionBadge.astro';
 import EditOnGitHub from '../../components/EditOnGitHub.astro';
 import Callout from '../../components/Callout.astro';
 import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
@@ -15,7 +14,6 @@ const upstreamPath = entry.upstreamPath;
   description="ULC JSON Schema (Draft 2020-12). Every field documented with type, required or optional status, description, allowed values, and example."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Schema reference.</h1>
     <p class="page-intro">
       ULC's JSON Schema (Draft 2020-12) defines every field, type,
@@ -41,7 +39,6 @@ const upstreamPath = entry.upstreamPath;
 </PageShell>
 
 <style>
-  .page-eyebrow { margin: 0 0 1.25rem 0; }
   .page-h1 {
     font-family: var(--font-display);
     font-size: 2.25rem;

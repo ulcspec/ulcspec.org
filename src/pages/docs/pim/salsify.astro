@@ -7,7 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
-import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+import EditOnGitHub from '../../../components/EditOnGitHub.astro';
 ---
 
 <PageShell
@@ -15,27 +15,26 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
   description="Field-by-field mapping from a Salsify product catalog to a ULC record. Identity, category, dimensional, photometric, and asset mappings; common gotchas; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
-    <p class="page-eyebrow"><SpecVersionBadge /></p>
-    <h1 class="page-h1">Salsify PIM mapping.</h1>
-
     <div class="pim-mapping-page">
+    <h1 class="page-h1">Salsify PIM mapping.</h1>
     <p class="page-intro">
       Salsify is a cloud PIM popular with consumer-facing brands, retail-syndicated product lines, and mid-market lighting manufacturers distributing through specifier and wholesale channels. This guide describes how a typical Salsify organization can emit ULC records.
     </p>
 
     <h2>Salsify data model in one page</h2>
     <ul>
-      <li><strong>Products</strong> are the core entity. Each product is identified by an internal ID and one or more external IDs (SKU, UPC, MPN).</li>
+      <li><strong>Products</strong> are the core entity. Each product has an internal <code>salsify_id</code> plus a user-designated external ID (commonly the SKU). UPC, MPN, and other identifiers are typically modeled as additional Properties on the product, not as built-in identifier slots.</li>
       <li><strong>Properties</strong> are typed fields on products: strings, numbers, enums, digital assets, or references.</li>
       <li><strong>Product relationships</strong> model accessories, replacements, and bundle components through typed reference properties.</li>
       <li><strong>Digital assets</strong> (images, PDFs, IES files) are first-class objects with their own IDs, versioning, and renditions.</li>
-      <li><strong>Channels and recipes</strong> define per-channel export transformations. The ULC emitter plugs in as a channel recipe plus an external transform service.</li>
-      <li><strong>APIs:</strong> GraphQL for rich queries, REST for bulk operations and webhooks, CSV for imports.</li>
+      <li><strong>Channels with JavaScript mappings</strong> define per-channel export transformations. The ULC emitter plugs in as a channel + JavaScript mapping (or a channel exporting raw JSON to an external transform service).</li>
+      <li><strong>APIs:</strong> GraphQL for typed reads across the schema; REST for CRUD, filtering, and Job-based bulk imports / exports (CSV, JSON, Excel formats); Webhooks for change-event subscriptions. All authentication via OAuth2 bearer tokens.</li>
     </ul>
 
     <h2>Core mapping</h2>
 
     <h3>Identity</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">Salsify</th><th scope="col">ULC path</th></tr></thead>
       <tbody>
@@ -46,8 +45,10 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
       </tbody>
     </table>
+    </div>
 
     <h3>Category and mounting</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">Salsify category</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
       <tbody>
@@ -58,8 +59,13 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>.../outdoor/bollard</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
       </tbody>
     </table>
+    </div>
+
+    <h3>Dimensional values</h3>
+    <p>Salsify dimensional values use the <code>Number</code> property type paired with a unit-of-measure property (for example, <code>overall_diameter_mm</code> with an <code>expressed_in: mm</code> companion convention). The emitter converts to ULC dual-unit (mm and in) at emit time.</p>
 
     <h3>Digital assets</h3>
+    <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">Salsify digital-asset role</th><th scope="col"><code>source_files[].file_type</code></th></tr></thead>
       <tbody>
@@ -69,6 +75,7 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
         <tr><td><code>installation_instructions</code></td><td><code>installation_instructions_pdf</code></td></tr>
       </tbody>
     </table>
+    </div>
 
     <p>The emitter streams each asset by its Salsify asset ID, computes SHA-256, and populates <code>source_files[].reference</code>. The cutsheet asset additionally populates <code>product_family.cutsheet</code> (required by the schema) with the same hash; an emitter that writes only <code>source_files[]</code> produces invalid records.</p>
 
@@ -79,11 +86,14 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
       <li><strong>Property type mismatches.</strong> Salsify's "number" type is a double. ULC distinguishes integer in some fields. Coerce at emit time.</li>
       <li><strong>Asset digest caching.</strong> SHA-256 on every asset on every run is expensive. Cache by Salsify asset ID + version; invalidate on <code>updated_at</code> change.</li>
       <li><strong>Missing required values.</strong> If a property needed for the target <code>conformance_level</code> is blank for a SKU, skip or fail the export. Do not downgrade <code>conformance_level</code> to paper over gaps.</li>
+      <li><strong>Salsisheets workflow.</strong> Many lighting brands' merchandising teams operate Salsify via the Salsisheets Excel-style bulk-edit interface rather than the API. A ULC emit pipeline anchored on the API may diverge from the in-flight data the merchandising team is curating. Coordinate emit timing with the channel's Readiness Report so partially-edited records don't ship as ULC.</li>
     </ol>
 
     <p class="full-guide-link">
       Full guide with emit-flow pseudocode, accessory-relationship walking, and Python transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/salsify.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/salsify.md</code></a>
     </p>
     </div>
+
+    <EditOnGitHub upstreamPath="mappings/pim/salsify.md" />
   </SpecDocsLayout>
 </PageShell>
