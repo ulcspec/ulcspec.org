@@ -106,7 +106,10 @@ jobs:
           set -euo pipefail
           PAGE=dist/for-manufacturers/index.html
           test -f "$PAGE" || (echo "no $PAGE"; exit 1)
-          grep -F "Pilot a publication" "$PAGE"
+          grep -F "How to create a ULC file" "$PAGE"
+          grep -F "Path A: Map from your PIM." "$PAGE"
+          grep -F "Path B: Convert from PDF, IES, and LDT." "$PAGE"
+          grep -F "github.com/ulcspec/ULC" "$PAGE"
           grep -F "What difference a ULC file makes" "$PAGE"
           grep -F "The Ask" "$PAGE"
           grep -F "pilot 1-3 SKUs as" "$PAGE"

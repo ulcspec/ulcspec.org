@@ -19,7 +19,7 @@ import ManufacturerFlowDiagram from '../components/ManufacturerFlowDiagram.astro
 const tocItems = [
   { href: '#insight', label: 'Where discovery is going' },
   { href: '#introduction', label: 'What ULC is' },
-  { href: '#pilot', label: 'Pilot a publication' },
+  { href: '#how-to-create', label: 'How to create' },
   { href: '#themes', label: 'Differentiated value' },
   { href: '#the-ask', label: 'The Ask' },
 ];
@@ -112,20 +112,21 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
         </Callout>
       </section>
 
-      {/* ── 5. PILOT A PUBLICATION ─────────────────────────────────────── */}
-      <section id="pilot" aria-labelledby="pilot-heading">
-        <p class="step-num">Activation</p>
-        <h2 id="pilot-heading">Pilot a publication</h2>
+      {/* ── 5. HOW TO CREATE A ULC FILE ────────────────────────────────── */}
+      <section id="how-to-create" aria-labelledby="how-to-create-heading">
+        <p class="step-num">Authoring</p>
+        <h2 id="how-to-create-heading">How to create a ULC file</h2>
         <p>
-          The lowest-cost way to see what ULC means for your brand is to publish 1-3 SKUs from one product line. The four canonical example records in <code>ulcspec/ULC/examples/</code> show what a finished <code>.ulc</code> file looks like across the four authoring patterns: single-SKU cutsheet, configurator with applicability blocks, per-IES with provenance classes, and per-foot linear scaling.
+          A <code>.ulc</code> file is JSON, validated against an open schema, and references your existing PDF, IES, and LDT files by SHA-256 hash, not embedded. The schema defines the structural shape: required fields, types, and nested blocks like <code>sources[]</code> for hash-referenced source files, <code>applicability[]</code> for configurator axes, and <code>provenance[]</code> for per-IES models. The taxonomy defines the value-sets: enumerated CCT brackets, CRI bands, beam angles, IP ratings, optic types, mounting categories. Together they make every meaningful product attribute machine-comparable across manufacturers.
         </p>
         <p>
-          Run a candidate file through the <a href="/validator" class="link-inline">validator</a> to catch schema errors before publication. Walk through the PIM mapping guides at <a href="/docs" class="link-inline">/docs</a> for Salsify, Akeneo, SAP, and custom systems. Compare what an LLM extracts from your existing PDF today against what it consumes from the matching <code>.ulc</code> record. The gap is the discovery layer ULC closes.
+          <strong>Path A: Map from your PIM.</strong> If your product data lives in Salsify, Akeneo, SAP Product Master, or a custom PIM system, the structured data already exists. The authoring-patterns and PIM-mapping guides at <a href="/docs" class="link-inline">/docs</a> walk through field-by-field translation from each PIM schema to the ULC schema. Most of the lift is mapping your internal field names and value-sets onto ULC's canonical fields and taxonomy. The mapping is typically a one-time integration; <code>.ulc</code> generation then runs as part of your existing publishing pipeline.
         </p>
-        <p class="sample-link">
-          <a href="/downloads#examples">
-            Download the four canonical samples <span aria-hidden="true">→</span>
-          </a>
+        <p>
+          <strong>Path B: Convert from PDF, IES, and LDT.</strong> If your authoritative product data still lives in cutsheets and photometric files, you can author <code>.ulc</code> records by hand or with LLM assistance using the schema as a contract. The four canonical example records in <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">ulcspec/ULC/examples/</a> are templates covering the four authoring patterns: single-SKU cutsheet, configurator with applicability blocks, per-IES with provenance classes, and per-foot linear scaling. Open a sample, replace the manufacturer, product, and SKU fields with yours, populate the photometric and electrical values from your existing cutsheets, and reference your source files by URL plus SHA-256 hash.
+        </p>
+        <p>
+          The schema source of truth lives at <a href="https://github.com/ulcspec/ULC" target="_blank" rel="noopener external" class="link-inline">github.com/ulcspec/ULC</a>: the <a href="https://github.com/ulcspec/ULC/tree/main/schema" target="_blank" rel="noopener external" class="link-inline">JSON Schema and taxonomy</a>, the <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">four example records</a>, and the <a href="https://github.com/ulcspec/ULC/tree/main/mappings" target="_blank" rel="noopener external" class="link-inline">PIM mapping guides</a>. The <a href="/validator" class="link-inline">validator</a> catches schema errors at upload before publication; it runs the same validation as the upstream repo's CI. The full authoring-pattern deep dives, taxonomy reference, and crosswalks live at <a href="/docs" class="link-inline">/docs</a>.
         </p>
       </section>
 
@@ -158,10 +159,10 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
           ULC is a new open-source standard. The activation mechanic turns when forward-leaning manufacturers pilot the publication shape and tell us what breaks.
         </p>
         <p>
-          The Ask is one specific commitment: pilot 1-3 SKUs as <code>.ulc</code> files in the next 90 days. The validator catches the easy issues. The conversations that follow shape what the standard becomes.
+          The Ask is one specific commitment: pilot 1-3 SKUs as <code>.ulc</code> files in the next 90 days. The lowest-cost path is one product line at a time. The four canonical example records show what a finished <code>.ulc</code> looks like across the authoring patterns. The validator catches the easy issues. The conversations that follow shape what the standard becomes.
         </p>
         <p>
-          Open an issue or contribute on <a
+          Open an issue, contribute, or browse the schema and example records on <a
             href="https://github.com/ulcspec/ULC"
             target="_blank"
             rel="noopener external"
