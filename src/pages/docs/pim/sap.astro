@@ -1,9 +1,10 @@
 ---
-// /spec/pim/sap, placeholder. PR-1b swaps this Callout for upstream MDX
-// rendered via the spec-sync Content Loader, using the same pattern as
-// /spec/authoring-patterns.
+// /docs/pim/sap. Condensed inline mapping guide; the full deep-dive lives
+// upstream at ulcspec/ULC/mappings/pim/sap.md and is linked from the
+// .full-guide-link callout at the bottom of the page. When PR-1b wires up
+// the spec-sync Content Loader, this inline content can be swapped for the
+// upstream MDX without changing the route or surrounding shell.
 
-import Callout from '../../../components/Callout.astro';
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
@@ -11,22 +12,81 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 
 <PageShell
   title="SAP PIM mapping - ULC specification"
-  description="Field-by-field mapping from an SAP product catalog to a ULC record. Documentation in progress; the upstream MDX wires up in PR-1b."
+  description="Field-by-field mapping from SAP MM material master (or S/4HANA OData) to a ULC record. Classification characteristics, DMS document linkage, variant axes, attestation mapping; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
     <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">SAP PIM mapping.</h1>
 
-    <Callout intent="default" label="Documentation in progress">
-      <p>
-        This page is part of the spec sub-route cohort. Upstream MDX
-        will be wired in via the spec-sync Content Loader in PR-1b.
-      </p>
-      <p>
-        For now, see <a href="/docs/authoring-patterns">authoring patterns</a>
-        for the proven loader pattern, or visit
-        <a href="/docs/pim">the PIM mapping overview</a>.
-      </p>
-    </Callout>
+    <div class="pim-mapping-page">
+    <p class="page-intro">
+      SAP ERP and adjacent SAP master-data products (MDG, PLM) hold the product data for most large-enterprise luminaire manufacturers. This guide describes how ULC records can be emitted from a typical SAP landscape.
+    </p>
+
+    <h2>SAP data model in one page</h2>
+    <ul>
+      <li><strong>SAP MM (Material Management)</strong> holds the core material master (MARA, MAKT, MVKE). Every material has a material number (<code>MATNR</code>).</li>
+      <li><strong>SAP PLM</strong> holds engineering master data, CAD revisions, and change-management workflows.</li>
+      <li><strong>SAP MDG</strong> is the enterprise governance layer on top, enforcing data quality and approval gates.</li>
+      <li><strong>Classification System (CA-CL)</strong> holds characteristics (CABN) and classes (KLAH). Luminaire-specific attributes like <code>BEAM_ANGLE</code>, <code>CCT_K</code>, <code>INPUT_POWER_W</code> live here.</li>
+      <li><strong>Document Info Records (DMS)</strong> hold cutsheet PDFs, IES, LDT linked to materials.</li>
+      <li><strong>Integration paths:</strong> legacy ECC uses IDocs (XML envelopes); S/4HANA exposes OData (REST/JSON). OData is preferred for new work.</li>
+    </ul>
+
+    <h2>Core mapping</h2>
+
+    <h3>Identity (MM material master)</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">SAP field (OData)</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td>Parent configurable material MATNR</td><td><code>product_family.catalog_model</code></td></tr>
+        <tr><td>Variant configuration MATNR</td><td><code>configuration.catalog_number</code></td></tr>
+        <tr><td><code>MaterialDescription</code> (MAKT-MAKTX)</td><td><code>configuration.scenario_label</code></td></tr>
+        <tr><td><code>Brand</code> (Z-field)</td><td><code>product_family.manufacturer.slug</code></td></tr>
+        <tr><td><code>ProductHierarchy</code></td><td><code>product_family.catalog_line</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Classification characteristics</h3>
+    <p>SAP characteristics carry typed values with unit of measure. The emitter reads characteristics assigned to a material and maps them to ULC fields:</p>
+    <table class="pim-map">
+      <thead><tr><th scope="col">SAP characteristic</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>OVERALL_DIAMETER_MM</code> (NUM, MM)</td><td><code>product_family.physical_dimensions.overall_diameter</code></td></tr>
+        <tr><td><code>WEIGHT_KG</code> (NUM, KG)</td><td><code>product_family.physical_dimensions.luminaire_mass</code></td></tr>
+        <tr><td><code>INPUT_POWER_W</code> (NUM, W)</td><td><code>electrical.input_power_w.value</code></td></tr>
+        <tr><td><code>BEAM_ANGLE_DEG</code> (NUM, DEG)</td><td><code>photometry.beam_angle_deg.value</code></td></tr>
+        <tr><td><code>TOTAL_FLUX_LM</code> (NUM, LM)</td><td><code>photometry.total_luminous_flux_lm.value</code></td></tr>
+        <tr><td><code>CCT_K</code> (CHAR enum)</td><td><code>colorimetry.nominal_cct_k</code></td></tr>
+        <tr><td><code>CRI_RA</code> (NUM)</td><td><code>colorimetry.cri_ra.value</code></td></tr>
+        <tr><td><code>DRIVER_PROTOCOL</code> (CHAR enum)</td><td><code>electrical.driver_protocol</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Document Info Records (DMS)</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">SAP DMS doc type</th><th scope="col">ULC <code>source_files[].file_type</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>CUTSHEET</code></td><td><code>datasheet_pdf</code></td></tr>
+        <tr><td><code>PHOTO_IES</code></td><td><code>ies</code></td></tr>
+        <tr><td><code>PHOTO_LDT</code></td><td><code>ldt</code></td></tr>
+        <tr><td><code>INSTALL_PDF</code></td><td><code>installation_instructions_pdf</code></td></tr>
+        <tr><td><code>LAB_REPORT</code></td><td>(referenced via <code>attestations[].source_document_ref</code>)</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Gotchas</h2>
+    <ol>
+      <li><strong>IDoc vs OData.</strong> Legacy ECC without S/4HANA exposes data via IDocs (MATMAS, CLFMAS, DOCMAS). Mapping is conceptually identical; the engineer handles XML instead of JSON.</li>
+      <li><strong>Language keys.</strong> SAP descriptions are per-language (SPRAS). Choose a canonical language key (typically <code>EN</code>) and record it in the integration config.</li>
+      <li><strong>Change-document tracking.</strong> Skip materials with active change documents (ECR/ECO in progress) from export until the change closes. Do not paper over draft state by lowering <code>conformance_level</code>.</li>
+      <li><strong>Classification sparseness.</strong> Not every luminaire will have every expected characteristic populated. Skip or fail the export when a required characteristic is missing.</li>
+      <li><strong>Unit rounding errors.</strong> SAP often stores dimensions at coarse precision (integer mm). Preserve decimal precision when computing the Imperial companion.</li>
+    </ol>
+
+    <p class="full-guide-link">
+      Full guide with OData endpoint examples, attestation patterns, and ABAP/Python hybrid transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/sap.md</code></a>
+    </p>
+    </div>
   </SpecDocsLayout>
 </PageShell>

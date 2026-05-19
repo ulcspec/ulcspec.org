@@ -1,9 +1,10 @@
 ---
-// /spec/pim/salsify, placeholder. PR-1b swaps this Callout for upstream
-// MDX rendered via the spec-sync Content Loader, using the same pattern
-// as /spec/authoring-patterns.
+// /docs/pim/salsify. Condensed inline mapping guide; the full deep-dive
+// lives upstream at ulcspec/ULC/mappings/pim/salsify.md and is linked from
+// the .full-guide-link callout at the bottom of the page. When PR-1b wires
+// up the spec-sync Content Loader, this inline content can be swapped for
+// the upstream MDX without changing the route or surrounding shell.
 
-import Callout from '../../../components/Callout.astro';
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
@@ -11,22 +12,78 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 
 <PageShell
   title="Salsify PIM mapping - ULC specification"
-  description="Field-by-field mapping from a Salsify product catalog to a ULC record. Documentation in progress; the upstream MDX wires up in PR-1b."
+  description="Field-by-field mapping from a Salsify product catalog to a ULC record. Identity, category, dimensional, photometric, and asset mappings; common gotchas; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
     <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Salsify PIM mapping.</h1>
 
-    <Callout intent="default" label="Documentation in progress">
-      <p>
-        This page is part of the spec sub-route cohort. Upstream MDX
-        will be wired in via the spec-sync Content Loader in PR-1b.
-      </p>
-      <p>
-        For now, see <a href="/docs/authoring-patterns">authoring patterns</a>
-        for the proven loader pattern, or visit
-        <a href="/docs/pim">the PIM mapping overview</a>.
-      </p>
-    </Callout>
+    <div class="pim-mapping-page">
+    <p class="page-intro">
+      Salsify is a cloud PIM popular with consumer-facing brands, retail-syndicated product lines, and mid-market lighting manufacturers distributing through specifier and wholesale channels. This guide describes how a typical Salsify organization can emit ULC records.
+    </p>
+
+    <h2>Salsify data model in one page</h2>
+    <ul>
+      <li><strong>Products</strong> are the core entity. Each product is identified by an internal ID and one or more external IDs (SKU, UPC, MPN).</li>
+      <li><strong>Properties</strong> are typed fields on products: strings, numbers, enums, digital assets, or references.</li>
+      <li><strong>Product relationships</strong> model accessories, replacements, and bundle components through typed reference properties.</li>
+      <li><strong>Digital assets</strong> (images, PDFs, IES files) are first-class objects with their own IDs, versioning, and renditions.</li>
+      <li><strong>Channels and recipes</strong> define per-channel export transformations. The ULC emitter plugs in as a channel recipe plus an external transform service.</li>
+      <li><strong>APIs:</strong> GraphQL for rich queries, REST for bulk operations and webhooks, CSV for imports.</li>
+    </ul>
+
+    <h2>Core mapping</h2>
+
+    <h3>Identity</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">Salsify</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td>Parent product identifier / catalog model property</td><td><code>product_family.catalog_model</code></td></tr>
+        <tr><td>Variant external ID (SKU)</td><td><code>configuration.catalog_number</code></td></tr>
+        <tr><td>Internal brand property</td><td><code>product_family.manufacturer.slug</code></td></tr>
+        <tr><td>Product line / series property</td><td><code>product_family.catalog_line</code></td></tr>
+        <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Category and mounting</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">Salsify category</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>.../recessed/downlight</code></td><td><code>downlight</code></td><td><code>["recessed_ceiling"]</code></td></tr>
+        <tr><td><code>.../pendant/linear</code></td><td><code>linear</code></td><td><code>["pendant"]</code></td></tr>
+        <tr><td><code>.../exterior/wall-pack</code></td><td><code>bulkhead_wall_pack</code></td><td><code>["surface_wall"]</code></td></tr>
+        <tr><td><code>.../industrial/high-bay</code></td><td><code>high_bay</code></td><td><code>["pendant", "surface_ceiling"]</code></td></tr>
+        <tr><td><code>.../outdoor/bollard</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Digital assets</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">Salsify digital-asset role</th><th scope="col"><code>source_files[].file_type</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>cutsheet_pdf</code></td><td><code>datasheet_pdf</code></td></tr>
+        <tr><td><code>photometric_ies</code></td><td><code>ies</code></td></tr>
+        <tr><td><code>photometric_ldt</code></td><td><code>ldt</code></td></tr>
+        <tr><td><code>installation_instructions</code></td><td><code>installation_instructions_pdf</code></td></tr>
+      </tbody>
+    </table>
+
+    <p>The emitter streams each asset by its Salsify asset ID, computes SHA-256, and populates <code>source_files[].reference</code>. The cutsheet asset additionally populates <code>product_family.cutsheet</code> (required by the schema) with the same hash; an emitter that writes only <code>source_files[]</code> produces invalid records.</p>
+
+    <h2>Gotchas</h2>
+    <ol>
+      <li><strong>Multi-CCT product families.</strong> Modeled as parent product with variant children. One child per CCT becomes one ULC scenario record; the shared <code>product_family</code> block derives from the parent.</li>
+      <li><strong>Localization.</strong> Salsify properties support per-locale values. ULC is locale-neutral at the schema level; the emitter chooses a canonical locale (typically en-US).</li>
+      <li><strong>Property type mismatches.</strong> Salsify's "number" type is a double. ULC distinguishes integer in some fields. Coerce at emit time.</li>
+      <li><strong>Asset digest caching.</strong> SHA-256 on every asset on every run is expensive. Cache by Salsify asset ID + version; invalidate on <code>updated_at</code> change.</li>
+      <li><strong>Missing required values.</strong> If a property needed for the target <code>conformance_level</code> is blank for a SKU, skip or fail the export. Do not downgrade <code>conformance_level</code> to paper over gaps.</li>
+    </ol>
+
+    <p class="full-guide-link">
+      Full guide with emit-flow pseudocode, accessory-relationship walking, and Python transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/salsify.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/salsify.md</code></a>
+    </p>
+    </div>
   </SpecDocsLayout>
 </PageShell>

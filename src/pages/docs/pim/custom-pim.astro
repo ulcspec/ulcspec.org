@@ -1,9 +1,10 @@
 ---
-// /spec/pim/custom-pim, placeholder. PR-1b swaps this Callout for
-// upstream MDX rendered via the spec-sync Content Loader, using the
-// same pattern as /spec/authoring-patterns.
+// /docs/pim/custom-pim. Condensed inline mapping guide; the full deep-dive
+// lives upstream at ulcspec/ULC/mappings/pim/custom-pim.md and is linked
+// from the .full-guide-link callout at the bottom of the page. When PR-1b
+// wires up the spec-sync Content Loader, this inline content can be swapped
+// for the upstream MDX without changing the route or surrounding shell.
 
-import Callout from '../../../components/Callout.astro';
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
@@ -11,22 +12,80 @@ import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
 
 <PageShell
   title="Custom / in-house PIM mapping - ULC specification"
-  description="Field-by-field mapping from a custom or in-house product catalog to a ULC record. Documentation in progress; the upstream MDX wires up in PR-1b."
+  description="Field-by-field mapping patterns from a custom or in-house product-master database to a ULC record. Identity, category, dimensional, scenario expansion, asset hashing, attestation mapping; cross-link to the full upstream guide."
 >
   <SpecDocsLayout>
     <p class="page-eyebrow"><SpecVersionBadge /></p>
     <h1 class="page-h1">Custom / in-house PIM mapping.</h1>
 
-    <Callout intent="default" label="Documentation in progress">
-      <p>
-        This page is part of the spec sub-route cohort. Upstream MDX
-        will be wired in via the spec-sync Content Loader in PR-1b.
-      </p>
-      <p>
-        For now, see <a href="/docs/authoring-patterns">authoring patterns</a>
-        for the proven loader pattern, or visit
-        <a href="/docs/pim">the PIM mapping overview</a>.
-      </p>
-    </Callout>
+    <div class="pim-mapping-page">
+    <p class="page-intro">
+      Traditional lighting manufacturers often run a home-grown product-master database rather than a commercial PIM. Typical stacks are Oracle or PostgreSQL with a web admin in Django, Rails, Spring, or .NET. This guide describes the patterns that apply to any in-house schema.
+    </p>
+
+    <h2>Typical in-house data model</h2>
+    <ul>
+      <li><strong>Products table</strong>: one row per SKU or family, with columns for identity, category, basic dimensions, rating.</li>
+      <li><strong>Attributes table</strong> (key/value or EAV): for values that vary per product or per scenario, often stored as a property bag.</li>
+      <li><strong>Categories table</strong>: hierarchical or flat.</li>
+      <li><strong>Files / assets table</strong>: cutsheet PDFs, IES, LDT; with a file-storage pointer (S3 key, SAN path) rather than the bytes.</li>
+      <li><strong>Relationships table</strong>: accessory compatibility, replacement chains, kit composition.</li>
+      <li><strong>Test reports table</strong> (sometimes): lab attestations with doc references.</li>
+    </ul>
+
+    <p>Sometimes the schema is fully normalized (one column per attribute); sometimes a "products + JSON blob" hybrid. Both work.</p>
+
+    <h2>Core mapping patterns</h2>
+
+    <h3>Identity</h3>
+    <table class="pim-map">
+      <thead><tr><th scope="col">SQL / ORM column</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>manufacturer</code></td><td><code>product_family.manufacturer.slug</code></td></tr>
+        <tr><td>Family / model-code column</td><td><code>product_family.catalog_model</code></td></tr>
+        <tr><td>SKU / order-code column</td><td><code>configuration.catalog_number</code></td></tr>
+        <tr><td><code>series</code></td><td><code>product_family.catalog_line</code></td></tr>
+        <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Category</h3>
+    <p>Maintain a mapping table from the in-house <code>category_id</code> to ULC enum values. Store as a version-controlled config file, not as a database table; ULC enums change with schema releases and should track the spec version. Example mapping:</p>
+    <table class="pim-map">
+      <thead><tr><th scope="col">In-house category</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>recessed_downlight</code></td><td><code>downlight</code></td><td><code>["recessed_ceiling"]</code></td></tr>
+        <tr><td><code>linear_pendant</code></td><td><code>linear</code></td><td><code>["pendant"]</code></td></tr>
+        <tr><td><code>wallpack_exterior</code></td><td><code>bulkhead_wall_pack</code></td><td><code>["surface_wall"]</code></td></tr>
+        <tr><td><code>highbay_industrial</code></td><td><code>high_bay</code></td><td><code>["pendant", "surface_ceiling"]</code></td></tr>
+        <tr><td><code>bollard_outdoor</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Dimensional fields</h3>
+    <p>In-house PIMs usually store dimensions in a single authoritative unit. Convert at emit time to dual-unit. Common columns:</p>
+    <table class="pim-map">
+      <thead><tr><th scope="col">DB column</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>overall_diameter_mm</code></td><td><code>product_family.physical_dimensions.overall_diameter</code></td></tr>
+        <tr><td><code>overall_length_mm</code></td><td><code>product_family.physical_dimensions.overall_length</code></td></tr>
+        <tr><td><code>recess_depth_mm</code></td><td><code>product_family.physical_dimensions.recess_depth</code></td></tr>
+        <tr><td><code>weight_kg</code></td><td><code>product_family.physical_dimensions.luminaire_mass</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Gotchas</h2>
+    <ol>
+      <li><strong>Schemas without scenarios.</strong> If the PIM has one row per SKU without a scenario concept, synthesize scenarios from photometric data (one scenario per IES file). If there's only one IES per SKU, that's Pattern A (simplest).</li>
+      <li><strong>Legacy free-text fields.</strong> In-house PIMs often have free-text fields mixing structured data ("90 CRI, 3000K, 120V"). Extract via regex during ETL, or flag for manual review.</li>
+      <li><strong>Unit-of-measure inconsistency.</strong> Older schemas may mix metric and Imperial in the same column. Normalize during ETL.</li>
+      <li><strong>Missing provenance history.</strong> If the PIM was hand-populated over years, default provenance to <code>{'{source: "manufacturer_direct", method: "transcribed"}'}</code> and plan a follow-up enrichment pass.</li>
+      <li><strong>No change tracking.</strong> Without CDC, the emitter either runs full sweeps or polls <code>updated_at</code> columns.</li>
+    </ol>
+
+    <p class="full-guide-link">
+      Full guide with scenario expansion SQL, S3 streaming patterns, migration path to a commercial PIM, and Python + SQLAlchemy transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md</code></a>
+    </p>
+    </div>
   </SpecDocsLayout>
 </PageShell>

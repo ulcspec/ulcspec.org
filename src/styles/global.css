@@ -206,3 +206,132 @@ body {
   font-variant-caps: all-small-caps;
   letter-spacing: 0.08em;
 }
+
+/* ============================================================
+   /docs/pim/* inner pages — inline mapping guide typography
+   ------------------------------------------------------------
+   The 4 PIM inner pages (salsify, akeneo, sap, custom-pim)
+   render condensed inline content (intro + H2/H3 + lists +
+   mapping tables + full-guide-link callout). Scoped to
+   .pim-mapping-page so other surfaces are not affected.
+   When PR-1b wires up the spec-sync Content Loader and swaps
+   inline content for upstream MDX, these selectors still apply
+   to the rendered MDX body. Keep in sync with the per-page
+   .spec-prose treatment in /docs/authoring-patterns.
+   ============================================================ */
+.pim-mapping-page .page-intro {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0 0 2rem 0;
+  max-width: 44rem;
+}
+.pim-mapping-page h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--text);
+  margin: 2.5rem 0 1rem 0;
+}
+.pim-mapping-page h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--text);
+  margin: 2rem 0 0.75rem 0;
+}
+.pim-mapping-page p,
+.pim-mapping-page ul,
+.pim-mapping-page ol {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  max-width: 44rem;
+}
+.pim-mapping-page ul,
+.pim-mapping-page ol {
+  padding-left: 1.5rem;
+}
+.pim-mapping-page li {
+  margin: 0 0 0.5rem 0;
+}
+.pim-mapping-page li::marker {
+  color: var(--accent-warm);
+}
+.pim-mapping-page strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.pim-mapping-page code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--accent-warm);
+}
+.pim-mapping-page a {
+  color: var(--accent-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pim-mapping-page a:hover {
+  color: var(--accent-warm-deep);
+}
+
+/* Inline mapping tables used in /docs/pim/* inner pages */
+.pim-map {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9375rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pim-map thead {
+  background: var(--bg);
+}
+.pim-map th[scope="col"] {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  text-align: left;
+  font-weight: 500;
+  padding: 0.875rem 1rem;
+}
+.pim-map td {
+  padding: 0.875rem 1rem;
+  vertical-align: top;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.pim-map code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--accent-warm);
+}
+
+.full-guide-link {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+.full-guide-link a {
+  color: var(--accent-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.full-guide-link code {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  color: inherit;
+}

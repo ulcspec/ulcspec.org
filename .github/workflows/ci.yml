@@ -108,7 +108,7 @@ jobs:
           test -f "$PAGE" || (echo "no $PAGE"; exit 1)
           grep -F "How to create a ULC file" "$PAGE"
           grep -F "Path A: Map from your PIM." "$PAGE"
-          grep -F "Path B: Convert from PDF, IES, and LDT." "$PAGE"
+          grep -F "Path B: Convert from Excel sheets." "$PAGE"
           grep -F "github.com/ulcspec/ULC" "$PAGE"
           grep -F "What difference a ULC file makes" "$PAGE"
           grep -F "The Ask" "$PAGE"
@@ -128,6 +128,47 @@ jobs:
             echo "FAIL: dropped verbose 3-themes H2 still present"
             exit 1
           fi
+
+      - name: Verify /docs/pim mapping pages have substantive content
+        run: |
+          set -euo pipefail
+          INDEX=dist/docs/pim/index.html
+          test -f "$INDEX" || (echo "no $INDEX"; exit 1)
+          grep -F "Cloud PIM. Consumer brands" "$INDEX"
+          grep -F "Open-source PIM. European mid-market" "$INDEX"
+          grep -F "Enterprise ERP master data. Large manufacturers running SAP MM" "$INDEX"
+          grep -F "Home-grown databases. Traditional lighting manufacturers without commercial PIM" "$INDEX"
+          if grep -F "Typical user." "$INDEX"; then
+            echo "FAIL: old 'Typical user.' trailing artifact still present on Salsify card"
+            exit 1
+          fi
+          # Each inner page must have its data-model H2 and full-guide-link to upstream
+          for pim_h2 in \
+            "Salsify data model in one page" \
+            "Akeneo data model in one page" \
+            "SAP data model in one page" \
+            "Typical in-house data model"; do
+            case "$pim_h2" in
+              Salsify*) slug=salsify ;;
+              Akeneo*) slug=akeneo ;;
+              SAP*) slug=sap ;;
+              *) slug=custom-pim ;;
+            esac
+            P="dist/docs/pim/${slug}/index.html"
+            test -f "$P" || (echo "FAIL: missing $P"; exit 1)
+            grep -F "$pim_h2" "$P" \
+              || (echo "FAIL: $P missing H2 '$pim_h2'"; exit 1)
+            grep -F "github.com/ulcspec/ULC/blob/main/mappings/pim/${slug}.md" "$P" \
+              || (echo "FAIL: $P missing full-guide cross-link"; exit 1)
+            if grep -F "Documentation in progress" "$P"; then
+              echo "FAIL: $P still has placeholder Callout"
+              exit 1
+            fi
+            if grep -F "spec-sync Content Loader in PR-1b" "$P"; then
+              echo "FAIL: $P still has PR-1b placeholder copy"
+              exit 1
+            fi
+          done
 
       - name: Verify cutsheet canonicalization (no 'cut sheet' / 'cut-sheet' anywhere)
         run: |
