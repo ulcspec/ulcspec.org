@@ -100,6 +100,14 @@ jobs:
             echo "FAIL: dropped 'Lighting-domain specialty tools' Callout still present"
             exit 1
           fi
+          if grep -F "error-prone and time-expensive part of project delivery is not design" "$PAGE"; then
+            echo "FAIL: preachy 'most error-prone... is not design' Insight line still present"
+            exit 1
+          fi
+          if grep -F "spec workflow runs through twelve PDFs open at once" "$PAGE"; then
+            echo "FAIL: preachy 'twelve PDFs open at once' workflow narration still present"
+            exit 1
+          fi
 
       - name: Verify /for-manufacturers locked copy + dropped sections
         run: |
@@ -126,6 +134,10 @@ jobs:
           fi
           if grep -F "Differentiated value, three themes" "$PAGE"; then
             echo "FAIL: dropped verbose 3-themes H2 still present"
+            exit 1
+          fi
+          if grep -F "Today, you publish PDF + IES + LDT separately" "$PAGE"; then
+            echo "FAIL: redundant 'Today, you publish PDF + IES + LDT separately' paragraph still present"
             exit 1
           fi
 
@@ -199,6 +211,33 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Verify PIM platform intros and /governance avoid audience-segmenting prose
+        run: |
+          set -euo pipefail
+          for pair in \
+            "salsify:Salsify is a cloud PIM popular with consumer-facing brands" \
+            "akeneo:Akeneo is an open-source PIM popular with European manufacturers" \
+            "sap:SAP ERP and adjacent SAP master-data products (MDG, PLM) hold the product data for most large-enterprise"; do
+            slug="${pair%%:*}"
+            needle="${pair#*:}"
+            P="dist/docs/pim/${slug}/index.html"
+            test -f "$P" || (echo "FAIL: missing $P"; exit 1)
+            if grep -F "$needle" "$P"; then
+              echo "FAIL: $P still has preachy 'X is a Y popular with...' intro"
+              exit 1
+            fi
+          done
+          GOV=dist/governance/index.html
+          test -f "$GOV" || (echo "FAIL: missing $GOV"; exit 1)
+          if grep -F "audience is everyone who reads a datasheet: lighting designers, interior designers" "$GOV"; then
+            echo "FAIL: $GOV still enumerates the full audience list"
+            exit 1
+          fi
+          if grep -F "Pilot conversations are underway with manufacturers and software vendors." "$GOV"; then
+            echo "FAIL: $GOV still has duplicate 'Pilot conversations are underway' first-sentence after the matching H2"
+            exit 1
+          fi
 
       - name: Verify cutsheet canonicalization (no 'cut sheet' / 'cut-sheet' anywhere)
         run: |

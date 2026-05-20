@@ -76,10 +76,10 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
         <p class="step-num">Step 1</p>
         <h2 id="insight-heading">Where spec-time hours actually go</h2>
         <p>
-          The most error-prone and time-expensive part of project delivery is not design. It is specifying fixtures from PDFs. Six hours cross-referencing CRI, CCT, wattage, and accessory pairings across twelve datasheets for one luminaire-schedule line. Then doing it again on VE round three. The hours bleed into the data layer.
+          The data layer underneath the spec workflow is PDF, and that is where the hours bleed.
         </p>
         <p>
-          The part that has to upgrade is not the designer's skill or the design tool. It is the data layer underneath, which today is PDF. ULC is that upgrade: an open machine-readable standard for luminaire cutsheets that any tool reading JSON can consume directly.
+          ULC is an open machine-readable standard for luminaire cutsheets that any tool reading JSON can consume directly.
         </p>
         <WhereHoursGoDiagram />
       </section>
@@ -92,9 +92,6 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
           ULC is the open machine-readable standard for luminaire cutsheets. The layer your AI, your BIM plugin, your firm's internal tools, and the next tool you'll adopt can read alongside the PDFs and IES files you already work with.
         </p>
         <BeforeAfterDiagram />
-        <p>
-          Today, your spec workflow runs through twelve PDFs open at once, a drift-prone firm library, and a rep on speed dial. With ULC, your tools consume the manufacturer's authoritative cutsheet data directly. Per-field provenance back to the source PDF / IES / LDT by SHA-256 hash. Apples-to-apples comparison in the tools you already use. VE review in seconds. Luminaire schedules generated from the list. The rep stays in the workflow for design and product judgment; ULC takes the data archaeology off the rep's plate too.
-        </p>
       </section>
 
       {/* ── 5. TRY ULC TODAY (Tier 1 activation) ───────────────────────── */}

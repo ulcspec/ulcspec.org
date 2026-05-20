@@ -96,12 +96,6 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
           ULC is the open standard for luminaire product data. The machine-readable layer AI tools, design tools, and spec databases read alongside your existing PDF, IES, and LDT.
         </p>
         <ManufacturerFlowDiagram />
-        <p>
-          Today, you publish PDF + IES + LDT separately. An extraction layer (AI tool or aggregator pipeline) tries to read structure from your PDF, lossy. An aggregator or spec database re-publishes its interpretation. The designer's tool consumes the aggregator's interpretation, with errors.
-        </p>
-        <p>
-          With ULC, you publish PDF + IES + LDT + a ULC record. Source files are referenced by SHA-256 hash, not embedded. The designer's AI or design tool fetches your ULC record directly, verifies the hash, parses native JSON.
-        </p>
         <Callout intent="default" label="What ULC replaces vs integrates with">
           <p>
             ULC does not replace your PDF, your IES, your LDT, your rep agency, your distributor, your existing PIM, or any existing commercial relationship. It integrates with your existing PIM via the published mapping guides (Salsify, Akeneo, SAP, custom).
