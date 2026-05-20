@@ -17,22 +17,36 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     <div class="pim-mapping-page">
     <h1 class="page-h1">Custom / in-house PIM mapping.</h1>
     <p class="page-intro">
-      The custom or in-house path applies to manufacturers without a commercial PIM. In the lighting industry this is typically sub-$50M brands, OEM/ODM suppliers, and family-owned specialty manufacturers. At the &gt;$100M tier (Signify, Acuity, Hubbell, GE Current, Louis Poulsen), the actual product master is typically SAP MM material master or a commercial PIM (Stibo, Pimcore): see the SAP and Salsify / Akeneo guides for those paths. This guide describes patterns that apply when the master is a custom relational database.
+      The custom or in-house path applies to manufacturers without a commercial PIM. Two source patterns are common: a custom relational database, or spreadsheets and Word documents paired with separate photometric files. Both lead to the same ULC record shape; the difference is the ETL surface.
     </p>
 
-    <h2>Typical in-house data model</h2>
+    <h2>If your master is a relational database</h2>
+    <p>A typical schema:</p>
     <ul>
       <li><strong>Products table</strong>: one row per SKU or family, with columns for identity, category, basic dimensions, rating.</li>
-      <li><strong>Attributes table</strong> (typed columns or a key/value extension): for values that vary per product. Typed-column schemas (one column per attribute, strongly typed) are preferred where the attribute set is stable. EAV (entity-attribute-value) patterns are common in legacy lighting databases but introduce per-query joins and complicate type validation. ETIM's typed feature model (Alphanumeric, Numeric, Range, Logical) is the dominant industry approach for electrotechnical product attributes; consider it as the data-shape target whether or not your internal storage uses EAV.</li>
+      <li><strong>Attributes table</strong> (typed columns or key/value): for values that vary per product.</li>
       <li><strong>Categories table</strong>: hierarchical or flat.</li>
-      <li><strong>Files / assets table</strong>: cutsheet PDFs, IES, LDT; with a file-storage pointer (S3 key, SAN path) rather than the bytes.</li>
+      <li><strong>Files / assets table</strong>: cutsheet PDFs, IES, LDT; stored by pointer (S3 key, SAN path), not by bytes.</li>
       <li><strong>Relationships table</strong>: accessory compatibility, replacement chains, kit composition.</li>
-      <li><strong>Test reports table</strong> (sometimes): lab attestations with doc references.</li>
+      <li><strong>Test reports table</strong>: lab attestations with doc references.</li>
     </ul>
 
-    <p>Typical stacks vary by manufacturer vintage: 1990s-era industrial lighting brands often use IBM i (AS/400 / iSeries) with RPG or COBOL underneath, with newer web admins in Java or .NET. Mid-2000s-era brands typically use Oracle or PostgreSQL with Spring (.NET) or Django / Rails admins. The pseudocode in this guide is shown in Python for readability: adapt to whichever language your team owns.</p>
-
-    <p>Sometimes the schema is fully normalized (one column per attribute); sometimes a "products + JSON blob" hybrid. Both work.</p>
+    <h2>If your master is spreadsheets and Word documents</h2>
+    <p>A typical setup:</p>
+    <ul>
+      <li>One spreadsheet (or Word table) per product line, with one row per SKU or per orderable configuration.</li>
+      <li>Photometric files (IES, LDT) stored separately on a file share, named by SKU or product code.</li>
+      <li>Cutsheet PDFs stored separately, often versioned by filename suffix.</li>
+    </ul>
+    <p>
+      The conversion pattern is LLM-assisted. Open one of the four canonical example records in <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">ulcspec/ULC/examples/</a> that matches your authoring pattern (single-SKU cutsheet, configurator with applicability, per-IES with provenance, or per-foot linear scaling). Hand an LLM the example, the row from your spreadsheet, the photometric file metadata, and the schema, and ask for a populated <code>.ulc</code> record. The schema provides the contract; the example provides the shape.
+    </p>
+    <p>
+      For batch generation across hundreds or thousands of SKUs, automate the per-row LLM call (Python with <code>pandas</code> plus the <code>openai</code> or <code>anthropic</code> SDK is the typical pattern), validate each output with the <code>ulc validate</code> CLI, and publish only records that pass. Records that fail validation get flagged for manual review with the validator's findings as the punch list.
+    </p>
+    <p>
+      The <a href="/validator" class="link-inline">validator</a> catches schema errors before publication. The <a href="/docs/taxonomy" class="link-inline">taxonomy reference</a> is the value-set authority for enum fields like CCT, CRI bracket, optic, and IP rating.
+    </p>
 
     <h2>Core mapping patterns</h2>
 
@@ -70,7 +84,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     <p>ETIM North America is expanding adoption in US and Canadian distribution channels; ETIM UK and Continental Europe are well-established. See <code>mappings/etim-crosswalk.md</code> (planned in the upstream repo) for the full field-level table.</p>
 
     <h3>Dimensional fields</h3>
-    <p>In-house PIMs usually store dimensions in a single authoritative unit. Convert at emit time to dual-unit. Common columns:</p>
+    <p>Convert single-unit columns to ULC dual-unit at emit time. Common columns:</p>
     <div class="pim-map-scroll">
     <table class="pim-map">
       <thead><tr><th scope="col">DB column</th><th scope="col">ULC path</th></tr></thead>
@@ -93,6 +107,9 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Unit-of-measure inconsistency.</strong> Older schemas may mix metric and Imperial in the same column. Normalize during ETL.</li>
       <li><strong>Missing provenance history.</strong> If the PIM was hand-populated over years, default provenance to <code>{'{source: "manufacturer_direct", method: "transcribed"}'}</code> and plan a follow-up enrichment pass.</li>
       <li><strong>No change tracking.</strong> Without CDC, the emitter either runs full sweeps or polls <code>updated_at</code> columns.</li>
+      <li><strong>Manual-edit drift in spreadsheets.</strong> Spreadsheet-based masters accumulate typos, inconsistent unit strings (<code>3000K</code> versus <code>3000 K</code>), and bracket-vs-value mismatches. Normalize before emit; flag suspicious rows for manual review.</li>
+      <li><strong>One row, multiple records.</strong> A spreadsheet row that bundles several CCTs in one cell (<code>2700K/3000K/3500K</code>) expands to multiple ULC records, one per scenario. The ETL must split.</li>
+      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>sources[]</code> block.</li>
     </ol>
 
     <p class="full-guide-link">

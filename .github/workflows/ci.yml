@@ -137,7 +137,7 @@ jobs:
           grep -F "Cloud PIM. Consumer brands" "$INDEX"
           grep -F "Open-source PIM. European mid-market" "$INDEX"
           grep -F "Enterprise ERP master data. Large manufacturers running SAP MM" "$INDEX"
-          grep -F "Home-grown databases. Traditional lighting manufacturers without commercial PIM" "$INDEX"
+          grep -F "Home-grown databases or spreadsheet-based masters. Manufacturers without commercial PIM" "$INDEX"
           if grep -F "Typical user." "$INDEX"; then
             echo "FAIL: old 'Typical user.' trailing artifact still present on Salsify card"
             exit 1
@@ -146,13 +146,11 @@ jobs:
           for pim_h2 in \
             "Salsify data model in one page" \
             "Akeneo data model in one page" \
-            "SAP data model in one page" \
-            "Typical in-house data model"; do
+            "SAP data model in one page"; do
             case "$pim_h2" in
               Salsify*) slug=salsify ;;
               Akeneo*) slug=akeneo ;;
               SAP*) slug=sap ;;
-              *) slug=custom-pim ;;
             esac
             P="dist/docs/pim/${slug}/index.html"
             test -f "$P" || (echo "FAIL: missing $P"; exit 1)
@@ -166,6 +164,38 @@ jobs:
             fi
             if grep -F "spec-sync Content Loader in PR-1b" "$P"; then
               echo "FAIL: $P still has PR-1b placeholder copy"
+              exit 1
+            fi
+          done
+          # /docs/pim/custom-pim has its own dual-H2 shape (relational database + spreadsheets and Word documents).
+          CUSTOM="dist/docs/pim/custom-pim/index.html"
+          test -f "$CUSTOM" || (echo "FAIL: missing $CUSTOM"; exit 1)
+          grep -F "If your master is a relational database" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing relational-database H2"; exit 1)
+          grep -F "If your master is spreadsheets and Word documents" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing spreadsheets H2"; exit 1)
+          grep -F "Manual-edit drift in spreadsheets." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'Manual-edit drift' gotcha"; exit 1)
+          grep -F "One row, multiple records." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'One row, multiple records' gotcha"; exit 1)
+          grep -F "Photometric file linkage." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'Photometric file linkage' gotcha"; exit 1)
+          grep -F "github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing full-guide cross-link"; exit 1)
+          # Cuts: ensure the preachy / manufacturer-vintage framing is gone.
+          for needle in \
+            "sub-\$50M" \
+            "Signify, Acuity, Hubbell" \
+            "1990s-era industrial" \
+            "AS/400" \
+            "iSeries" \
+            "RPG or COBOL" \
+            "Mid-2000s-era brands" \
+            "Both work" \
+            "EAV (entity-attribute-value)" \
+            "In-house PIMs usually store"; do
+            if grep -F "$needle" "$CUSTOM"; then
+              echo "FAIL: $CUSTOM still contains cut copy '$needle'"
               exit 1
             fi
           done
