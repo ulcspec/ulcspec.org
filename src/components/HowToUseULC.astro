@@ -13,12 +13,9 @@
     </h2>
 
     <p class="mt-6 max-w-3xl text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
-      ULC is consumed indirectly through tools that read it. AI agents, design
-      software, specification tools, and data pipelines parse ULC files
-      directly, without preprocessing PDFs, which saves time and money by
-      reducing AI token consumption. Any JSON-aware system can consume the
-      format, including general-purpose LLMs such as ChatGPT and Claude, and
-      domain-specific AI tools such as
+      ULC is read, not opened. Design tools, spec databases, data pipelines,
+      and general-purpose LLMs like ChatGPT and Claude parse a ULC record
+      directly, with no PDF-extraction step. Lighting-domain tools such as
       {' '}<a
         href="https://www.lightingagent.ai/"
         target="_blank"
@@ -31,7 +28,10 @@
         target="_blank"
         rel="noopener noreferrer"
         class="text-[var(--accent-warm)] hover:text-[var(--accent-warm-deep)] transition-colors underline underline-offset-4"
-      >gosourcery.com</a>.
+      >gosourcery.com</a>
+      {' '}go further, fetching the linked IES and LDT files on demand and
+      resolving industry shorthand. Both work; the difference is depth, not
+      whether ULC is consumable.
     </p>
 
     <div class="mt-12 grid gap-8 md:grid-cols-2 md:gap-10">
@@ -45,9 +45,11 @@
         <p
           class="mt-3 text-base md:text-lg text-[var(--text)] leading-relaxed"
         >
-          Consume ULC data through tools that read it. Get fast, accurate,
-          AI-assisted comparisons, luminaire schedules, and value engineering
-          review.
+          Reclaim the hours that disappear into cross-referencing PDFs. ULC
+          records read straight into your fixture comparisons, luminaire
+          schedules, and VE reviews, every attribute traceable to the
+          manufacturer's source. The tools you already use, and any LLM, can
+          read ULC today.
         </p>
         <a
           href="/for-designers"
@@ -67,9 +69,11 @@
         <p
           class="mt-3 text-base md:text-lg text-[var(--text)] leading-relaxed"
         >
-          Publish ULC files alongside your datasheet PDFs, IES, and LDT files
-          on your product pages. Gain machine-discoverability by AI systems
-          and improved data fidelity in downstream workflows.
+          Show up when a designer asks an AI which fixture fits. Publish a ULC
+          record alongside the PDF, IES, and LDT files you already produce, and
+          your products surface in AI-mediated discovery with the attributes you
+          published, not whatever an extraction layer guessed. You own the data
+          at its source.
         </p>
         <a
           href="/for-manufacturers"
