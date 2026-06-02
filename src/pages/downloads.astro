@@ -1,5 +1,5 @@
 ---
-// /downloads — v1 download hub. Lead content: the 5-prompt designer LLM
+// /downloads: v1 download hub. Lead content: the 5-prompt designer LLM
 // catalog (Tier 1 designer activation surface). Canonical example records
 // follow, then the JSON Schema, then the Go reference validator binaries.
 //
@@ -116,17 +116,17 @@ const crossLinks = [
   { href: '/docs', labelHtml: 'Authoring patterns and schema reference' },
   {
     href: '/docs#how-to-use-today',
-    labelHtml: 'Two-tier consumption deep dive',
+    labelHtml: 'How to use ULC today',
   },
-  { href: '/for-designers', labelHtml: 'Designer-track pitch' },
-  { href: '/for-manufacturers', labelHtml: 'Manufacturer-track pitch' },
+  { href: '/for-designers', labelHtml: 'ULC for designers' },
+  { href: '/for-manufacturers', labelHtml: 'ULC for manufacturers' },
   {
     href: '/validator',
-    labelHtml: 'Validate in your browser without the CLI',
+    labelHtml: 'Validate a record in your browser',
   },
   {
     href: 'https://github.com/ulcspec/ULC',
-    labelHtml: 'Specification source on GitHub',
+    labelHtml: 'The spec on GitHub',
   },
 ];
 
@@ -193,12 +193,12 @@ function formatAssetSize(bytes: number): string {
       <section id="prompts" aria-labelledby="prompts-heading">
         <h2 id="prompts-heading">Designer LLM prompt templates</h2>
         <p>
-          Five ready-to-use prompts. Paste a prompt into ChatGPT, Claude, or Gemini, attach a <code>.ulc.json</code> file (download a sample from the <a href="#examples" class="link-inline">next section</a>), and the LLM produces a clean spec sheet, an apples-to-apples comparison, a luminaire-schedule-ready table, a VE sanity check, or a per-attribute source-file provenance trace. The Tier 1 consumption framing is at <a href="/docs#how-to-use-today" class="link-inline">/spec#how-to-use-today</a>.
+          Five ready-to-use prompts. Paste one into ChatGPT, Claude, or Gemini, attach a <code>.ulc.json</code> file, and you get back a clean spec sheet, an apples-to-apples comparison, a schedule-ready table, a VE sanity check, or a trace of where every value came from. Need a file to try them on? <a href="#examples" class="link-inline">Grab a sample below</a>.
         </p>
 
         <Callout intent="accent" label="Compatibility">
           <p>
-            Any modern LLM (ChatGPT 4o / 5, Claude 4.5+ / 4.7, Gemini 2+) is suitable. The prompts work without modification across all three. Bracketed placeholders (<code>[project type]</code>, <code>[CRI, CCT options, ...]</code>) invite per-use customization.
+            Any current version of ChatGPT, Claude, or Gemini works, with no modification. The bracketed placeholders like <code>[project type]</code> are yours to fill in.
           </p>
         </Callout>
 
@@ -220,7 +220,7 @@ function formatAssetSize(bytes: number): string {
       <section id="examples" aria-labelledby="examples-heading">
         <h2 id="examples-heading">Canonical example records</h2>
         <p>
-          Four canonical reference records, one per manufacturer authoring pattern, drafted from real specification-grade manufacturer spec sheets. These are the files designers drop into the prompts above and the load-bearing test fixtures every Schema Change Proposal must continue to validate against.
+          Four reference records, one per manufacturer authoring pattern, built from real specification-grade spec sheets. These are the files you drop into the prompts above, and together they cover the four ways manufacturers structure their data.
         </p>
 
         <ul class="example-grid" aria-label="Four canonical .ulc example records">
@@ -254,17 +254,17 @@ function formatAssetSize(bytes: number): string {
       <section id="schema" aria-labelledby="schema-heading">
         <h2 id="schema-heading">JSON Schema</h2>
         <p>
-          ULC v0.5.1, JSON Schema Draft 2020-12. Served at <code>/schema/ulc.json</code> with <code>application/schema+json</code> content-type.
+          The ULC schema, written to JSON Schema Draft 2020-12, served at <code>/schema/ulc.json</code> with the <code>application/schema+json</code> content type.
         </p>
         <p>
-          Tool builders integrating against ULC reference this file directly. Any JSON Schema Draft 2020-12 library can validate ULC records without additional configuration.
+          Point any Draft 2020-12 library at this file to validate records, no extra configuration needed. Conformant records declare <code>ulc_version</code> 0.3.0, the current schema level.
         </p>
 
         <div class="schema-card">
           <div class="schema-card__head">
             <p class="schema-card__filename"><code>ulc.json</code></p>
             <p class="schema-card__meta">
-              ULC v0.5.1 · Draft 2020-12
+              Schema level 0.3.0 · Draft 2020-12
             </p>
           </div>
           <a
@@ -463,7 +463,7 @@ function formatAssetSize(bytes: number): string {
     }
   }
 
-  /* Link variants — mirrored from sibling surfaces. */
+  /* Link variants, mirrored from sibling surfaces. */
   .link {
     color: var(--accent-warm);
     text-decoration: underline;
