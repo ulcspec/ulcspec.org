@@ -27,7 +27,7 @@ const adopters: Adopter[] = [];
       <h2
         class="font-display text-3xl md:text-4xl font-semibold tracking-tight leading-tight"
       >
-        Adopted By
+        Adoption
       </h2>
     </div>
 
@@ -38,12 +38,11 @@ const adopters: Adopter[] = [];
           style="background: var(--bg-elevated);"
         >
           <p class="text-base md:text-lg text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed">
-            No manufacturer has published a ULC record yet. This list fills in
-            as they publish{' '}
+            This list fills in as manufacturers publish{' '}
             <code class="font-mono text-[var(--text)]">.ulc</code> files for
             their products. In the meantime, ULC is in active dialogue with
-            DIAL, the IES, and the LIA, with manufacturer and software-vendor
-            pilots underway.
+            leading organizations like the IES and the LIA, with manufacturer
+            and software-vendor pilots underway.
           </p>
         </div>
       ) : (
@@ -72,5 +71,10 @@ const adopters: Adopter[] = [];
         </ul>
       )
     }
+
+    <p class="mt-8 text-sm text-[var(--text-muted)]">
+      Specify lighting? Ask your manufacturers to publish ULC. That is how this
+      list grows.
+    </p>
   </div>
 </section>
