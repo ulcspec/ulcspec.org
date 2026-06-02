@@ -1,7 +1,7 @@
 ---
-// /spec/templates/wall-sconce, placeholder. PR-1b swaps this Callout for
-// upstream MDX rendered via the spec-sync Content Loader, using the
-// same pattern as /spec/authoring-patterns.
+// /docs/templates/wall-sconce: per-category template page. The upstream template
+// (templates/wall-sconce.ulc.json + .md) renders here once the docs loader
+// covers these routes; until then the page points to the spec repo.
 
 import Callout from '../../../components/Callout.astro';
 import PageShell from '../../../components/PageShell.astro';
@@ -10,20 +10,18 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 
 <PageShell
   title="Wall-sconce template - ULC specification"
-  description="ULC authoring template for wall-sconce luminaires. Documentation in progress; the upstream MDX wires up in PR-1b."
+  description="ULC authoring template for wall-sconce luminaires. Starter JSON skeleton and guide in the spec repository's templates/ directory."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Wall-sconce template.</h1>
 
-    <Callout intent="default" label="Documentation in progress">
+    <Callout intent="default" label="Get the template">
       <p>
-        This page is part of the spec sub-route cohort. Upstream MDX
-        will be wired in via the spec-sync Content Loader in PR-1b.
-      </p>
-      <p>
-        For now, see <a href="/docs/authoring-patterns">authoring patterns</a>
-        for the proven loader pattern, or browse <a href="/downloads">downloads</a>
-        for the canonical template catalog.
+        The wall-sconce authoring template lives in the spec repository:
+        <code>wall-sconce.ulc.json</code> is a starter JSON skeleton to fill in
+        and validate, and <code>wall-sconce.md</code> is the guide. Both are
+        under
+        <a href="https://github.com/ulcspec/ULC/tree/main/templates" rel="noopener external"><code>templates/</code></a>.
       </p>
     </Callout>
   </SpecDocsLayout>
