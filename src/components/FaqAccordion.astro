@@ -12,7 +12,7 @@ interface Item {
   /**
    * Trusted HTML rendered via `set:html`. Content MUST be repo-authored
    * (e.g. literal strings in a page frontmatter or content collection); never
-   * pass user-supplied input here — this is an XSS surface if the contract
+   * pass user-supplied input here; this is an XSS surface if the contract
    * breaks. If a third `set:html` consumer materializes, promote to a
    * `TrustedHtml` branded type in `src/lib/trusted-html.ts`.
    */

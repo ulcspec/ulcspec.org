@@ -112,7 +112,7 @@ export async function fetchReleases(): Promise<ReleaseFetchResult> {
 
   // Checksums fetch (one extra round-trip) runs only for the latest
   // release, since the previous-releases list is version + date + notes
-  // link only — no per-asset checksum rendering. Saves N round-trips
+  // link only, no per-asset checksum rendering. Saves N round-trips
   // and keeps build-time fetch budget tight on the unauthenticated
   // 60/hour rate limit.
   const latest = await normalize(latestRaw, { withChecksums: true });
@@ -169,7 +169,7 @@ async function normalize(
       platform: resolvePlatform(a.name),
     }))
     .filter((a) => a.platform !== null)
-    // Stable display order — derived from the index of each platform
+    // Stable display order, derived from the index of each platform
     // in PLATFORM_PATTERNS so the single source of truth controls both
     // detection and ordering.
     .sort((a, b) => platformIndex(a.platform) - platformIndex(b.platform));

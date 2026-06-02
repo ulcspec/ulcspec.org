@@ -9,7 +9,7 @@
 // rate limits).
 //
 // Failures retry 3× with 500ms-linear backoff. After exhaustion the
-// loader throws and the build fails — preferable to silently shipping
+// loader throws and the build fails; preferable to silently shipping
 // a partial spec collection.
 
 import { createHash } from 'node:crypto';

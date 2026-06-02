@@ -13,7 +13,7 @@
 //
 // Copy authority: docs/growth/copy/downloads.md ("Designer LLM prompts
 // section"). The RENDER prompt is identical across all four surfaces
-// (homepage hero, /for-designers, /spec, /downloads) — verbatim parity is
+// (homepage hero, /for-designers, /docs, /downloads), verbatim parity is
 // load-bearing; verify with CI grep against built HTML on every PR.
 
 export interface Tier1Prompt {

@@ -1,4 +1,4 @@
-// Validator engine — first-draft, surface-specific to /validator.
+// Validator engine: first-draft, surface-specific to /validator.
 //
 // At v1 first-draft this is a hand-rolled structural pre-validator: native
 // JSON.parse with line+col extraction on syntax errors, plus a minimal
@@ -10,7 +10,7 @@
 // pre-validator. Random JSON FAILs with line-anchored "missing required"
 // errors. Malformed JSON FAILs with line+col reference.
 //
-// SubtleCrypto SHA-256 hash verification IS fully wired here at v1 — no
+// SubtleCrypto SHA-256 hash verification IS fully wired here at v1, no
 // dep needed, all browser-native.
 
 export interface ParseSuccess {
