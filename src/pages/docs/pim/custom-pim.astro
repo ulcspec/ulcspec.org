@@ -79,10 +79,6 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     </table>
     </div>
 
-    <h3>ETIM classification cross-walk</h3>
-    <p>Many lighting product-master schemas in the European market reference ETIM class codes (for example, <code>EC002643</code> for downlights) and feature codes (for example, <code>EF001596</code> for housing material). ULC's <code>primary_category</code> enum and many of its individual fields cite ETIM feature identifiers inline in the schema descriptions where a direct correspondence exists. If your in-house PIM stores ETIM codes, use them as the bridge to ULC enums: the mapping is typically 1:1 at the class level and per-feature at the attribute level.</p>
-    <p>ETIM North America is expanding adoption in US and Canadian distribution channels; ETIM UK and Continental Europe are well-established. See <code>mappings/etim-crosswalk.md</code> (planned in the upstream repo) for the full field-level table.</p>
-
     <h3>Dimensional fields</h3>
     <p>Convert single-unit columns to ULC dual-unit at emit time. Common columns:</p>
     <div class="pim-map-scroll">
@@ -98,7 +94,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     </div>
 
     <h3>Attestations</h3>
-    <p>Common attestation programs the in-house schema should track: DLC QPL (DesignLights Consortium Qualified Products List, a lighting-specific energy attestation), ENERGY STAR Luminaires V2.0+, UL listings (UL 1598 and similar), and lumen-maintenance attestations (LM-80 / TM-21 derived L70 / L80 / L90 hours). The emitter maps each to a ULC <code>attestations[]</code> entry with <code>program</code>, <code>status</code>, <code>value_type</code>, and <code>verification</code> populated per the schema.</p>
+    <p>Common attestation programs the in-house schema should track: DLC QPL (DesignLights Consortium Qualified Products List, a lighting-specific energy attestation), ENERGY STAR Luminaires V2.0+, UL listings (UL 1598 and similar), and lumen-maintenance attestations (LM-80 / TM-21 derived L70 / L80 / L90 hours). The emitter maps each to a ULC <code>attestations[]</code> entry with <code>program</code>, <code>status</code>, and <code>value_type</code> populated per the schema.</p>
 
     <h2>Gotchas</h2>
     <ol>
@@ -109,7 +105,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>No change tracking.</strong> Without CDC, the emitter either runs full sweeps or polls <code>updated_at</code> columns.</li>
       <li><strong>Manual-edit drift in spreadsheets.</strong> Spreadsheet-based masters accumulate typos, inconsistent unit strings (<code>3000K</code> versus <code>3000 K</code>), and bracket-vs-value mismatches. Normalize before emit; flag suspicious rows for manual review.</li>
       <li><strong>One row, multiple records.</strong> A spreadsheet row that bundles several CCTs in one cell (<code>2700K/3000K/3500K</code>) expands to multiple ULC records, one per scenario. The ETL must split.</li>
-      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>sources[]</code> block.</li>
+      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>source_files[]</code> block.</li>
     </ol>
 
     <p class="full-guide-link">

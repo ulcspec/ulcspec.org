@@ -22,12 +22,12 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 
     <h2>Salsify data model in one page</h2>
     <ul>
-      <li><strong>Products</strong> are the core entity. Each product has an internal <code>salsify_id</code> plus a user-designated external ID (commonly the SKU). UPC, MPN, and other identifiers are typically modeled as additional Properties on the product, not as built-in identifier slots.</li>
+      <li><strong>Products</strong> are the core entity, identified by an internal ID and one or more external IDs (commonly SKU, UPC, MPN).</li>
       <li><strong>Properties</strong> are typed fields on products: strings, numbers, enums, digital assets, or references.</li>
       <li><strong>Product relationships</strong> model accessories, replacements, and bundle components through typed reference properties.</li>
       <li><strong>Digital assets</strong> (images, PDFs, IES files) are first-class objects with their own IDs, versioning, and renditions.</li>
-      <li><strong>Channels with JavaScript mappings</strong> define per-channel export transformations. The ULC emitter plugs in as a channel + JavaScript mapping (or a channel exporting raw JSON to an external transform service).</li>
-      <li><strong>APIs:</strong> GraphQL for typed reads across the schema; REST for CRUD, filtering, and Job-based bulk imports / exports (CSV, JSON, Excel formats); Webhooks for change-event subscriptions. All authentication via OAuth2 bearer tokens.</li>
+      <li><strong>Channels and recipes</strong> define per-channel export transformations. The ULC emitter is typically a Salsify channel recipe plus an external transform service.</li>
+      <li><strong>APIs:</strong> GraphQL for typed reads, REST for bulk operations and webhooks, CSV for imports.</li>
     </ul>
 
     <h2>Core mapping</h2>
@@ -85,7 +85,6 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Property type mismatches.</strong> Salsify's "number" type is a double. ULC distinguishes integer in some fields. Coerce at emit time.</li>
       <li><strong>Asset digest caching.</strong> SHA-256 on every asset on every run is expensive. Cache by Salsify asset ID + version; invalidate on <code>updated_at</code> change.</li>
       <li><strong>Missing required values.</strong> If a property needed for the target <code>conformance_level</code> is blank for a SKU, skip or fail the export. Do not downgrade <code>conformance_level</code> to paper over gaps.</li>
-      <li><strong>Salsisheets workflow.</strong> Many lighting brands' merchandising teams operate Salsify via the Salsisheets Excel-style bulk-edit interface rather than the API. A ULC emit pipeline anchored on the API may diverge from the in-flight data the merchandising team is curating. Coordinate emit timing with the channel's Readiness Report so partially-edited records don't ship as ULC.</li>
     </ol>
 
     <p class="full-guide-link">

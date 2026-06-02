@@ -27,7 +27,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>SAP MDG</strong> is the enterprise governance layer on top, enforcing data quality and approval gates.</li>
       <li><strong>Classification System (CA-CL)</strong> holds characteristics (CABN) and classes (KLAH). Luminaire-specific attributes like <code>BEAM_ANGLE</code>, <code>CCT_K</code>, <code>INPUT_POWER_W</code> live here.</li>
       <li><strong>Document Info Records (DMS)</strong> hold cutsheet PDFs, IES, LDT linked to materials.</li>
-      <li><strong>Integration paths:</strong> Legacy ECC integration is primarily IDoc-based (XML envelopes). S/4HANA exposes OData (REST/JSON) services for the same master-data domains and is the strategic path for new work, but IDocs remain fully supported on S/4HANA on-premise and Private Cloud (only S/4HANA Public Cloud blocks them). Choose OData for new emit integrations; preserve IDoc as a fallback if your landscape has constraints.</li>
+      <li><strong>Integration paths:</strong> Legacy ECC integration is primarily IDoc-based (XML envelopes). S/4HANA exposes OData (REST/JSON) services for the same master-data domains. Choose OData for new emit integrations; IDocs remain a supported fallback (except on S/4HANA Public Cloud, which restricts integration to released APIs).</li>
     </ul>
 
     <h2>Core mapping</h2>
@@ -67,7 +67,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     <p>The actual characteristic <em>values</em> per material live in the AUSP table (KSSK links class-to-material; AUSP holds the values). Plan the emit to query AUSP for characteristic values, not just KSSK for class assignment.</p>
 
     <p>
-      Two OData services are commonly used for classification data on S/4HANA. <code>API_CLFN_CHARACTERISTIC_SRV</code> ("Classification System Characteristic", SAP_COM_0163 communication scenario) exposes characteristic definitions and value-sets directly; use it when the emitter needs to walk the characteristic catalog independent of any one material. <code>API_CLFN_PRODUCT_SRV</code> ("Product Master Data Including Classification") is often a better single-entry endpoint than <code>API_PRODUCT_SRV</code> when characteristic values inline with the product fetch are what the emitter needs; it returns the product master plus assigned classes plus characteristic values in one navigation graph.
+      Two OData services are commonly used for classification data on S/4HANA. <code>API_CLFN_CHARACTERISTIC_SRV</code> ("Classification System Characteristic") exposes characteristic definitions and value-sets directly; use it when the emitter needs to walk the characteristic catalog independent of any one material. <code>API_CLFN_PRODUCT_SRV</code> ("Product Master Data Including Classification") is often a better single-entry endpoint than <code>API_PRODUCT_SRV</code> when characteristic values inline with the product fetch are what the emitter needs; it returns the product master plus assigned classes plus characteristic values in one navigation graph.
     </p>
 
     <h3>Document Info Records (DMS)</h3>
@@ -88,10 +88,10 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     <ol>
       <li><strong>IDoc vs OData.</strong> Legacy ECC without S/4HANA exposes data via IDocs (MATMAS, CLFMAS, DOCMAS). Mapping is conceptually identical; the engineer handles XML instead of JSON.</li>
       <li><strong>Language keys.</strong> SAP descriptions are per-language (SPRAS). Choose a canonical language key (typically <code>EN</code>) and record it in the integration config.</li>
-      <li><strong>Change-master tracking.</strong> Skip materials with active engineering change records (AENR, referenced by change-master transaction CC02) from export until the change closes. The relevant artifacts are the change number (ECN) and change-master, not just generic "ECR/ECO": name them precisely so the integration engineer can map the skip-condition to the actual SAP table. Do not paper over draft state by lowering <code>conformance_level</code>.</li>
+      <li><strong>Change-master tracking.</strong> Skip materials with active engineering change records (AENR, referenced by change-master transaction CC02) from export until the change closes. Do not paper over draft state by lowering <code>conformance_level</code>.</li>
       <li><strong>Classification sparseness.</strong> Not every luminaire will have every expected characteristic populated. Skip or fail the export when a required characteristic is missing.</li>
       <li><strong>Unit rounding errors.</strong> SAP often stores dimensions at coarse precision (integer mm). Preserve decimal precision when computing the Imperial companion.</li>
-      <li><strong>IDoc serialization ordering.</strong> When emitting a material with classification, callers must send MATMAS first (material master) then CLFMAS (classification). The serialization group BD44 enforces this; ULC emit pipelines that batch must respect the order.</li>
+      <li><strong>IDoc serialization ordering.</strong> When emitting a material with classification, callers must send MATMAS first (material master) then CLFMAS (classification); ULC emit pipelines that batch must respect that order.</li>
     </ol>
 
     <p class="full-guide-link">

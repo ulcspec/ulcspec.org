@@ -28,11 +28,11 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Variants and variant groups</strong> model SKU-level variation. Parent product-models hold shared attributes; variants carry per-SKU differences (CCT, distribution, finish).</li>
       <li><strong>Categories</strong> are a separate hierarchy from families, used for marketing navigation and channel filtering.</li>
       <li><strong>Channels</strong> define per-channel localization and completeness rules. A ULC emit channel can enforce that only records with complete photometric data ship.</li>
-      <li><strong>Asset Manager</strong> (Enterprise Edition, v4.0+, replaces the legacy PAM) holds cutsheet PDFs, IES files, and LDT files as Asset Families. <strong>Reference Entities</strong> (also Enterprise-only) model structured entities like brand or designer. <strong>Community Edition has neither</strong>: file and image attributes on the product itself are the only built-in option, and the emitter streams those directly.</li>
+      <li><strong>Asset Manager</strong> (Enterprise Edition) holds cutsheet PDFs, IES files, and LDT files as Asset Families. <strong>Reference Entities</strong> (also Enterprise-only) model structured entities like brand or designer. <strong>Community Edition has neither</strong>: file and image attributes on the product itself are the only built-in option, and the emitter streams those directly.</li>
       <li><strong>API:</strong> REST with OAuth2 for both reads and writes.</li>
     </ul>
 
-    <p><strong>PIM 7.0+ identity:</strong> Akeneo's API now recommends UUID-based product endpoints (<code>/api/rest/v1/products-uuid/&#123;uuid&#125;</code>) over identifier-based ones. UUIDs are immutable; identifiers (the SKU) are user-editable Attributes that can change. New ULC emit integrations should anchor on UUIDs and treat the identifier as a separate Attribute mapped to <code>configuration.catalog_number</code>.</p>
+    <p><strong>Identity:</strong> a product's identifier (the SKU) is a user-editable attribute and can change, so anchor ULC emit integrations on Akeneo's stable internal product ID, and map the identifier to <code>configuration.catalog_number</code>.</p>
 
     <h2>Core mapping</h2>
 
