@@ -1,0 +1,97 @@
+---
+// Quote-styled block for the rep-conversation line on The Ask section.
+// Visually distinct from prompt blocks (sans-serif, larger, blockquote-style)
+// because designers read this aloud to a manufacturer rep, not paste it into
+// an LLM. Same copy mechanic as PromptBlock.
+
+import Button from './Button.astro';
+
+interface Props {
+  id: string;
+  text: string;
+}
+
+const { id, text } = Astro.props;
+const buttonId = `${id}-copy`;
+const statusId = `${id}-status`;
+---
+
+<figure
+  class="quote-card"
+  data-quote-card
+  data-button-id={buttonId}
+  data-source-id={id}
+  data-status-id={statusId}
+>
+  <blockquote
+    id={id}
+    tabindex="0"
+    aria-label="Rep-conversation line, selectable text"
+    class="quote-card__quote">{text}</blockquote>
+  <div class="quote-card__actions">
+    <Button
+      variant="ghost"
+      size="sm"
+      id={buttonId}
+      ariaDescribedby={statusId}
+    >
+      <svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        ></path>
+      </svg>
+      <span data-copy-default>Copy line</span>
+      <span data-copy-done class="hidden">Copied</span>
+    </Button>
+    <p id={statusId} class="sr-only" role="status" aria-live="polite"></p>
+  </div>
+</figure>
+
+<style>
+  .quote-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 8px;
+    padding: 1.75rem 1.75rem 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .quote-card__quote {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 0;
+    quotes: none;
+    white-space: pre-wrap;
+    user-select: text;
+  }
+  .quote-card__quote:focus-visible {
+    outline-offset: 4px;
+  }
+  .quote-card__actions {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
+
+<script>
+  // See PromptBlock.astro for the no-`define:vars` constraint.
+  import { bindAllCopyCards } from '../lib/clipboard';
+
+  bindAllCopyCards('[data-quote-card]', {
+    copiedAnnouncement: 'Line copied to clipboard',
+    selectFallbackText: 'Line selected. Press Cmd+C / Ctrl+C to copy.',
+  });
+</script>

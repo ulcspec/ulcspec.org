@@ -1,0 +1,160 @@
+---
+// Theme 3 visualization (manufacturer track): standards-trajectory timeline.
+// Three labeled milestones: 2026 introduction, 2026-2027 pilots + crosswalks,
+// 2028-2030 anticipated broad adoption (labeled "anticipated"). Inline
+// HTML/CSS, themeable, zero network bytes.
+//
+// Single-surface consumer as of 2026-05-16 (/for-manufacturers only). The
+// dates and milestone framing are page-local; promote to a generalized
+// timeline figure only when a second surface needs the same primitive.
+
+interface Milestone {
+  year: string;
+  label: string;
+  status: 'now' | 'planned' | 'anticipated';
+}
+
+const milestones: readonly Milestone[] = [
+  {
+    year: '2026',
+    label: 'Introduced at the NLB AI Think Tank, New York. Four canonical reference records, validator, PIM mapping guides.',
+    status: 'now',
+  },
+  {
+    year: '2026–2027',
+    label: 'Pilot manufacturer publications. Crosswalks to GLDF and ETIM land. SCP-driven schema evolution.',
+    status: 'planned',
+  },
+  {
+    year: '2028–2030',
+    label: 'Anticipated broad adoption: ULC becomes the table-stakes machine-readable cut-sheet layer the industry expects.',
+    status: 'anticipated',
+  },
+];
+
+const statusLabels: Record<Milestone['status'], string> = {
+  now: 'Available now',
+  planned: 'Planned',
+  anticipated: 'Anticipated',
+};
+---
+
+<figure class="tl-fig">
+  <ol
+    class="tl-list"
+    role="list"
+    aria-label="ULC standards trajectory. 2026: introduced at the NLB AI Think Tank, New York, with reference records, validator, and PIM mapping guides available now. 2026 to 2027: planned pilot publications, crosswalks to GLDF and ETIM, and SCP-driven schema evolution. 2028 to 2030: anticipated broad adoption."
+  >
+    {milestones.map((m, i) => (
+      <li class={`tl-item tl-item--${m.status}`}>
+        <div class="tl-marker" aria-hidden="true">
+          <span class="tl-marker__dot"></span>
+          {i < milestones.length - 1 && <span class="tl-marker__line"></span>}
+        </div>
+        <div class="tl-body">
+          <p class="tl-year">{m.year}</p>
+          <p class="tl-status">{statusLabels[m.status]}</p>
+          <p class="tl-label">{m.label}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+  <figcaption class="tl-cap">
+    The standards trajectory. Early adopters help shape the schema through the SCP process; later adopters get the standard once it is table-stakes.
+  </figcaption>
+</figure>
+
+<style>
+  .tl-fig {
+    margin: 2rem 0 0 0;
+  }
+  @media print {
+    .tl-fig {
+      page-break-inside: avoid;
+    }
+    .tl-marker__dot,
+    .tl-item--now .tl-marker__dot,
+    .tl-item--anticipated .tl-marker__dot {
+      /* Filled / hollow / dashed dot variants survive print stripping. */
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  .tl-list {
+    list-style: none;
+    margin: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: 1rem;
+    padding: 0;
+  }
+  .tl-marker {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.5rem;
+  }
+  .tl-marker__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 999px;
+    border: 2px solid var(--accent-warm);
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+  }
+  .tl-item--now .tl-marker__dot {
+    background: var(--accent-warm);
+  }
+  .tl-item--anticipated .tl-marker__dot {
+    border-style: dashed;
+  }
+  .tl-marker__line {
+    flex: 1 1 auto;
+    width: 1px;
+    background: var(--border);
+    margin-top: 0.25rem;
+  }
+  .tl-body {
+    grid-column: 2;
+    padding-bottom: 1.25rem;
+  }
+  .tl-item:last-child .tl-body {
+    padding-bottom: 0;
+  }
+  .tl-year {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--accent-warm);
+    letter-spacing: 0.04em;
+    margin: 0;
+  }
+  .tl-status {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0.125rem 0 0.5rem 0;
+  }
+  .tl-label {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .tl-cap {
+    margin-top: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    line-height: 1.5;
+  }
+</style>

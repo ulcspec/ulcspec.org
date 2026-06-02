@@ -1,0 +1,133 @@
+---
+// Step 1 visualization (manufacturer track): where specifier discovery flows
+// today and where the loss accumulates. Four-stage sequence + loss callouts
+// at the extraction and aggregator-interpretation hops. Inline HTML/CSS,
+// themeable, zero network bytes.
+//
+// Single-surface consumer as of 2026-05-16 (/for-manufacturers only). The
+// manufacturer-PDF protagonist and the "loss" framing are page-local.
+// Promote to src/components/figures/* with a generalized API only when a
+// second surface needs the same diagram or a sibling.
+
+interface Stage {
+  label: string;
+  sub: string;
+  loss: boolean;
+}
+
+const stages: readonly Stage[] = [
+  { label: 'Manufacturer PDF', sub: 'authoritative source', loss: false },
+  { label: 'AI / aggregator extracts', sub: 'guesses structure', loss: true },
+  { label: 'Aggregator interpretation', sub: 'becomes the data layer', loss: true },
+  { label: "Designer's tool", sub: 'consumes the interpretation', loss: false },
+];
+---
+
+<figure class="dl-fig">
+  <div
+    class="dl-grid"
+    role="img"
+    aria-label="Discovery loop today: a manufacturer's PDF flows through an AI or aggregator extractor that guesses structure, then through an aggregator's interpretation that becomes the data layer, before reaching the designer's tool which consumes the interpretation rather than the authoritative source."
+  >
+    {stages.map((stage, i) => (
+      <div class={`dl-stage ${stage.loss ? 'dl-stage--loss' : ''}`}>
+        <span class="dl-stage__num">{String(i + 1).padStart(2, '0')}</span>
+        <span class="dl-stage__label">{stage.label}</span>
+        <span class="dl-stage__sub">{stage.sub}</span>
+        {stage.loss && (
+          <span class="dl-stage__loss" aria-hidden="true">loss</span>
+        )}
+      </div>
+    ))}
+  </div>
+  <figcaption class="dl-cap">
+    Today's discovery loop, from the manufacturer's seat. Loss accumulates at the extraction and aggregator-interpretation hops.
+  </figcaption>
+</figure>
+
+<style>
+  .dl-fig {
+    margin: 2rem 0 0 0;
+  }
+  @media print {
+    .dl-fig {
+      page-break-inside: avoid;
+    }
+    .dl-stage,
+    .dl-stage--loss {
+      /* Loss-tint survives print stripping; the loss signal is load-bearing. */
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+  .dl-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: var(--bg-elevated);
+  }
+  @media (min-width: 768px) {
+    .dl-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.625rem;
+      padding: 1.5rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .dl-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+  }
+  .dl-stage {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 0.875rem;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 104px;
+  }
+  /* Loss tint: 10% mix clears WCAG 3:1 non-text-UI floor in both themes
+     while keeping the affordance subtle. Border at 50% telegraphs the
+     stronger "this stage is problematic" semantic. */
+  .dl-stage--loss {
+    border-color: color-mix(in oklab, var(--accent-warm) 50%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 10%, var(--bg));
+  }
+  .dl-stage__num {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.06em;
+  }
+  .dl-stage__label {
+    font-size: 0.8125rem;
+    color: var(--text);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+  .dl-stage__sub {
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    line-height: 1.4;
+  }
+  .dl-stage__loss {
+    margin-top: auto;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    font-size: 0.6875rem;
+    color: var(--accent-warm);
+  }
+  .dl-cap {
+    margin-top: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    line-height: 1.5;
+  }
+</style>

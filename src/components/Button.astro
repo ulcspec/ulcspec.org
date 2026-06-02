@@ -1,19 +1,108 @@
 ---
-// Click button, get confetti!
-// Styled by Tailwind :)
+// Shared button primitive. Variants documented in DESIGN_SYSTEM.md.
+//
+// Renders as <a> when `href` is set, otherwise as <button>. All buttons clear
+// the 44px touch-target minimum.
+//
+// Variants:
+//   - primary   amber fill, dark text         hero CTAs, primary Ask
+//   - secondary amber border, amber text      secondary CTAs
+//   - ghost     transparent, border, muted    nav toggle, theme toggle, copy
+//
+// Sizes:
+//   - md (default) px-6 py-3.5     hero CTAs
+//   - sm           px-4 py-2.5     copy buttons
+//   - icon         h-11 w-11       icon-only ghost buttons (nav, toggle)
+
+type Variant = 'primary' | 'secondary' | 'ghost';
+type Size = 'md' | 'sm' | 'icon';
+
+interface Props {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  id?: string;
+  class?: string;
+  ariaLabel?: string;
+  ariaControls?: string;
+  ariaExpanded?: 'true' | 'false';
+  ariaDescribedby?: string;
+  ariaCurrent?: 'page';
+  rel?: string;
+  title?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  id,
+  class: extraClass = '',
+  ariaLabel,
+  ariaControls,
+  ariaExpanded,
+  ariaDescribedby,
+  ariaCurrent,
+  rel,
+  title,
+} = Astro.props;
+
+const baseClass =
+  'inline-flex items-center justify-center gap-2 rounded-md font-semibold transition-colors';
+
+const variantClass: Record<Variant, string> = {
+  primary:
+    'bg-[var(--accent-warm)] text-[var(--on-accent)] hover:bg-[var(--accent-warm-deep)]',
+  secondary:
+    'border border-[var(--accent-warm)] text-[var(--accent-warm)] hover:bg-[var(--accent-warm)] hover:text-[var(--on-accent)]',
+  ghost:
+    'border border-token text-[var(--text-muted)] hover:text-[var(--accent-warm)] hover:border-[var(--accent-warm)]',
+};
+
+const sizeClass: Record<Size, string> = {
+  md: 'px-6 py-3.5 min-h-[44px] text-base',
+  sm: 'px-4 min-h-[44px] text-sm',
+  icon: 'h-11 w-11',
+};
+
+const className = [
+  baseClass,
+  variantClass[variant],
+  sizeClass[size],
+  extraClass,
+]
+  .filter(Boolean)
+  .join(' ');
 ---
 
-<button
-	class="appearance-none py-2 px-4 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-75"
->
-	<slot />
-</button>
-
-<script>
-	import confetti from 'canvas-confetti';
-	const button = document.body.querySelector('button');
-
-	if (button) {
-		button.addEventListener('click', () => confetti());
-	}
-</script>
+{
+  href ? (
+    <a
+      href={href}
+      class={className}
+      id={id}
+      rel={rel}
+      title={title}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      aria-current={ariaCurrent}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      class={className}
+      id={id}
+      title={title}
+      aria-label={ariaLabel}
+      aria-controls={ariaControls}
+      aria-expanded={ariaExpanded}
+      aria-describedby={ariaDescribedby}
+    >
+      <slot />
+    </button>
+  )
+}

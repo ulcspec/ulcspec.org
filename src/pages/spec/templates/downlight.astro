@@ -1,0 +1,32 @@
+---
+// /spec/templates/downlight, placeholder. PR-1b swaps this Callout for
+// upstream MDX rendered via the spec-sync Content Loader, using the
+// same pattern as /spec/authoring-patterns.
+
+import Callout from '../../../components/Callout.astro';
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import SpecVersionBadge from '../../../components/SpecVersionBadge.astro';
+---
+
+<PageShell
+  title="Downlight template - ULC specification"
+  description="ULC authoring template for downlight luminaires. Documentation in progress; the upstream MDX wires up in PR-1b."
+>
+  <SpecDocsLayout>
+    <p class="page-eyebrow"><SpecVersionBadge /></p>
+    <h1 class="page-h1">Downlight template.</h1>
+
+    <Callout intent="default" label="Documentation in progress">
+      <p>
+        This page is part of the spec sub-route cohort. Upstream MDX
+        will be wired in via the spec-sync Content Loader in PR-1b.
+      </p>
+      <p>
+        For now, see <a href="/spec/authoring-patterns">authoring patterns</a>
+        for the proven loader pattern, or browse <a href="/downloads">downloads</a>
+        for the canonical template catalog.
+      </p>
+    </Callout>
+  </SpecDocsLayout>
+</PageShell>

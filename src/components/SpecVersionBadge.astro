@@ -1,0 +1,103 @@
+---
+// SpecVersionBadge: "Rendering ULC v0.5.1 · commit `abc1234`"
+//
+// Single-surface (/spec/*) consumer of the SPEC_SYNC config. Pure data
+// render; no client JS. Reused at the top of every rendered page so a
+// reader instantly knows which schema version + commit they are seeing.
+//
+// JSDoc-marked single-surface per the chrome-extraction discipline
+// established in for-designers-plan §10.3 / for-manufacturers-plan §2.3.
+// Promote to shared chrome only when a second consumer appears.
+
+import {
+  SPEC_SYNC,
+  SPEC_SYNC_SHORT_SHA,
+  SPEC_SYNC_IS_PINNED,
+} from '../../spec-sync.config';
+
+interface Props {
+  /** Optional extra utility class on the outer span. */
+  class?: string;
+  /**
+   * "verbose" = "Rendering ULC v0.5.1 · commit abc1234"
+   * "compact" = "ULC v0.5.1 · abc1234"
+   * Default per copy artifact A/B variant A. Pick "compact" inside
+   * dense table cells if space is tight.
+   */
+  variant?: 'verbose' | 'compact';
+}
+
+const { class: extraClass = '', variant = 'verbose' } = Astro.props;
+
+const verbose = `Rendering ULC ${SPEC_SYNC.upstreamVersion} · commit ${SPEC_SYNC_SHORT_SHA}`;
+const compact = `ULC ${SPEC_SYNC.upstreamVersion} · ${SPEC_SYNC_SHORT_SHA}`;
+const label = variant === 'compact' ? compact : verbose;
+
+const upstreamCommitUrl = `https://github.com/${SPEC_SYNC.upstreamOwner}/${SPEC_SYNC.upstreamRepo}/commit/${SPEC_SYNC.upstreamCommit}`;
+const isPlaceholderPin = !SPEC_SYNC_IS_PINNED;
+---
+
+<span class={`spec-version-badge ${isPlaceholderPin ? 'spec-version-badge--pending' : ''} ${extraClass}`.trim()}>
+  <span class="spec-version-badge__dot" aria-hidden="true"></span>
+  {isPlaceholderPin ? (
+    <span class="spec-version-badge__label">
+      {`ULC ${SPEC_SYNC.upstreamVersion} · pin pending`}
+    </span>
+  ) : (
+    <a
+      href={upstreamCommitUrl}
+      class="spec-version-badge__label spec-version-badge__label--link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {label}
+    </a>
+  )}
+</span>
+
+<style>
+  .spec-version-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .spec-version-badge__dot {
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 999px;
+    background: var(--accent-warm);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent-warm) 18%, transparent);
+    flex-shrink: 0;
+  }
+  .spec-version-badge--pending .spec-version-badge__dot {
+    background: var(--text-subtle);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--text-subtle) 18%, transparent);
+  }
+  .spec-version-badge__label {
+    color: inherit;
+    word-break: break-word;
+    min-width: 0;
+  }
+  .spec-version-badge__label--link {
+    text-decoration: none;
+    border-bottom: 1px dotted color-mix(in oklab, var(--text-muted) 70%, transparent);
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    transition: color 150ms ease-out, border-color 150ms ease-out;
+  }
+  .spec-version-badge__label--link:hover {
+    color: var(--accent-warm);
+    border-bottom-color: var(--accent-warm);
+  }
+</style>

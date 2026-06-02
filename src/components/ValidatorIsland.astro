@@ -1,0 +1,1132 @@
+---
+// Validator interactive island: drop-zone + paste-JSON disclosure + sample
+// picker + result panel + source-file hash verification panel.
+//
+// Single-surface consumer of the validator-engine.ts module. Promote to
+// shared primitive on 2nd consumer (none anticipated; the validator is
+// the only interactive surface in v1).
+//
+// All script-side logic is in this file's scoped <script> block. The
+// engine module handles JSON parse + structural validation + SHA-256.
+// Full Ajv (Draft 2020-12) consumption is gated on the ajv dep addition
+// (see validator-plan.md OQ-1).
+//
+// Accessibility: drop zone is a real <button>, keyboard-activatable.
+// Paste-JSON disclosure is a <details>. Result panel announces via
+// aria-live polite. Drag-over state is visually distinct + announced.
+---
+
+<section class="validator" aria-labelledby="drop-zone-label">
+  {/* Drop zone */}
+  <div class="drop-wrap">
+    <button
+      type="button"
+      id="drop-zone"
+      class="drop-zone"
+      aria-describedby="drop-zone-help"
+    >
+      <span class="drop-zone__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+      </span>
+      <span id="drop-zone-label" class="drop-zone__label">
+        Drop a <code>.ulc.json</code> file here, or click to upload.
+      </span>
+      <span id="drop-zone-help" class="drop-zone__help">
+        Files never leave your browser.
+      </span>
+    </button>
+
+    <input
+      type="file"
+      id="file-input"
+      accept=".ulc.json,.ulc,.json,application/json"
+      multiple
+      hidden
+    />
+
+    {/* Inline secondary affordances under the drop zone */}
+    <div class="drop-aux">
+      <details class="paste-disclosure">
+        <summary>
+          <span>Paste JSON instead</span>
+          <svg class="paste-disclosure__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="paste-disclosure__body">
+          <label for="paste-input" class="paste-disclosure__label">
+            Paste a <code>.ulc.json</code> record below, then click Validate.
+          </label>
+          <textarea
+            id="paste-input"
+            rows="10"
+            spellcheck="false"
+            placeholder='{"ulc_version": "0.3.0", "record_id": "..."}'
+          ></textarea>
+          <button type="button" id="paste-validate" class="paste-disclosure__cta">
+            Validate
+          </button>
+        </div>
+      </details>
+
+      <details class="sample-disclosure">
+        <summary>
+          <span>Try a sample record</span>
+          <svg class="paste-disclosure__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="sample-disclosure__body">
+          <p class="sample-disclosure__intro">
+            Four canonical reference records. Pick one and the validator loads it as if you had dropped it yourself.
+          </p>
+          <ul class="sample-list">
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-a-erco-quintessence.ulc.json">Pattern A: ERCO Quintessence downlight</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-b-selux-aya.ulc.json">Pattern B: Selux Aya pole</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade.ulc.json">Pattern C: Lumenpulse Lumenfacade façade</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-d-vode-nexa.ulc.json">Pattern D: Vode Nexa linear suspended pendant</button></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  {/* Live region for screen-reader announcements */}
+  <div id="validator-status" class="sr-live" role="status" aria-live="polite"></div>
+
+  {/* Result panel — populated by script. Hidden until first run. */}
+  <div id="result-panel" class="result-panel" hidden>
+    <div id="result-header" class="result-header" data-state="idle"></div>
+    <div id="result-summary" class="result-summary"></div>
+    <div id="result-errors" class="result-errors" hidden>
+      <p class="result-errors__label">Errors</p>
+      <ol id="error-list" class="error-list"></ol>
+    </div>
+    <div id="source-panel" class="source-panel" hidden>
+      <p class="source-panel__label">Source-file hash verification</p>
+      <p class="source-panel__hint">
+        Drop the source PDF, IES, LDT, or ULD files declared in this record to verify their SHA-256 hashes. Files are read in your browser; nothing is uploaded.
+      </p>
+      <ul id="source-list" class="source-list"></ul>
+    </div>
+    <div id="json-view-wrap" class="json-view-wrap" hidden>
+      <p class="json-view__label">Source JSON</p>
+      <pre id="json-view" class="json-view" tabindex="0"></pre>
+    </div>
+    <div class="result-actions">
+      <button type="button" id="copy-summary" class="result-actions__btn">
+        Copy result summary
+      </button>
+      <button type="button" id="reset" class="result-actions__btn result-actions__btn--ghost">
+        Try another file
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .validator {
+    margin-top: 2.5rem;
+  }
+
+  .drop-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    width: 100%;
+    min-height: 240px;
+    padding: 2.5rem 1.5rem;
+    background: var(--bg-elevated);
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font: inherit;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 150ms ease-out, background 150ms ease-out;
+  }
+  .drop-zone:hover,
+  .drop-zone:focus-visible {
+    border-color: var(--accent-warm);
+  }
+  .drop-zone[data-drag-over='true'] {
+    border-color: var(--accent-warm);
+    background: color-mix(in oklab, var(--accent-warm) 6%, var(--bg-elevated));
+  }
+  .drop-zone__icon {
+    color: var(--text-muted);
+  }
+  .drop-zone[data-drag-over='true'] .drop-zone__icon,
+  .drop-zone:hover .drop-zone__icon {
+    color: var(--accent-warm);
+  }
+  .drop-zone__label {
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+  .drop-zone__label code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .drop-zone__help {
+    font-size: 0.875rem;
+    color: var(--text-subtle);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+  }
+
+  .drop-aux {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .drop-aux {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .paste-disclosure,
+  .sample-disclosure {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.25rem 1rem;
+  }
+  .paste-disclosure > summary,
+  .sample-disclosure > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text);
+    font-size: 0.9375rem;
+    min-height: 44px;
+  }
+  .paste-disclosure > summary::-webkit-details-marker,
+  .sample-disclosure > summary::-webkit-details-marker {
+    display: none;
+  }
+  .paste-disclosure__chev {
+    color: var(--text-muted);
+    transition: transform 200ms ease-out;
+    flex-shrink: 0;
+  }
+  .paste-disclosure[open] .paste-disclosure__chev,
+  .sample-disclosure[open] .paste-disclosure__chev {
+    transform: rotate(180deg);
+  }
+  .paste-disclosure__body,
+  .sample-disclosure__body {
+    padding: 0.5rem 0 1rem 0;
+    border-top: 1px solid var(--border);
+    margin-top: 0.125rem;
+  }
+  .paste-disclosure__label {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0.5rem 0;
+  }
+  .paste-disclosure__label code {
+    font-family: var(--font-mono);
+    color: var(--accent-warm);
+  }
+  #paste-input {
+    width: 100%;
+    min-height: 200px;
+    padding: 0.75rem;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    resize: vertical;
+  }
+  #paste-input:focus-visible {
+    outline: 2px solid var(--accent-warm);
+    outline-offset: 2px;
+  }
+  .paste-disclosure__cta {
+    margin-top: 0.75rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--accent-warm);
+    color: var(--on-accent);
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .paste-disclosure__cta:hover {
+    background: var(--accent-warm-deep);
+  }
+
+  .sample-disclosure__intro {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0.75rem 0 0.5rem 0;
+  }
+  .sample-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .sample-list li {
+    margin: 0;
+  }
+  .sample-list__btn {
+    width: 100%;
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    margin: 0.125rem 0;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    min-height: 44px;
+    transition: border-color 150ms ease-out, color 150ms ease-out;
+  }
+  .sample-list__btn:hover,
+  .sample-list__btn:focus-visible {
+    border-color: var(--accent-warm);
+    color: var(--accent-warm);
+  }
+
+  .sr-live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Result panel */
+  .result-panel {
+    margin-top: 2.5rem;
+    padding: 1.75rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .result-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .result-header[data-state='pass'] {
+    color: var(--accent-warm);
+  }
+  .result-header[data-state='pass']::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-warm);
+    margin-right: 0.5rem;
+  }
+  .result-header[data-state='fail'] {
+    color: var(--text);
+  }
+  .result-header[data-state='fail']::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklab, var(--accent-warm) 70%, var(--text));
+    margin-right: 0.5rem;
+  }
+  .result-header[data-state='parse-error']::before {
+    content: '!';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--accent-warm) 25%, var(--bg-overlay));
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-right: 0.5rem;
+  }
+  .result-summary {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  .result-summary dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0;
+  }
+  .result-summary dt {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-size: 0.75rem;
+  }
+  .result-summary dd {
+    margin: 0;
+    color: var(--text);
+    font-size: 0.875rem;
+  }
+  .result-summary dd code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  .result-errors__label,
+  .source-panel__label,
+  .json-view__label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    margin: 1.5rem 0 0.5rem 0;
+  }
+  .error-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: err;
+  }
+  .error-list__item {
+    counter-increment: err;
+    border-left: 2px solid color-mix(in oklab, var(--accent-warm) 60%, var(--border));
+    padding: 0.75rem 0 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+  }
+  .error-list__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--text);
+  }
+  .error-list__num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+  }
+  .error-list__num::before {
+    content: counter(err, decimal-leading-zero);
+  }
+  .error-list__path {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--accent-warm);
+  }
+  .error-list__line {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+  }
+  .error-list__msg {
+    margin: 0.375rem 0 0 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .error-list__expected {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    margin-top: 0.25rem;
+  }
+  .error-list__jump {
+    background: transparent;
+    border: none;
+    color: var(--accent-warm);
+    font: inherit;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    min-height: 44px;
+  }
+  .error-list__jump:hover {
+    text-decoration: underline;
+  }
+
+  .source-panel {
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: color-mix(in oklab, var(--accent-warm) 4%, var(--bg-elevated));
+    border: 1px solid color-mix(in oklab, var(--accent-warm) 20%, var(--border));
+    border-radius: 8px;
+  }
+  .source-panel__hint {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem 0;
+  }
+  .source-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .source-row {
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+  .source-row:last-child {
+    border-bottom: none;
+  }
+  .source-row__type {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    color: var(--text-subtle);
+    font-size: 0.75rem;
+  }
+  .source-row__filename {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .source-row__status {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .source-row__status[data-status='match'] {
+    color: var(--accent-warm);
+  }
+  .source-row__status[data-status='mismatch'] {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .json-view-wrap {
+    margin-top: 0.5rem;
+  }
+  .json-view {
+    max-height: 24rem;
+    overflow: auto;
+    padding: 1rem;
+    background: var(--code-bg);
+    color: var(--code-text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    white-space: pre;
+    counter-reset: jln;
+  }
+  .json-view :global(.jline) {
+    display: block;
+    counter-increment: jln;
+  }
+  .json-view :global(.jline)::before {
+    content: counter(jln);
+    display: inline-block;
+    width: 2.5rem;
+    color: var(--text-subtle);
+    text-align: right;
+    margin-right: 1rem;
+    font-size: 0.75rem;
+  }
+  .json-view :global(.jline--hit) {
+    background: color-mix(in oklab, var(--accent-warm) 14%, transparent);
+    border-left: 2px solid var(--accent-warm);
+    margin-left: -1rem;
+    padding-left: calc(1rem - 2px);
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .result-actions__btn {
+    padding: 0.625rem 1.25rem;
+    background: var(--accent-warm);
+    color: var(--on-accent);
+    border: none;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .result-actions__btn:hover {
+    background: var(--accent-warm-deep);
+  }
+  .result-actions__btn--ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .result-actions__btn--ghost:hover {
+    background: transparent;
+    color: var(--accent-warm);
+    border-color: var(--accent-warm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drop-zone,
+    .paste-disclosure__chev,
+    .sample-list__btn {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .drop-zone,
+    .drop-aux,
+    .result-actions {
+      display: none;
+    }
+    .result-panel {
+      page-break-inside: avoid;
+    }
+  }
+</style>
+
+<script>
+  import {
+    parseUlcJson,
+    validateStructure,
+    computeFileHash,
+    loadSchemaSubset,
+    type ValidationResult,
+    type ValidationError,
+    type SourceDeclaration,
+  } from './validator-engine';
+
+  type LastValidatedRecord = {
+    text: string;
+    result: ValidationResult;
+  } | null;
+
+  let lastRecord: LastValidatedRecord = null;
+  // Monotonic run token. Each validation entry-point captures the current
+  // value; post-await renders bail if the token has been superseded by a
+  // newer call. Guards against concurrent drops racing module state.
+  let currentRunId = 0;
+  // Enter-counter for drag events. The drop zone has child elements (icon,
+  // label, help text) that cause dragenter/dragleave to bubble; we only
+  // want the visual flip when the cursor truly exits the zone.
+  let dragEnterCount = 0;
+
+  const dropZone = document.getElementById('drop-zone') as HTMLButtonElement | null;
+  const fileInput = document.getElementById('file-input') as HTMLInputElement | null;
+  const pasteInput = document.getElementById('paste-input') as HTMLTextAreaElement | null;
+  const pasteValidate = document.getElementById('paste-validate') as HTMLButtonElement | null;
+  const resultPanel = document.getElementById('result-panel') as HTMLDivElement | null;
+  const resultHeader = document.getElementById('result-header') as HTMLDivElement | null;
+  const resultSummary = document.getElementById('result-summary') as HTMLDivElement | null;
+  const resultErrors = document.getElementById('result-errors') as HTMLDivElement | null;
+  const errorList = document.getElementById('error-list') as HTMLOListElement | null;
+  const sourcePanel = document.getElementById('source-panel') as HTMLDivElement | null;
+  const sourceList = document.getElementById('source-list') as HTMLUListElement | null;
+  const jsonViewWrap = document.getElementById('json-view-wrap') as HTMLDivElement | null;
+  const jsonView = document.getElementById('json-view') as HTMLPreElement | null;
+  const copyBtn = document.getElementById('copy-summary') as HTMLButtonElement | null;
+  const resetBtn = document.getElementById('reset') as HTMLButtonElement | null;
+  const statusRegion = document.getElementById('validator-status') as HTMLDivElement | null;
+
+  if (
+    dropZone &&
+    fileInput &&
+    resultPanel &&
+    resultHeader &&
+    resultSummary &&
+    resultErrors &&
+    errorList &&
+    sourcePanel &&
+    sourceList &&
+    jsonViewWrap &&
+    jsonView &&
+    copyBtn &&
+    resetBtn &&
+    statusRegion
+  ) {
+    initValidator();
+  }
+
+  function initValidator() {
+    // Click-to-upload via the drop-zone button activates the hidden input.
+    dropZone!.addEventListener('click', () => fileInput!.click());
+    fileInput!.addEventListener('change', () => {
+      const files = Array.from(fileInput!.files ?? []);
+      if (files.length === 0) return;
+      void handleFiles(files);
+      fileInput!.value = '';
+    });
+
+    // Drag + drop. Enter-counter pattern: dragenter/leave bubble from
+    // child geometry inside the button, so we only flip the visual on
+    // a true enter (counter 0→1) and true exit (counter back to 0).
+    dropZone!.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragEnterCount++;
+      if (dragEnterCount === 1) {
+        dropZone!.dataset.dragOver = 'true';
+      }
+    });
+    dropZone!.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
+    dropZone!.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragEnterCount = Math.max(0, dragEnterCount - 1);
+      if (dragEnterCount === 0) {
+        dropZone!.dataset.dragOver = 'false';
+      }
+    });
+    dropZone!.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dragEnterCount = 0;
+      dropZone!.dataset.dragOver = 'false';
+      const dt = e.dataTransfer;
+      if (!dt) return;
+      const files = Array.from(dt.files);
+      if (files.length === 0) return;
+      const records = files.filter((f) => classifyFile(f) === 'record');
+      if (records.length > 1) {
+        announce(
+          `Multiple .ulc.json files dropped; validating ${records[0].name} only.`,
+        );
+      }
+      void handleFiles(files);
+    });
+
+    // Paste-JSON path.
+    pasteValidate?.addEventListener('click', () => {
+      const text = pasteInput?.value ?? '';
+      if (!text.trim()) {
+        announce('Paste a JSON record first.');
+        return;
+      }
+      void validateText(text, 'pasted record');
+    });
+
+    // Sample picker buttons.
+    document.querySelectorAll<HTMLButtonElement>('[data-sample]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const url = btn.dataset.sample;
+        if (!url) return;
+        void loadSample(url, btn.textContent ?? 'sample record');
+      });
+    });
+
+    // Copy + reset.
+    copyBtn!.addEventListener('click', () => void copySummary());
+    resetBtn!.addEventListener('click', () => resetValidator());
+  }
+
+  function announce(message: string) {
+    if (!statusRegion) return;
+    statusRegion.textContent = message;
+  }
+
+  function classifyFile(file: File): 'record' | 'source' | 'unknown' {
+    const name = file.name.toLowerCase();
+    if (name.endsWith('.ulc.json') || name.endsWith('.ulc') || name.endsWith('.json')) {
+      return 'record';
+    }
+    if (
+      name.endsWith('.pdf') ||
+      name.endsWith('.ies') ||
+      name.endsWith('.ldt') ||
+      name.endsWith('.uld')
+    ) {
+      return 'source';
+    }
+    return 'unknown';
+  }
+
+  async function handleFiles(files: File[]) {
+    const record = files.find((f) => classifyFile(f) === 'record');
+    const sources = files.filter((f) => classifyFile(f) === 'source');
+    const unknown = files.filter((f) => classifyFile(f) === 'unknown');
+
+    if (record) {
+      const text = await record.text();
+      await validateText(text, record.name);
+      if (sources.length > 0 && lastRecord && lastRecord.result.valid) {
+        await verifySources(sources);
+      }
+      if (unknown.length > 0) {
+        announce(`${unknown.length} dropped file(s) ignored: not a JSON record or known source type.`);
+      }
+      return;
+    }
+
+    if (sources.length > 0) {
+      if (!lastRecord || !lastRecord.result.valid) {
+        renderParseFailure({
+          line: 0,
+          column: 0,
+          message: 'Drop the .ulc.json record first, then add the source PDF, IES, LDT, or ULD files to verify hashes.',
+        });
+        return;
+      }
+      await verifySources(sources);
+      return;
+    }
+
+    renderParseFailure({
+      line: 0,
+      column: 0,
+      message: "This doesn't look like a JSON record. Drop a .ulc.json file.",
+    });
+  }
+
+  async function loadSample(url: string, label: string) {
+    try {
+      announce(`Loading ${label}…`);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const text = await response.text();
+      await validateText(text, label);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      renderParseFailure({ line: 0, column: 0, message: `Couldn't load the sample: ${message}` });
+    }
+  }
+
+  async function validateText(text: string, sourceLabel: string) {
+    const runId = ++currentRunId;
+    announce(`Validating ${sourceLabel}…`);
+    const parsed = parseUlcJson(text);
+    if (!parsed.ok) {
+      if (runId !== currentRunId) return;
+      renderParseFailure(parsed.error);
+      return;
+    }
+    let schema;
+    try {
+      schema = await loadSchemaSubset();
+    } catch (err) {
+      if (runId !== currentRunId) return;
+      const message = err instanceof Error ? err.message : String(err);
+      renderParseFailure({
+        line: 0,
+        column: 0,
+        message: `Couldn't load the schema: ${message}`,
+      });
+      return;
+    }
+    if (runId !== currentRunId) return;
+    const result = validateStructure(parsed.data, parsed.text, schema);
+    lastRecord = { text: parsed.text, result };
+    renderResult(result, parsed.text);
+  }
+
+  function renderParseFailure(error: { line: number; column: number; message: string }) {
+    showPanel();
+    resultHeader!.dataset.state = 'parse-error';
+    resultHeader!.textContent = "Couldn't parse the file as JSON";
+    resultSummary!.innerHTML = `<p>${escapeHtml(error.message)}</p>${
+      error.line > 0
+        ? `<p style="color: var(--text-subtle); font-family: var(--font-mono); font-size: 0.8125rem; margin-top: 0.5rem;">Line ${error.line}, column ${error.column}</p>`
+        : ''
+    }<p style="color: var(--text-subtle); font-size: 0.8125rem; margin-top: 0.75rem;">Common issues: trailing comma, unescaped quote, missing brace.</p>`;
+    resultErrors!.hidden = true;
+    sourcePanel!.hidden = true;
+    jsonViewWrap!.hidden = true;
+    announce('JSON parse failed. See result panel for details.');
+  }
+
+  function renderResult(result: ValidationResult, text: string) {
+    showPanel();
+    if (result.valid) {
+      resultHeader!.dataset.state = 'pass';
+      // Soft-launch posture: the in-browser engine is a structural
+      // pre-check at v1; the full Draft 2020-12 Ajv consumption ships
+      // in the follow-on dep-add PR. Visual + aria-live wording both
+      // carry the qualification so users do not mis-read PASS as
+      // full-schema PASS. See validator-plan.md OQ-1 + Amendment 12.
+      resultHeader!.textContent = 'Structural pre-check passed';
+      resultSummary!.innerHTML = renderRecordSummary(result);
+      resultErrors!.hidden = true;
+      errorList!.innerHTML = '';
+      renderSourcePanel(result.sources);
+      jsonViewWrap!.hidden = true;
+      announce(`Structural pre-check passed. ${describeRecord(result)}.`);
+    } else {
+      resultHeader!.dataset.state = 'fail';
+      resultHeader!.textContent = `Validation failed (${result.errors.length} ${result.errors.length === 1 ? 'error' : 'errors'})`;
+      resultSummary!.innerHTML = `<p>The record did not pass structural validation. See errors below; click any error to scroll the JSON view to the offending line.</p>`;
+      renderErrors(result.errors);
+      resultErrors!.hidden = false;
+      sourcePanel!.hidden = true;
+      renderJsonView(text);
+      jsonViewWrap!.hidden = false;
+      announce(`Validation failed with ${result.errors.length} ${result.errors.length === 1 ? 'error' : 'errors'}.`);
+    }
+  }
+
+  function renderRecordSummary(result: ValidationResult): string {
+    const rows: string[] = [];
+    if (result.pattern) {
+      rows.push(`<dt>Pattern</dt><dd>${escapeHtml(result.pattern)}</dd>`);
+    }
+    if (result.manufacturer) {
+      rows.push(
+        `<dt>Manufacturer</dt><dd>${escapeHtml(result.manufacturer.display || result.manufacturer.slug)}</dd>`,
+      );
+    }
+    if (result.model) {
+      rows.push(`<dt>Model</dt><dd>${escapeHtml(result.model)}</dd>`);
+    }
+    if (result.version) {
+      rows.push(`<dt>ULC version</dt><dd><code>${escapeHtml(result.version)}</code></dd>`);
+    }
+    rows.push(`<dt>Sources</dt><dd>${result.sources.length} declared</dd>`);
+    return `<dl>${rows.join('')}</dl>`;
+  }
+
+  function describeRecord(result: ValidationResult): string {
+    const parts: string[] = [];
+    if (result.pattern) parts.push(`Pattern ${result.pattern}`);
+    if (result.manufacturer) parts.push(result.manufacturer.display || result.manufacturer.slug);
+    if (result.model) parts.push(result.model);
+    return parts.join(', ') || 'record';
+  }
+
+  function renderErrors(errors: ValidationError[]) {
+    errorList!.innerHTML = '';
+    for (const err of errors) {
+      const li = document.createElement('li');
+      li.className = 'error-list__item';
+      li.innerHTML = `
+        <div class="error-list__head">
+          <span class="error-list__num" aria-hidden="true"></span>
+          <code class="error-list__path">${escapeHtml(err.path)}</code>
+          ${err.line > 0 ? `<span class="error-list__line">line ${err.line}</span>` : ''}
+        </div>
+        <p class="error-list__msg">${escapeHtml(err.message)}</p>
+        <p class="error-list__expected">expected: ${escapeHtml(err.expected)} · actual: ${escapeHtml(err.actual)}</p>
+        ${err.line > 0 ? `<button type="button" class="error-list__jump" data-line="${err.line}">Jump to line ${err.line} →</button>` : ''}
+      `;
+      errorList!.appendChild(li);
+    }
+    errorList!.querySelectorAll<HTMLButtonElement>('.error-list__jump').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const line = Number.parseInt(btn.dataset.line ?? '0', 10);
+        if (line > 0) jumpToLine(line);
+      });
+    });
+  }
+
+  function renderJsonView(text: string) {
+    const lines = text.split('\n');
+    const escaped = lines.map((line) => `<span class="jline">${escapeHtml(line) || ' '}</span>`).join('');
+    jsonView!.innerHTML = escaped;
+  }
+
+  function jumpToLine(line: number) {
+    const spans = jsonView!.querySelectorAll<HTMLSpanElement>('.jline');
+    spans.forEach((s) => s.classList.remove('jline--hit'));
+    const target = spans[line - 1];
+    if (!target) return;
+    target.classList.add('jline--hit');
+    target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    jsonView!.focus();
+  }
+
+  function renderSourcePanel(sources: SourceDeclaration[]) {
+    if (sources.length === 0) {
+      sourcePanel!.hidden = true;
+      return;
+    }
+    sourcePanel!.hidden = false;
+    sourceList!.innerHTML = '';
+    for (const src of sources) {
+      const li = document.createElement('li');
+      li.className = 'source-row';
+      li.dataset.sha = src.sha256;
+      li.dataset.filename = src.filename;
+      li.innerHTML = `
+        <span class="source-row__type">${escapeHtml(src.type)}</span>
+        <span class="source-row__filename">${escapeHtml(src.filename)}</span>
+        <span class="source-row__status" data-status="pending">awaiting drop</span>
+      `;
+      sourceList!.appendChild(li);
+    }
+  }
+
+  async function verifySources(files: File[]) {
+    if (!lastRecord) return;
+    const declared = lastRecord.result.sources;
+    if (declared.length === 0) return;
+
+    let matches = 0;
+    let mismatches = 0;
+    let unreferenced = 0;
+    let failed = 0;
+
+    for (const file of files) {
+      let hex: string;
+      try {
+        hex = await computeFileHash(file);
+      } catch {
+        failed++;
+        continue;
+      }
+      const matchedDecl = declared.find(
+        (d) => d.filename === file.name || d.sha256 === hex,
+      );
+      const row = findSourceRow(file.name, matchedDecl?.sha256 ?? null);
+      if (!row) {
+        unreferenced++;
+        continue;
+      }
+      const declaredSha = row.dataset.sha ?? '';
+      const status = row.querySelector<HTMLSpanElement>('.source-row__status');
+      if (!status) continue;
+      if (hex === declaredSha) {
+        status.dataset.status = 'match';
+        status.textContent = 'SHA-256 match';
+        matches++;
+      } else {
+        status.dataset.status = 'mismatch';
+        status.textContent = 'SHA-256 mismatch';
+        mismatches++;
+      }
+    }
+
+    // Coalesce per-file announces into a single summary so polite-live
+    // does not race the screen reader.
+    const parts: string[] = [];
+    if (matches > 0) parts.push(`${matches} match${matches === 1 ? '' : 'es'}`);
+    if (mismatches > 0)
+      parts.push(`${mismatches} mismatch${mismatches === 1 ? '' : 'es'}`);
+    if (unreferenced > 0)
+      parts.push(`${unreferenced} not referenced in the record`);
+    if (failed > 0)
+      parts.push(`${failed} hash computation${failed === 1 ? '' : 's'} failed`);
+    if (parts.length > 0) {
+      announce(`Source verification: ${parts.join(', ')}.`);
+    }
+  }
+
+  function findSourceRow(filename: string, sha: string | null): HTMLLIElement | null {
+    const rows = Array.from(sourceList!.querySelectorAll<HTMLLIElement>('.source-row'));
+    return (
+      rows.find((r) => r.dataset.filename === filename) ??
+      (sha ? rows.find((r) => r.dataset.sha === sha) ?? null : null)
+    );
+  }
+
+  async function copySummary() {
+    if (!lastRecord) return;
+    const r = lastRecord.result;
+    let summary: string;
+    if (r.valid) {
+      const desc = describeRecord(r);
+      summary = `PASS · ${desc}`;
+    } else {
+      summary = `FAIL · ${r.errors.length} ${r.errors.length === 1 ? 'error' : 'errors'}`;
+    }
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(summary);
+        announce(`Copied: ${summary}`);
+        flashLabel(copyBtn!, 'Copied');
+      } else {
+        announce(`Result: ${summary}`);
+      }
+    } catch {
+      announce(`Result: ${summary}`);
+    }
+  }
+
+  // Idempotent flash so rapid double-clicks do not lock the label on
+  // the "Copied" state. The original label is captured once on first
+  // call and reused on every revert.
+  const flashState: WeakMap<HTMLButtonElement, { original: string; timer: number }> = new WeakMap();
+
+  function flashLabel(btn: HTMLButtonElement, label: string) {
+    const prior = flashState.get(btn);
+    if (prior) {
+      window.clearTimeout(prior.timer);
+      btn.textContent = prior.original;
+    }
+    const original = prior?.original ?? btn.textContent ?? '';
+    btn.textContent = label;
+    const timer = window.setTimeout(() => {
+      btn.textContent = original;
+      flashState.delete(btn);
+    }, 2400);
+    flashState.set(btn, { original, timer });
+  }
+
+  function resetValidator() {
+    lastRecord = null;
+    resultPanel!.hidden = true;
+    resultHeader!.textContent = '';
+    resultHeader!.removeAttribute('data-state');
+    resultSummary!.innerHTML = '';
+    resultErrors!.hidden = true;
+    errorList!.innerHTML = '';
+    sourcePanel!.hidden = true;
+    sourceList!.innerHTML = '';
+    jsonViewWrap!.hidden = true;
+    jsonView!.innerHTML = '';
+    if (pasteInput) pasteInput.value = '';
+    announce('Validator reset.');
+    dropZone!.focus();
+  }
+
+  function showPanel() {
+    resultPanel!.hidden = false;
+  }
+
+  function escapeHtml(s: string): string {
+    return s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+</script>

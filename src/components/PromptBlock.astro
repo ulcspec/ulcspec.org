@@ -1,0 +1,108 @@
+---
+// Reusable LLM prompt block: header label, monospace block with horizontal
+// scroll on overflow (selectable, focusable), and a Copy button wired via
+// src/lib/clipboard.ts.
+//
+// The block is announceable: the <pre> has role="region" + aria-label so the
+// designer reaches it as a discrete landmark. The copy button announces
+// "Copied to clipboard" via aria-live.
+//
+// Usage:
+//   <PromptBlock id="tier1-render" label="Render a .ulc file as a spec sheet"
+//                text={TIER1_PROMPT_RENDER.text} />
+
+import Button from './Button.astro';
+
+interface Props {
+  id: string;
+  label: string;
+  text: string;
+  /** Optional eyebrow above the label (e.g. "Prompt 1") */
+  eyebrow?: string;
+}
+
+const { id, label, text, eyebrow } = Astro.props;
+
+const buttonId = `${id}-copy`;
+const statusId = `${id}-status`;
+---
+
+<div
+  class="prompt-card"
+  data-prompt-card
+  data-button-id={buttonId}
+  data-source-id={id}
+  data-status-id={statusId}
+>
+  <div class="prompt-card__head">
+    <div class="min-w-0">
+      {eyebrow && (
+        <p class="small-caps text-xs text-[var(--text-subtle)] mb-1">
+          {eyebrow}
+        </p>
+      )}
+      <h3
+        class="font-display text-base md:text-lg font-semibold text-[var(--text)] tracking-tight"
+      >
+        {label}
+      </h3>
+    </div>
+    <Button
+      variant="ghost"
+      size="sm"
+      id={buttonId}
+      ariaDescribedby={statusId}
+      class="shrink-0"
+    >
+      <svg
+        aria-hidden="true"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+        ></path>
+      </svg>
+      <span data-copy-default>Copy prompt</span>
+      <span data-copy-done class="hidden">Copied</span>
+    </Button>
+  </div>
+  <pre
+    id={id}
+    tabindex="0"
+    aria-label={`${label}, selectable prompt text`}
+    class="prompt-block text-[var(--text)] mt-3">{text}</pre>
+  <p id={statusId} class="sr-only" role="status" aria-live="polite"></p>
+</div>
+
+<style>
+  .prompt-card {
+    margin-top: 1.5rem;
+  }
+  .prompt-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+</style>
+
+<script>
+  // Note for future contributors: this script is hoisted + deduplicated by
+  // Astro across all PromptBlock instances on the page. Do NOT add
+  // `define:vars` to this block; that would defeat dedup and break the
+  // multi-instance binding. Per-instance state lives on the wrapper's
+  // data-* attributes (see bindAllCopyCards in src/lib/clipboard.ts).
+  import { bindAllCopyCards } from '../lib/clipboard';
+
+  bindAllCopyCards('[data-prompt-card]', {
+    copiedAnnouncement: 'Prompt copied to clipboard',
+    selectFallbackText: 'Prompt selected. Press Cmd+C / Ctrl+C to copy.',
+  });
+</script>

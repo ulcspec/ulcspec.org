@@ -1,0 +1,349 @@
+---
+// /validator — interactive in-browser .ulc.json validator.
+//
+// Section spec:  docs/tasks/sections/validator.md
+// Copy:          docs/growth/copy/validator.md
+//
+// Single-page interactive tool. Drop zone + paste-JSON + sample picker
+// converge on the same validation pipeline. PASS / FAIL / parse-error
+// result panel below. Source-file SHA-256 hash verification panel
+// appears when the record declares a source_files block.
+//
+// Per PRD: validator is the only material JS island and must lazy-load.
+// The ValidatorIsland module imports validator-engine.ts dynamically via
+// Astro's default deferred-module behavior; the script body executes on
+// DOMContentLoaded, the schema fetches at first interaction.
+
+import PageShell from '../components/PageShell.astro';
+import Callout from '../components/Callout.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import ValidatorIsland from '../components/ValidatorIsland.astro';
+
+const pageTitle = 'The ULC validator';
+const pageDescription =
+  'Drag a .ulc.json file to check schema conformance against ULC v0.5.1 (JSON Schema Draft 2020-12). Files never leave your browser. Optional SHA-256 hash verification of declared source files.';
+
+const crossLinks = [
+  { href: '/spec', labelHtml: 'Field reference and authoring patterns' },
+  { href: '/for-designers', labelHtml: 'Designer track: verify a <code>.ulc</code> from a rep' },
+  { href: '/for-manufacturers', labelHtml: 'Manufacturer track: publish your first record' },
+  { href: '/downloads', labelHtml: 'Download the canonical Go CLI' },
+  { href: 'https://github.com/ulcspec/ULC', labelHtml: 'The spec repository on GitHub' },
+];
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  <article class="validator-page">
+    {/* Hero band */}
+    <header class="hero">
+      <p class="eyebrow">/validator</p>
+      <h1 class="hero__h1">Validate a <code>.ulc.json</code> record.</h1>
+      <p class="hero__sub">
+        Drop a file to check schema conformance against ULC v0.5.1 (JSON Schema
+        Draft 2020-12). Source files (PDF, IES, LDT, ULD) can be dropped
+        alongside to verify SHA-256 hashes.
+      </p>
+      <p class="hero__audiences">
+        Designers verifying a <code>.ulc</code> file from a manufacturer rep,
+        or software vendors testing their own conformance, are both first-class
+        consumers of this surface.
+      </p>
+      <div class="privacy-badge" role="note" aria-label="Privacy notice">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <span>Files never leave your browser.</span>
+      </div>
+    </header>
+
+    {/* Drop zone + paste + sample + result panel — interactive island */}
+    <ValidatorIsland />
+
+    {/* Idle-state explainer */}
+    <section class="explainer" aria-labelledby="explainer-h2">
+      <h2 id="explainer-h2">What this validator checks.</h2>
+      <ol class="checks">
+        <li>
+          <h3>Schema conformance</h3>
+          <p>
+            Every required field is present, every value is the right type,
+            and every enumerated value falls inside the closed-enum taxonomy
+            declared by the spec.
+          </p>
+        </li>
+        <li>
+          <h3>JSON parse</h3>
+          <p>
+            Malformed JSON is caught with line and column references before
+            schema validation runs. Common issues: trailing comma, unescaped
+            quote, missing brace.
+          </p>
+        </li>
+        <li>
+          <h3>Source-file hash verification</h3>
+          <p>
+            Drop the PDF, IES, LDT, or ULD files declared in the record's
+            <code>source_files</code> block and the validator computes
+            SHA-256 hashes in your browser and verifies them against the
+            declared values.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    {/* Validator-fidelity disclosure */}
+    <section class="fidelity">
+      <details>
+        <summary>
+          <span>How this validator compares to the Go CLI.</span>
+          <svg class="fidelity__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="fidelity__body">
+          <p>
+            This in-browser validator uses Ajv against the canonical JSON
+            Schema. The Go CLI available from <a href="/downloads">/downloads</a>
+            is the canonical reference implementation. The two are tested in
+            CI against the four canonical reference records and are expected
+            to agree on PASS or FAIL.
+          </p>
+          <p>
+            If you see a disagreement between the two on the same record,
+            that is a bug; file an issue in the spec repository and the CI
+            parity test is strengthened in response.
+          </p>
+          <Callout intent="default" label="At v1 first-draft">
+            <p>
+              The in-browser engine ships with a minimal structural
+              pre-validator (top-level required fields, type checks, source
+              metadata extraction) and the full Ajv consumption of the
+              schema lands in the next PR. SHA-256 hash verification is
+              fully wired today via browser SubtleCrypto. The four
+              canonical reference records in
+              <a href="/examples/pattern-a-erco-quintessence.ulc.json">
+                <code>/examples/</code>
+              </a>
+              all PASS the pre-validator.
+            </p>
+          </Callout>
+          <p class="fidelity__crosslink">
+            For byte-exact validation, download the Go CLI:
+            <a href="/downloads"><code>/downloads</code></a>.
+          </p>
+        </div>
+      </details>
+    </section>
+  </article>
+
+  <CrossLinkFooter links={crossLinks} label="Continue" />
+</PageShell>
+
+<style>
+  .validator-page {
+    margin: 0 auto;
+    max-width: 56rem;
+    padding: 4rem 1.5rem 5rem;
+  }
+  @media (min-width: 768px) {
+    .validator-page {
+      padding: 5rem 2.5rem 6rem;
+    }
+  }
+
+  .hero {
+    margin-bottom: 1rem;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    letter-spacing: 0.08em;
+    margin: 0 0 1rem 0;
+  }
+  .hero__h1 {
+    font-size: clamp(2rem, 4.5vw + 0.5rem, 3rem);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem 0;
+    color: var(--text);
+  }
+  .hero__h1 code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--accent-warm);
+    font-weight: 600;
+  }
+  .hero__sub {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 44rem;
+    margin: 0 0 0.875rem 0;
+  }
+  .hero__audiences {
+    font-size: 0.9375rem;
+    color: var(--text-subtle);
+    line-height: 1.55;
+    max-width: 44rem;
+    margin: 0 0 1.5rem 0;
+  }
+  .hero__sub code,
+  .hero__audiences code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+    border: 1px solid color-mix(in oklab, var(--accent-warm) 30%, var(--border));
+    border-radius: 999px;
+    color: var(--accent-warm);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .privacy-badge svg {
+    flex-shrink: 0;
+  }
+
+  /* Idle-state explainer */
+  .explainer {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .explainer h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1.75rem 0;
+    color: var(--text);
+  }
+  .checks {
+    list-style: none;
+    counter-reset: chk;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .checks li {
+    counter-increment: chk;
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .checks li::before {
+    content: counter(chk, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--accent-warm);
+  }
+  .checks h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.375rem 0;
+  }
+  .checks p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 44rem;
+  }
+  .checks code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  /* Validator-fidelity disclosure */
+  .fidelity {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .fidelity details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    padding: 0.25rem 1.25rem;
+  }
+  .fidelity summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.875rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    min-height: 44px;
+  }
+  .fidelity summary::-webkit-details-marker {
+    display: none;
+  }
+  .fidelity__chev {
+    color: var(--text-muted);
+    transition: transform 200ms ease-out;
+  }
+  .fidelity details[open] .fidelity__chev {
+    transform: rotate(180deg);
+  }
+  .fidelity__body {
+    padding: 0.5rem 0 1.25rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .fidelity__body p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 1rem 0 0 0;
+    max-width: 44rem;
+  }
+  .fidelity__body a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .fidelity__body code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .fidelity__crosslink {
+    margin-top: 1.25rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fidelity__chev {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .privacy-badge {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .fidelity details {
+      page-break-inside: avoid;
+    }
+    .fidelity__chev {
+      display: none;
+    }
+  }
+</style>
