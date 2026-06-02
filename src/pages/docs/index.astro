@@ -1,20 +1,16 @@
 ---
-// /spec landing page.
+// /docs landing page.
 //
 // Composition:
-//   1. Brief orientation header (H1 + sub-H1 + version badge + body)
-//   2. Section nav cards: 7 cards (Tier 1+2 activation card first; six
-//      content-area cards after)
-//   3. Two-tier consumption section (anchor #how-to-use-today)
+//   1. Brief orientation header (H1 + sub-H1 + body)
+//   2. Section nav cards: the six content-area cards
 //
-// Copy per docs/growth/copy/spec.md "/spec landing page" + "How to use
-// ULC today". Layout-wise this page uses the two-pane variant of
-// <SpecDocsLayout> (sidebar + main; right-rail suppressed by default).
+// Layout-wise this page uses the two-pane variant of <SpecDocsLayout>
+// (sidebar + main; right-rail suppressed by default).
 
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
 import SectionCard from '../../components/SectionCard.astro';
-import TwoTierConsumption from '../../components/TwoTierConsumption.astro';
 
 const pageTitle = 'The ULC specification';
 const pageDescription =
@@ -108,8 +104,6 @@ const navCards: readonly NavCard[] = [
         ))}
       </ul>
     </nav>
-
-    <TwoTierConsumption />
   </SpecDocsLayout>
 </PageShell>
 
