@@ -1,8 +1,6 @@
 ---
-// Site footer: steward + license (left), governance + repo links (right).
-// No footer "Navigate" menu: the header nav is sticky and always on screen,
-// so a footer nav would only duplicate it. Governance lives here now (moved
-// out of the header); repo URLs kept visible for open-source transparency.
+// Site footer: steward + license (left), repo links (right). Governance is a
+// header tab, not a footer link. Repo URLs kept visible for transparency.
 const year = new Date().getFullYear();
 ---
 
@@ -10,7 +8,7 @@ const year = new Date().getFullYear();
   class="border-t border-token mt-6"
   style="background: var(--bg);"
 >
-  <div class="mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-12">
+  <div class="mx-auto max-w-7xl px-6 py-8 md:px-10 md:py-10">
     <div class="grid gap-6 md:grid-cols-2">
       {/* Brand + license */}
       <div class="grid gap-2 content-start max-w-md text-sm">
@@ -27,12 +25,8 @@ const year = new Date().getFullYear();
         </p>
       </div>
 
-      {/* Governance + repos */}
+      {/* Repo links */}
       <div class="grid gap-2 content-start md:justify-self-end text-sm md:max-w-md">
-        <a
-          href="/governance"
-          class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors"
-        >Governance</a>
         <a
           href="https://github.com/ulcspec/ULC"
           rel="noopener external"

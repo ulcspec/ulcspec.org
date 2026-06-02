@@ -11,12 +11,13 @@ interface Props {
 
 const { current = Astro.url.pathname } = Astro.props;
 
-// Governance moved to the footer nav (it is due-diligence content, not a
-// primary task surface). Keep this array as the single source for both the
-// desktop and mobile header menus.
+// Governance sits third, right after the two audience tabs: it is a primary
+// credibility surface for industry-body reviewers, not a footer afterthought.
+// Single source for both the desktop and mobile header menus.
 const links = [
   { href: '/for-designers', label: 'For Designers' },
   { href: '/for-manufacturers', label: 'For Manufacturers' },
+  { href: '/governance', label: 'Governance' },
   { href: '/validator', label: 'Validator' },
   { href: '/docs', label: 'Docs' },
   { href: '/downloads', label: 'Downloads' },
