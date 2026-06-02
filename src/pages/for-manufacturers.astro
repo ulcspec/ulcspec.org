@@ -1,8 +1,7 @@
 ---
-// /for-manufacturers — manufacturer-track audience landing page. Full 8-step
-// storyboard end-to-end, CEO-as-protagonist register, with the designer-
-// demand callout in the Insight section to surface the dual-track activation
-// flywheel without diluting the manufacturer pitch.
+// /for-manufacturers: manufacturer-track audience landing page. Discovery-led,
+// less-is-more register (v3 copy overhaul), with a designer-demand callout in
+// the Insight section to surface the dual-track activation flywheel.
 //
 // Spec:          docs/tasks/sections/for-manufacturers.md
 // Copy:          docs/growth/copy/for-manufacturers.md
@@ -19,9 +18,9 @@ import ManufacturerFlowDiagram from '../components/ManufacturerFlowDiagram.astro
 const tocItems = [
   { href: '#insight', label: 'Where discovery is going' },
   { href: '#introduction', label: 'What ULC is' },
-  { href: '#how-to-create', label: 'How to create' },
-  { href: '#themes', label: 'Differentiated value' },
-  { href: '#the-ask', label: 'The Ask' },
+  { href: '#how-to-create', label: 'How to publish' },
+  { href: '#themes', label: 'What changes' },
+  { href: '#the-ask', label: 'Where you come in' },
 ];
 
 const crossLinks = [
@@ -55,7 +54,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
       >
-        Specifier discovery is shifting from PDF to AI-mediated. The manufacturers whose data is structured and machine-readable are the ones AI tools surface, the ones design tools consume natively, and the ones designers ask for by name.
+        Specifier discovery is shifting from PDF to AI. The manufacturers whose data is machine-readable are the ones AI surfaces, design tools consume, and designers ask for by name.
       </p>
     </div>
   </section>
@@ -70,97 +69,85 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
 
       {/* ── 1. INSIGHT ─────────────────────────────────────────────────── */}
       <section id="insight" aria-labelledby="insight-heading">
-        <p class="step-num">Step 1</p>
-        <h2 id="insight-heading">Where specifier discovery is going</h2>
+        <h2 id="insight-heading">Where discovery is going</h2>
         <p>
-          Specifier discovery is moving from the designer opening a PDF to the designer asking an AI which luminaire fits a project. The manufacturers whose data is machine-readable are the ones that surface. Eventually, the ones that get the usage telemetry back. The bottleneck for that whole loop is not the AI. It is the data layer underneath, which today is PDF.
+          Specifier discovery is moving from the designer opening your PDF to the designer asking an AI which luminaire fits. The manufacturers whose data is machine-readable are the ones that surface in the answer; the rest depend on whatever the AI guessed off the PDF. The bottleneck isn't the AI. It's the data layer underneath.
         </p>
         <DiscoveryLoopDiagram />
 
         <Callout intent="accent" label="Designer demand, in motion">
           <p>
-            Designers are starting to ask their preferred manufacturer reps for ULC files. The activation flywheel turns through designer-to-rep advocacy. The demand-side surface is at <a href="/for-designers" class="link-inline">/for-designers</a>.
+            Designers are starting to ask their reps for ULC files. That demand is the flywheel, and it's why publishing early matters. The demand side is at <a href="/for-designers" class="link-inline">/for-designers</a>.
           </p>
         </Callout>
-
-        <p>
-          The bottleneck is solvable today with structured publishing, ahead of the analytics loop that does not yet exist. The first manufacturers to publish are the ones the industry remembers as having defined the layer.
-        </p>
       </section>
 
       {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
       <section id="introduction" aria-labelledby="introduction-heading">
-        <p class="step-num">Step 4</p>
         <h2 id="introduction-heading">What ULC is</h2>
         <p>
-          ULC is the open standard for luminaire product data. The machine-readable layer AI tools, design tools, and spec databases read alongside your existing PDF, IES, and LDT.
+          ULC is the open, machine-readable standard for luminaire product data: the layer AI tools, design tools, and spec databases read alongside the PDF, IES, and LDT you already publish.
         </p>
         <ManufacturerFlowDiagram />
-        <Callout intent="default" label="What ULC replaces vs integrates with">
+        <Callout intent="default" label="What ULC touches">
           <p>
-            ULC does not replace your PDF, your IES, your LDT, your rep agency, your distributor, your existing PIM, or any existing commercial relationship. It integrates with your existing PIM via the published mapping guides (Salsify, Akeneo, SAP, custom).
-          </p>
-          <p>
-            What it replaces is the aggregator's interpretation as the data layer the designer's tool actually reads. The aggregator can still exist; it is no longer the authoritative source.
+            It doesn't replace your PDF, IES, LDT, reps, distributors, or PIM. It integrates with your PIM through the published mapping guides. What it replaces is the aggregator's guess as the data your customers' tools actually read; the aggregator can still exist, it just stops being the source of truth.
           </p>
         </Callout>
       </section>
 
       {/* ── 5. HOW TO CREATE A ULC FILE ────────────────────────────────── */}
       <section id="how-to-create" aria-labelledby="how-to-create-heading">
-        <p class="step-num">Authoring</p>
-        <h2 id="how-to-create-heading">How to create a ULC file</h2>
+        <h2 id="how-to-create-heading">How to publish</h2>
         <p>
-          A <code>.ulc</code> file is JSON, validated against an open schema, and references your existing PDF, IES, and LDT files by SHA-256 hash, not embedded. The schema defines the structural shape: required fields, types, and nested blocks like <code>sources[]</code> for hash-referenced source files, <code>applicability[]</code> for configurator axes, and <code>provenance[]</code> for per-IES models. The taxonomy defines the value-sets: enumerated CCT brackets, CRI bands, beam angles, IP ratings, optic types, mounting categories. Together they make every meaningful product attribute machine-comparable across manufacturers.
+          A <code>.ulc</code> file is JSON, validated against an open schema, that references your existing PDF, IES, and LDT by SHA-256 hash instead of embedding them. There are two ways to produce it.
         </p>
         <p>
-          <strong>Path A: Map from your PIM.</strong> If your product data lives in Salsify, Akeneo, SAP Product Master, or a custom PIM system, the structured data already exists. The authoring-patterns and PIM-mapping guides at <a href="/docs" class="link-inline">/docs</a> walk through field-by-field translation from each PIM schema to the ULC schema. Most of the lift is mapping your internal field names and value-sets onto ULC's canonical fields and taxonomy. The mapping is typically a one-time integration; <code>.ulc</code> generation then runs as part of your existing publishing pipeline.
+          <strong>From your PIM.</strong> If your data lives in Salsify, Akeneo, SAP, or a custom PIM, the structure already exists. The mapping guides at <a href="/docs" class="link-inline">/docs</a> translate your fields onto ULC's, usually a one-time integration that then runs inside your existing publishing pipeline.
         </p>
         <p>
-          <strong>Path B: Convert from Excel sheets.</strong> If your authoritative product data lives in spreadsheets or word documents and photometric files, you can author <code>.ulc</code> records with LLM assistance using the schema as a contract. The four canonical example records in <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">ulcspec/ULC/examples/</a> are templates covering the four authoring patterns: single-SKU cutsheet, configurator with applicability blocks, per-IES with provenance classes, and per-foot linear scaling. Open a sample, replace the manufacturer, product, and SKU fields with yours, populate the photometric and electrical values from your existing cutsheets, and reference your source files by URL plus SHA-256 hash.
+          <strong>From cutsheets and spreadsheets.</strong> If your data lives in spreadsheets, documents, and photometric files, author records with LLM help using the four <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">example records</a> as templates: copy the closest pattern, drop in your values, reference your source files.
         </p>
         <p>
-          The schema source of truth lives at <a href="https://github.com/ulcspec/ULC" target="_blank" rel="noopener external" class="link-inline">github.com/ulcspec/ULC</a>: the <a href="https://github.com/ulcspec/ULC/tree/main/schema" target="_blank" rel="noopener external" class="link-inline">JSON Schema and taxonomy</a>, the <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">four example records</a>, and the <a href="https://github.com/ulcspec/ULC/tree/main/mappings" target="_blank" rel="noopener external" class="link-inline">PIM mapping guides</a>. The <a href="/validator" class="link-inline">validator</a> catches schema errors at upload before publication; it runs the same validation as the upstream repo's CI. The full authoring-pattern deep dives, taxonomy reference, and crosswalks live at <a href="/docs" class="link-inline">/docs</a>.
+          The <a href="/validator" class="link-inline">validator</a> catches schema errors before you publish. The schema, examples, and mapping guides all live at <a href="/docs" class="link-inline">/docs</a>.
         </p>
       </section>
 
       {/* ── 6. WHAT DIFFERENCE A ULC FILE MAKES (3 bullets) ────────────── */}
       <section id="themes" aria-labelledby="themes-heading">
-        <p class="step-num">Step 5</p>
-        <h2 id="themes-heading">What difference a ULC file makes</h2>
-        <p>
-          ULC turns your product data into a layer AI tools, design tools, and spec databases consume natively. Three concrete shifts.
-        </p>
+        <h2 id="themes-heading">What changes</h2>
 
         <ul class="value-list">
           <li>
-            <strong>Found in AI-mediated specifier discovery with correct attributes.</strong> When a designer asks an AI which 2700K downlight under 40W fits a project, your products are in the answer set with the right CCT, CRI, optical accessories, and IP rating, sourced from you, not whatever the extraction layer guessed off your PDF.
+            <strong>Found in AI-mediated discovery, with your attributes.</strong> When a designer asks an AI for a 2700K downlight under 40W, your products are in the answer with the CCT, CRI, optics, and IP rating you published, not the ones an extraction layer guessed.
           </li>
           <li>
-            <strong>Direct data channel from you to the designer's tool, hash-verifiable.</strong> The designer's AI agent, design tool, and spec database fetch your authoritative <code>.ulc</code> record from your infrastructure, verify it against your source files by SHA-256 hash, and parse it natively. No aggregator's interpretation sitting in the middle. Your rep, distributor, and aggregator relationships stay where they are.
+            <strong>A direct channel to the designer's tools.</strong> Their AI and design tools fetch your authoritative record from your infrastructure and parse it natively. The aggregator's interpretation stops being the data layer. Reps, distributors, and aggregator relationships stay exactly where they are.
           </li>
           <li>
-            <strong>Early-mover position in the standard your peers will adopt.</strong> Open, MIT-licensed, neutrally stewarded, with active dialogue with DIAL, LIA, and IES, and pilot conversations underway. The first manufacturers to publish are the ones the industry remembers as having defined the layer.
+            <strong>Early-mover position in the standard your peers will adopt.</strong> Open, MIT-licensed, neutrally stewarded, in dialogue with DIAL, the IES, and the LIA. The first to publish are the ones the industry remembers as having defined the layer.
           </li>
         </ul>
+
+        <Callout intent="accent" label="You own your accuracy at the source">
+          <p>
+            When a design tool or an AI fetches your data, it fetches <em>your</em> file. Every value traces back to the PDF, IES, or LDT you published, and each file carries a SHA-256 hash, a tamper-evident seal, so anyone can confirm the data is yours and unchanged. No aggregator's re-typing, no AI's guess, can quietly misrepresent your products.
+          </p>
+        </Callout>
       </section>
 
       {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
       <section id="the-ask" aria-labelledby="the-ask-heading">
-        <p class="step-num">Step 6</p>
-        <h2 id="the-ask-heading">The Ask</h2>
+        <h2 id="the-ask-heading">Where you come in</h2>
         <p>
-          ULC is a new open-source standard. The activation mechanic turns when forward-leaning manufacturers pilot the publication shape and tell us what breaks.
+          Pilot it. Publish one to three of your most-specified SKUs as <code>.ulc</code> files; one product line is enough to start. The example records show the shape, the validator catches the easy mistakes, and the conversations that follow shape what the standard becomes.
         </p>
         <p>
-          The Ask is one specific commitment: pilot 1-3 SKUs as <code>.ulc</code> files in the next 90 days. The lowest-cost path is one product line at a time. The four canonical example records show what a finished <code>.ulc</code> looks like across the authoring patterns. The validator catches the easy issues. The conversations that follow shape what the standard becomes.
-        </p>
-        <p>
-          Open an issue, contribute, or browse the schema and example records on <a
+          Start at <a href="/docs" class="link-inline">/docs</a>, browse the schema and examples on <a
             href="https://github.com/ulcspec/ULC"
             target="_blank"
             rel="noopener external"
-          >GitHub</a>.
+          >GitHub</a>, or read the <a href="/for-designers" class="link-inline">designer track</a> that drives the demand.
         </p>
       </section>
 
@@ -337,7 +324,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       margin-top: 0;
     }
   }
-  /* Companion row (the ULC fifth row) — matches sibling /for-designers
+  /* Companion row (the ULC fifth row), matches sibling /for-designers
      neutral 4% mix so the two surfaces share one alt-table treatment.
      The accent-warm row header keeps the ULC name highlighted without
      repainting the whole row. */
@@ -784,7 +771,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
   }
 
   /* Forward-to-team share affordance. Visually understated to match the
-     industry-document register — sits between the mailto CTA and the
+     industry-document register, sits between the mailto CTA and the
      designer cross-link as a "and here is how you forward this internally"
      beat, not a competing call-to-action. */
   .pilot-share {

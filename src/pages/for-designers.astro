@@ -1,6 +1,6 @@
 ---
-// /for-designers — designer-track audience landing page. Full 8-step
-// storyboard end-to-end, designer-to-designer register.
+// /for-designers: designer-track audience landing page. Discovery-led,
+// less-is-more register (v3 copy overhaul).
 //
 // Spec:          docs/tasks/sections/for-designers.md
 // Copy:          docs/growth/copy/for-designers.md
@@ -10,8 +10,8 @@
 import PageShell from '../components/PageShell.astro';
 import StickyToc from '../components/StickyToc.astro';
 import PromptBlock from '../components/PromptBlock.astro';
+import Callout from '../components/Callout.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
-import WhereHoursGoDiagram from '../components/WhereHoursGoDiagram.astro';
 import BeforeAfterDiagram from '../components/BeforeAfterDiagram.astro';
 import {
   TIER1_PROMPT_RENDER,
@@ -20,11 +20,11 @@ import {
 } from '../content/prompts/tier1-prompts';
 
 const tocItems = [
-  { href: '#insight', label: 'Where the hours go' },
+  { href: '#insight', label: 'Where discovery is going' },
   { href: '#introduction', label: 'What ULC is' },
-  { href: '#try-ulc-today', label: 'Try ULC today' },
-  { href: '#differentiated-value', label: 'Differentiated value' },
-  { href: '#the-ask', label: 'The Ask' },
+  { href: '#try-ulc-today', label: 'Try it today' },
+  { href: '#differentiated-value', label: 'What changes' },
+  { href: '#the-ask', label: 'Where you come in' },
 ];
 
 const crossLinks = [
@@ -37,7 +37,7 @@ const crossLinks = [
 ];
 
 const pageTitle = 'ULC for lighting designers: the data layer upgrade';
-const pageDescription = 'The open machine-readable standard for luminaire cutsheets. Designers consume ULC today through any LLM. Try the prompts and run the 90-day Ask.';
+const pageDescription = 'Specifying is moving from PDFs to AI. ULC feeds your tools real luminaire data from the manufacturer, not a guess scraped from a PDF.';
 ---
 
 <PageShell title={pageTitle} description={pageDescription}>
@@ -53,12 +53,12 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
       <h1
         class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
       >
-        For lighting designers, interior designers, and architects who specify lighting fixtures.
+        For everyone who specifies lighting.
       </h1>
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
       >
-        Specifying lighting fixtures from PDFs is the most error-prone and time-expensive part of project delivery. The data layer is what has to upgrade. ULC is that upgrade.
+        Specifying is moving from reading PDFs to asking AI. ULC is the open standard that gives your tools the manufacturer's real data to read, not a guess scraped from a PDF.
       </p>
     </div>
   </section>
@@ -73,33 +73,29 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
 
       {/* ── 1. INSIGHT ─────────────────────────────────────────────────── */}
       <section id="insight" aria-labelledby="insight-heading">
-        <p class="step-num">Step 1</p>
-        <h2 id="insight-heading">Where spec-time hours actually go</h2>
+        <h2 id="insight-heading">Where product discovery is going</h2>
         <p>
-          The data layer underneath the spec workflow is PDF, and that is where the hours bleed.
+          Product discovery is moving from opening the PDF to asking an AI which fixture fits. The tools are racing ahead; the data isn't. Luminaire specs still live in PDFs built for human eyes, so the AI guesses at the CRI, the accessory, the IP rating, and your spec inherits the guess.
         </p>
         <p>
-          ULC is an open machine-readable standard for luminaire cutsheets that any tool reading JSON can consume directly.
+          The limit on AI in specification isn't the model. It's the data layer underneath. ULC fixes the data layer.
         </p>
-        <WhereHoursGoDiagram />
       </section>
 
       {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
       <section id="introduction" aria-labelledby="introduction-heading">
-        <p class="step-num">Step 4</p>
         <h2 id="introduction-heading">What ULC is</h2>
         <p>
-          ULC is the open machine-readable standard for luminaire cutsheets. The layer your AI, your BIM plugin, your firm's internal tools, and the next tool you'll adopt can read alongside the PDFs and IES files you already work with.
+          ULC is the open, machine-readable standard for luminaire cutsheets: one structured record your AI, your BIM tools, and the next tool you adopt can read directly, alongside the PDF and IES files you already work with.
         </p>
         <BeforeAfterDiagram />
       </section>
 
       {/* ── 5. TRY ULC TODAY (Tier 1 activation) ───────────────────────── */}
       <section id="try-ulc-today" aria-labelledby="try-heading">
-        <p class="step-num">Activation</p>
-        <h2 id="try-heading">Try ULC today</h2>
+        <h2 id="try-heading">Try it today</h2>
         <p>
-          Generic LLMs (ChatGPT, Claude, Gemini) parse a <code>.ulc.json</code> file natively. Drop a sample record into the chat alongside one of the prompts below and the LLM produces a clean spec-sheet rendering, an apples-to-apples comparison across two products, or a luminaire-schedule-ready table. The six-hour PDF cross-referencing pass collapses to seconds. No setup. No waiting for ecosystem maturity.
+          You don't have to wait for the ecosystem. Drop a ULC record into ChatGPT, Claude, or Gemini with one of the prompts below; the tool reads it natively, no setup.
         </p>
 
         <PromptBlock
@@ -130,37 +126,35 @@ const pageDescription = 'The open machine-readable standard for luminaire cutshe
 
       {/* ── 6. DIFFERENTIATED VALUE (3 bullets) ────────────────────────── */}
       <section id="differentiated-value" aria-labelledby="differentiated-value-heading">
-        <p class="step-num">Step 5</p>
-        <h2 id="differentiated-value-heading">What difference a ULC file makes</h2>
-        <p>
-          A ULC database changes what designers can do in one afternoon versus a week.
-        </p>
+        <h2 id="differentiated-value-heading">What changes</h2>
 
         <ul class="value-list">
           <li>
-            <strong>Find the right luminaire in seconds.</strong> Search a hyperfocused criteria string like "recessed in gyp ceiling, tunable white, 2-inch aperture downlight, 95+ CRI, UGR under 16" and get a list of matching luminaires from a database of ULC files in seconds.
+            <strong>Find the right fixture in seconds.</strong> Search "recessed downlight, tunable white, 95+ CRI, UGR under 16, two-inch aperture" across a set of ULC records and get matches back, not a stack of PDFs to read.
           </li>
           <li>
-            <strong>Generate a luminaire schedule autonomously.</strong> Save your luminaire package as ULC files, hand AI tools a template and the right prompt, and the schedule writes itself in seconds.
+            <strong>Let the luminaire schedule write itself.</strong> Hand your tools the ULC files and a template; the schedule generates from the records, not by hand.
           </li>
           <li>
-            <strong>Review a 100-luminaire VE package against the basis of design in minutes.</strong> Compare an 800-page value engineering submittal against your design intent in minutes instead of hours, with human error squeezed out of the loop.
+            <strong>Review a 100-fixture VE package in minutes.</strong> Check an 800-page submittal against your basis of design without opening every sheet.
           </li>
         </ul>
+
+        <Callout intent="accent" label="Accurate by construction">
+          <p>
+            Every value in a ULC record traces to the manufacturer's own source file, and each file carries a SHA-256 hash, a tamper-evident seal. So the data you spec is the manufacturer's real data, verifiably unchanged, not an aggregator's re-typing or an AI's best guess off a PDF.
+          </p>
+        </Callout>
       </section>
 
       {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
       <section id="the-ask" aria-labelledby="the-ask-heading">
-        <p class="step-num">Step 6</p>
-        <h2 id="the-ask-heading">The Ask</h2>
+        <h2 id="the-ask-heading">Where you come in</h2>
         <p>
-          ULC is a new open-source standard proposed by practicing lighting designers. The activation mechanic turns when designers start asking manufacturers for ULC files.
+          ULC is new, and it grows the moment designers ask for it. Ask your preferred manufacturer reps one question: are you publishing ULC files yet?
         </p>
         <p>
-          The Ask is one specific commitment: a 90-day channel advocacy. Ask your top 5 preferred manufacturer reps for ULC files in the next 90 days.
-        </p>
-        <p>
-          If you code, consider contributing on <a
+          That request is the entire flywheel. When designers ask, manufacturers publish. Read the <a href="/for-manufacturers">manufacturer track</a>, or contribute on <a
             href="https://github.com/ulcspec/ULC"
             target="_blank"
             rel="noopener external"
