@@ -2,10 +2,6 @@
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
 import Callout from '../../components/Callout.astro';
-import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
-
-const entry = manifestEntryForRouteOrThrow('/docs/taxonomy');
-const upstreamPath = entry.upstreamPath;
 ---
 
 <PageShell
@@ -22,12 +18,11 @@ const upstreamPath = entry.upstreamPath;
       through the Schema Change Proposal process.
     </p>
 
-    <Callout intent="default" label="Content sync">
+    <Callout intent="default" label="Reference in progress">
       <p>
-        Enum groups rendered at build from
-        <code>{`ulcspec/ULC/${upstreamPath}`}</code>. Each group lists its
-        values with cross-links to the schema fields that consume them.
-        Generator lands alongside the schema-reference generator in PR-2.
+        The browsable enum reference is still being built. In the meantime, the
+        taxonomy lives in <code>taxonomy.schema.json</code> in the
+        <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>.
       </p>
     </Callout>
   </SpecDocsLayout>

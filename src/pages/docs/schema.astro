@@ -2,10 +2,6 @@
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
 import Callout from '../../components/Callout.astro';
-import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
-
-const entry = manifestEntryForRouteOrThrow('/docs/schema');
-const upstreamPath = entry.upstreamPath;
 ---
 
 <PageShell
@@ -23,13 +19,13 @@ const upstreamPath = entry.upstreamPath;
       <code>application/schema+json</code> content-type.
     </p>
 
-    <Callout intent="default" label="Content sync">
+    <Callout intent="default" label="Reference in progress">
       <p>
-        Field-by-field reference cards are generated at build from
-        <code>{`ulcspec/ULC/${upstreamPath}`}</code>. The generator
-        walks the JSON Schema tree and emits one anchor per field
-        (type · required · description · allowed values · example).
-        Generator + first batch land with the spec-sync content loader.
+        The browsable, field-by-field reference is still being built. In the
+        meantime, read the schema directly: it's served at
+        <a href="/schema/ulc.json"><code>/schema/ulc.json</code></a>, and the
+        annotated source lives in the
+        <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>.
       </p>
     </Callout>
   </SpecDocsLayout>
