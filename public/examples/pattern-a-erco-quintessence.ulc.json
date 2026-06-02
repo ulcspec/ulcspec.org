@@ -3,7 +3,6 @@
   "record_id": "erco-quintessence-30416-023",
   "record_status": "active",
   "record_status_as_of": "2026-04-21",
-  "conformance_level": "full",
   "product_family": {
     "family_id": "erco-quintessence-downlight",
     "family_display_name": "Quintessence Downlight",
@@ -791,6 +790,7 @@
   "index": {
     "x-ulc-generated": true,
     "builder_version": "0.2.0",
+    "conformance_level": "full",
     "manufacturer_slug": "erco",
     "catalog_model": "Quintessence Downlight 30416",
     "primary_category": "downlight",

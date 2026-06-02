@@ -70,6 +70,17 @@ const crossLinks = [
           </p>
         </li>
         <li>
+          <h3>Conformance level</h3>
+          <p>
+            The validator computes a record's conformance level (core,
+            standard, or full) from the data it actually carries. Core is the
+            minimum identifying and photometric set, standard is what a typical
+            LM-79 report produces, and full adds the comprehensive set. Because
+            the level is computed and verified rather than self-declared, full
+            means the data is genuinely present.
+          </p>
+        </li>
+        <li>
           <h3>JSON parse</h3>
           <p>
             Malformed JSON is caught first, with the line and column, before

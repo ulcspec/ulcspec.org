@@ -33,11 +33,6 @@
       "format": "date"
     },
 
-    "conformance_level": {
-      "description": "The completeness target this record declares. The reference validator grades the record against this level.",
-      "$ref": "taxonomy.schema.json#/$defs/ConformanceLevel"
-    },
-
     "index": {
       "description": "Denormalized scan surface for AI agents, search indexers, and filter UIs. Every field is a projection of authoritative values from the deeper blocks below. GENERATED, NOT HAND-AUTHORED: produced deterministically by the `ulc build-index` reference CLI (see `tools/validator/`) from the deep blocks and stamped with `x-ulc-generated: true` plus a `builder_version` so consumers can detect stale indices. Manufacturers never type these values; their PIM export or ULC CLI writes them. Drift is prevented by construction, because the builder is a pure function of the deep blocks.",
       "$ref": "#/$defs/Index"
@@ -168,7 +163,6 @@
     "ulc_version",
     "record_id",
     "record_status",
-    "conformance_level",
     "index",
     "product_family",
     "configuration",
@@ -191,6 +185,10 @@
           "description": "Semver of the builder that produced this index. Consumers compare against the current builder version to detect stale indices.",
           "type": "string",
           "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "conformance_level": {
+          "description": "The completeness level this record achieves. GENERATED, NOT HAND-AUTHORED: the reference builder computes it from the record's populated fields (applying the conditional rubric: directional categories require a beam angle, color-mixing fixtures skip CRI, outdoor products require BUG at full, and so on) and stamps it here like every other index value. Because it is a builder projection, a hand-tampered value fails the build-parity check just like any other index field, so the level a record claims is the level its data actually achieves.",
+          "$ref": "taxonomy.schema.json#/$defs/ConformanceLevel"
         },
         "manufacturer_slug": { "type": "string" },
         "catalog_model": { "type": "string" },
@@ -247,6 +245,7 @@
       "required": [
         "x-ulc-generated",
         "builder_version",
+        "conformance_level",
         "manufacturer_slug",
         "catalog_model",
         "primary_category",

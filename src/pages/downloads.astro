@@ -43,6 +43,8 @@ interface ExampleRecord {
   product: string;
   category: string;
   patternRole: string;
+  /** Builder-computed conformance level carried in index.conformance_level. */
+  level: 'core' | 'standard' | 'full';
   filename: string;
   url: string;
   downloadAs: string;
@@ -59,6 +61,12 @@ interface ExampleRecord {
 // divergence is intentional: pattern-prefixed for the validator sample
 // picker (src/components/ValidatorIsland.astro); product-model-prefixed
 // at download save-time for users.
+//
+// The `level` field below mirrors each file's index.conformance_level (the
+// builder-computed value the validator reads). It is a static literal here,
+// not read from the file, so when re-syncing these examples re-read the
+// computed level from each file and update `level` in lockstep; otherwise
+// the card badge could silently drift from the record it labels.
 const exampleRecords: readonly ExampleRecord[] = [
   {
     pattern: 'A',
@@ -66,6 +74,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     product: 'Quintessence',
     category: 'recessed downlight',
     patternRole: 'Single-SKU cutsheet model.',
+    level: 'full',
     filename: 'erco-quintessence-30416-023.ulc',
     url: '/examples/pattern-a-erco-quintessence.ulc.json',
     downloadAs: 'erco-quintessence-30416-023.ulc',
@@ -77,6 +86,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'exterior pole',
     patternRole:
       'Configurator with applicability blocks; 54,000 SKUs compressed into 21 records.',
+    level: 'full',
     filename: 'selux-aya-pole-sr-ho-3000k.ulc',
     url: '/examples/pattern-b-selux-aya.ulc.json',
     downloadAs: 'selux-aya-pole-sr-ho-3000k.ulc',
@@ -88,6 +98,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'RGB façade',
     patternRole:
       'Per-IES model with provenance classes for measured, simulated, and extended-photometry records.',
+    level: 'core',
     filename: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
     url: '/examples/pattern-c-lumenpulse-lumenfacade.ulc.json',
     downloadAs: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
@@ -98,6 +109,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     product: 'Nexa',
     category: 'suspended linear pendant',
     patternRole: 'Per-foot linear-scaling model.',
+    level: 'full',
     filename: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
     url: '/examples/pattern-d-vode-nexa.ulc.json',
     downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
@@ -218,11 +230,22 @@ function formatAssetSize(bytes: number): string {
         <p>
           Four reference records, one per manufacturer authoring pattern, built from real manufacturer spec sheets. These are the files you drop into the prompts above.
         </p>
+        <p class="example-grid__note">
+          Each record's conformance level (core, standard, or full) is computed by the validator from the data the record carries, not self-declared.
+        </p>
 
         <ul class="example-grid" aria-label="Four canonical .ulc example records">
           {exampleRecords.map((r) => (
             <li class="example-card">
-              <p class="example-card__pattern">Pattern {r.pattern}</p>
+              <div class="example-card__meta">
+                <p class="example-card__pattern">Pattern {r.pattern}</p>
+                <span
+                  class="example-card__level"
+                  title="Computed by the validator from the data this record carries, not self-declared."
+                >
+                  {r.level.charAt(0).toUpperCase() + r.level.slice(1)}
+                </span>
+              </div>
               <h3 class="example-card__title">
                 {r.manufacturer} {r.product}
                 <span class="example-card__category"> · {r.category}</span>
@@ -511,12 +534,39 @@ function formatAssetSize(bytes: number): string {
     display: flex;
     flex-direction: column;
   }
+  .example-grid__note {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0.5rem 0 0 0;
+  }
+  .example-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0 0 0.375rem 0;
+  }
   .example-card__pattern {
     font-variant-caps: all-small-caps;
     letter-spacing: 0.08em;
     font-size: 0.6875rem;
     color: var(--accent-warm);
-    margin: 0 0 0.375rem 0;
+    margin: 0;
+  }
+  .example-card__level {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
   }
   .example-card__title {
     margin: 0 0 0.25rem 0 !important;

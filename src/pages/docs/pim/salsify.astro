@@ -84,7 +84,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Localization.</strong> Salsify properties support per-locale values. ULC is locale-neutral at the schema level; the emitter chooses a canonical locale (typically en-US).</li>
       <li><strong>Property type mismatches.</strong> Salsify's "number" type is a double. ULC distinguishes integer in some fields. Coerce at emit time.</li>
       <li><strong>Asset digest caching.</strong> SHA-256 on every asset on every run is expensive. Cache by Salsify asset ID + version; invalidate on <code>updated_at</code> change.</li>
-      <li><strong>Missing required values.</strong> If a property needed for the target <code>conformance_level</code> is blank for a SKU, skip or fail the export. Do not downgrade <code>conformance_level</code> to paper over gaps.</li>
+      <li><strong>Missing values.</strong> If a property a record should carry is blank for a SKU, skip or fail the export rather than shipping a thin record. There is no level to set: the validator computes the conformance level from whatever the record carries, so gate the export on completeness in Salsify instead.</li>
     </ol>
 
     <p class="full-guide-link">

@@ -53,6 +53,12 @@ export interface ValidationResult {
   model: string | null;
   /** Declared ULC version, e.g. "0.3.0". */
   version: string | null;
+  /**
+   * Computed conformance level read from `index.conformance_level`
+   * ("core" / "standard" / "full"). The builder computes this from the
+   * data the record carries; it is never hand-declared. Null when absent.
+   */
+  conformanceLevel: string | null;
   /** Source-file declarations from the record's `source_files` block. */
   sources: SourceDeclaration[];
 }
@@ -142,10 +148,11 @@ function escapeRegex(s: string): string {
 }
 
 /**
- * Minimal structural validation. Checks the 8 top-level required fields
- * declared in the schema's `required` array and reports any missing or
- * type-wrong values with line-anchored errors. Returns record metadata on
- * pass so the result-state can populate the summary band.
+ * Minimal structural validation. Checks the top-level required fields
+ * declared in the schema's `required` array (7 at this spec version) and
+ * reports any missing or type-wrong values with line-anchored errors.
+ * Returns record metadata on pass so the result-state can populate the
+ * summary band, including the builder-computed `index.conformance_level`.
  *
  * NOT a substitute for Ajv. Documented as such in the result-state
  * fidelity disclosure.
@@ -213,6 +220,7 @@ export function validateStructure(
     manufacturer: extractManufacturer(record),
     model: extractModel(record),
     version: typeof record.ulc_version === 'string' ? record.ulc_version : null,
+    conformanceLevel: extractConformanceLevel(record),
     sources: extractSources(record),
   };
 }
@@ -225,6 +233,7 @@ function emptyFailResult(errors: ValidationError[]): ValidationResult {
     manufacturer: null,
     model: null,
     version: null,
+    conformanceLevel: null,
     sources: [],
   };
 }
@@ -266,6 +275,18 @@ function extractModel(record: Record<string, unknown>): string | null {
   const fam = asObject(record.product_family);
   if (!fam) return null;
   return getString(fam, 'catalog_model') ?? getString(fam, 'family_display_name');
+}
+
+/**
+ * Read the builder-computed conformance level from `index.conformance_level`.
+ * The value is never hand-declared; the reference builder grades the record
+ * from its populated fields and stamps the achieved level into the generated
+ * index. Returns null when the index or the field is absent.
+ */
+function extractConformanceLevel(record: Record<string, unknown>): string | null {
+  const index = asObject(record.index);
+  if (!index) return null;
+  return getString(index, 'conformance_level');
 }
 
 /**
