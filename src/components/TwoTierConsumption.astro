@@ -1,0 +1,269 @@
+---
+// TwoTierConsumption: "How to use ULC today" section, anchored at
+// #how-to-use-today on /spec landing.
+//
+// Composes the existing PromptBlock primitive with the surface-specific
+// Tier 2 prose, neutrality framing, and audience-aware cross-links per
+// copy artifact docs/growth/copy/spec.md (How to use ULC today section).
+// The Tier 1 prompt is rendered from the SSOT
+// src/content/prompts/tier1-prompts.ts (TIER1_PROMPT_RENDER) — fourth
+// consumer of that SSOT after homepage, /for-designers x3, and
+// /downloads#prompts (forthcoming). PromptBlock id `tier1-spec-render`
+// is unique across all five tier1-* consumers in the codebase.
+//
+// The trailing cross-link block is in-flow surface copy, not page-footer
+// chrome; the third bullet references "below" within this section. Do
+// not fold into <CrossLinkFooter>.
+//
+// Single-surface (/spec landing) consumer.
+
+import PromptBlock from './PromptBlock.astro';
+import Callout from './Callout.astro';
+import { TIER1_PROMPT_RENDER } from '../content/prompts/tier1-prompts';
+---
+
+<section id="how-to-use-today" class="two-tier" aria-labelledby="how-to-use-today-h">
+  <h2 id="how-to-use-today-h" class="two-tier__h">How to use ULC today</h2>
+  <p class="two-tier__lead">
+    ULC files work with the tools designers, manufacturers' engineering
+    leads, and software vendors already use today, without waiting for
+    ecosystem maturity. There are two tiers.
+  </p>
+
+  <div class="two-tier__tier">
+    <p class="two-tier__eyebrow">Tier 1</p>
+    <h3 class="two-tier__sub">Generic LLMs parse <code>.ulc</code> files natively.</h3>
+    <p class="two-tier__body">
+      Drag a <code>.ulc.json</code> from <code>examples/</code> into ChatGPT,
+      Claude, or Gemini alongside the prompt below and the LLM produces a
+      useful spec-sheet rendering, cross-product comparison, or attribute
+      lookup. No setup. No installation. The activation surface is the LLM
+      you already have open.
+    </p>
+    <PromptBlock
+      id="tier1-spec-render"
+      label="A ready-to-use prompt for any generic LLM"
+      text={TIER1_PROMPT_RENDER.text}
+      eyebrow="Prompt"
+    />
+    <ul class="two-tier__inline-links">
+      <li>
+        <a href="/downloads#examples" class="two-tier__link">
+          Try a sample <code>.ulc</code> file <span aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <a href="/downloads#prompts" class="two-tier__link">
+          More prompt templates <span aria-hidden="true">→</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="two-tier__tier">
+    <p class="two-tier__eyebrow">Tier 2</p>
+    <h3 class="two-tier__sub">Lighting-domain specialty consumption tools.</h3>
+    <p class="two-tier__body">
+      Specialty consumption tools add on-demand fetching of the linked
+      IES / LDT photometric files and built-in resolution for industry-
+      shorthand glossary: L90, TM-21, CCR, SVM, melanopic DER, IES-C,
+      CIE 97 maintenance-factor tables. One specialty tool, LightingAgent.AI,
+      is in development today. The specialty layer is the consumption-layer
+      audience this spec page also serves; tool builders implementing this
+      tier should consult the schema reference plus the four canonical
+      reference records plus the relevant crosswalks (when landed).
+    </p>
+  </div>
+
+  <Callout intent="warning" label="Both tiers work" class="two-tier__neutrality">
+    <p>
+      The difference is depth of lighting-domain support, not whether
+      ULC is consumable. ULC is the substrate both tiers consume.
+    </p>
+  </Callout>
+
+  <div class="two-tier__cross-links">
+    <p class="two-tier__eyebrow two-tier__eyebrow--small">Continue</p>
+    <ul>
+      <li>
+        <strong>Designers:</strong>
+        full designer-track activation flywheel
+        <a href="/for-designers" class="two-tier__link two-tier__link--inline">
+          /for-designers <span aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <strong>Manufacturers:</strong>
+        full manufacturer-track publication pitch
+        <a href="/for-manufacturers" class="two-tier__link two-tier__link--inline">
+          /for-manufacturers <span aria-hidden="true">→</span>
+        </a>
+      </li>
+      <li>
+        <strong>Software vendors and AI tool builders:</strong>
+        continue to the schema reference and crosswalks below.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .two-tier {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+    scroll-margin-top: 5rem;
+  }
+  .two-tier__h {
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    margin: 0 0 0.875rem 0;
+    color: var(--text);
+  }
+  @media (min-width: 768px) {
+    .two-tier__h { font-size: 2.25rem; }
+  }
+  @media (min-width: 1024px) {
+    .two-tier__h { font-size: 2.5rem; }
+  }
+  .two-tier__lead {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 2.5rem 0;
+    max-width: 48rem;
+  }
+
+  .two-tier__tier {
+    margin-top: 2.5rem;
+    padding: 1.75rem 1.875rem 2rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-elevated);
+  }
+  .two-tier__tier:first-of-type {
+    border-left: 3px solid var(--accent-warm);
+    background: color-mix(in oklab, var(--accent-warm) 4%, var(--bg-elevated));
+  }
+
+  .two-tier__eyebrow {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.6875rem;
+    color: var(--accent-warm);
+    margin: 0 0 0.4375rem 0;
+    font-weight: 600;
+  }
+  .two-tier__eyebrow--small {
+    color: var(--text-subtle);
+  }
+
+  .two-tier__sub {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text);
+    margin: 0 0 0.75rem 0;
+    letter-spacing: -0.01em;
+  }
+  @media (min-width: 768px) {
+    .two-tier__sub {
+      font-size: 1.375rem;
+    }
+  }
+  .two-tier__sub code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent-warm);
+    font-weight: 500;
+  }
+
+  .two-tier__body {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 44rem;
+  }
+  .two-tier__body code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent-warm);
+  }
+
+  .two-tier__inline-links {
+    list-style: none;
+    padding: 0;
+    margin: 1.25rem 0 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+  }
+  .two-tier__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    min-height: 44px;
+    padding: 0.5rem 0;
+    color: var(--accent-warm);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 150ms ease-out;
+  }
+  .two-tier__link code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: inherit;
+  }
+  .two-tier__link:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  /* The neutrality block uses <Callout intent="warning">; this class is
+     only used to add the section-rhythm margin-top. */
+  .two-tier :global(.two-tier__neutrality) {
+    margin-top: 2.5rem;
+  }
+  .two-tier :global(.two-tier__neutrality .callout__body p) {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .two-tier__cross-links {
+    margin-top: 2.5rem;
+  }
+  .two-tier__cross-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+  .two-tier__cross-links li {
+    padding: 0.625rem 0;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .two-tier__cross-links li:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+  .two-tier__cross-links strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .two-tier__link--inline {
+    display: inline-flex;
+    margin-left: 0.25rem;
+    /* Keep the 44px touch target floor; the cross-link sits inside a
+       prose <li>, but it's still a primary nav target. */
+    min-height: 44px;
+    padding: 0.375rem 0;
+    align-items: center;
+  }
+</style>

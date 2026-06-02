@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="ULC: open machine-readable standard for luminaire cut sheets">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#0f0f0f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#fcd34d" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#fbbf24" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#fafafa" fill-opacity="0.04"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Eyebrow -->
+  <text x="80" y="120"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="500" letter-spacing="3"
+        fill="#a1a1a1" text-transform="uppercase">
+    OPEN MACHINE-READABLE STANDARD · MIT-LICENSED
+  </text>
+
+  <!-- Headline (dual-clause, equal weight) -->
+  <text x="80" y="240"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="56" font-weight="600" fill="#fafafa" letter-spacing="-1.4">
+    Designers spec faster when
+  </text>
+  <text x="80" y="312"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="56" font-weight="600" fill="#fafafa" letter-spacing="-1.4">
+    manufacturers publish ULC.
+  </text>
+
+  <text x="80" y="412"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="56" font-weight="600" fill="#fafafa" letter-spacing="-1.4">
+    Manufacturers reach designers
+  </text>
+  <text x="80" y="484"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="56" font-weight="600" fill="#fafafa" letter-spacing="-1.4">
+    who specify ULC-readable products.
+  </text>
+
+  <!-- Amber underline accent on the wordmark -->
+  <rect x="80" y="540" width="120" height="3" fill="#fbbf24"/>
+
+  <!-- Wordmark + URL -->
+  <text x="80" y="580"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="600" fill="#fafafa" letter-spacing="-0.5">
+    ULC
+  </text>
+  <text x="135" y="580"
+        font-family="Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="400" fill="#a1a1a1" letter-spacing="-0.2">
+    ulcspec.org
+  </text>
+</svg>

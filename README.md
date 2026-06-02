@@ -1,8 +1,14 @@
 # ulcspec.org
 
-Public front end for the **ULC (Universal Luminaire Cutsheet)** open specification. The v1 site delivers three pillars: (1) a credibility surface that converts lighting manufacturers into published-`.ulc.json` pilots; (2) an interactive in-browser validator where visitors drag a candidate `.ulc.json` onto the page and get pass/fail with line-anchored errors, plus optional SHA-256 verification of source PDF / IES / LDT files; and (3) a navigable rendering of the spec content (authoring patterns, schema, taxonomy, templates, PIM guides) pulled from the spec repo at build time.
+Public front end for the **ULC (Universal Luminaire Cutsheet)** open specification: the docs site and adoption registry for the standard.
 
-The spec itself lives at **[github.com/ulcspec/ULC](https://github.com/ulcspec/ULC)** and remains the single source of truth for schema, taxonomy, and prose.
+The spec itself, including the schema, taxonomy, authoring patterns, canonical reference records, validator, and the full README, lives at **[github.com/ulcspec/ULC](https://github.com/ulcspec/ULC)**. Start there for what ULC is, why it exists, and how to use it.
+
+This repository builds the [ulcspec.org](https://ulcspec.org) site, which provides:
+
+1. **The adoption registry**: which manufacturers have published ULC files for which products, updated as the ecosystem grows
+2. **An interactive in-browser validator**: drag a candidate `.ulc.json` onto the page for pass/fail with line-anchored errors, plus optional SHA-256 verification of source PDF / IES / LDT files
+3. **A navigable rendering of the spec content**: authoring patterns, schema, taxonomy, templates, and PIM guides, pulled from the spec repo at build time
 
 ## Development
 
@@ -18,12 +24,19 @@ Requires Node.js 22.12+ and pnpm. See `docs/architecture/TECH_STACK.md` for the 
 
 ## Design context
 
-- **[docs/architecture/PRD.md](docs/architecture/PRD.md)** — product requirements: audience, success criteria, non-goals, constraints
-- **[docs/architecture/TECH_STACK.md](docs/architecture/TECH_STACK.md)** — language, runtime, frameworks, validation, content sync, hosting
-- **[docs/architecture/BACKEND_STRUCTURE.md](docs/architecture/BACKEND_STRUCTURE.md)** — static-site posture; no server, no API, no database
-- **[docs/architecture/APP_FLOW.md](docs/architecture/APP_FLOW.md)** — entry routes, per-audience journeys, error & empty states
-- **[docs/brainstorms/2026-05-14-ulcspec-org-site-brainstorm.md](docs/brainstorms/2026-05-14-ulcspec-org-site-brainstorm.md)** — v1 brainstorm: scope, stack rationale, open questions
+- **[docs/architecture/PRD.md](docs/architecture/PRD.md)**: product requirements covering audience, success criteria, non-goals, and constraints
+- **[docs/architecture/TECH_STACK.md](docs/architecture/TECH_STACK.md)**: language, runtime, frameworks, validation, content sync, and hosting
+- **[docs/architecture/BACKEND_STRUCTURE.md](docs/architecture/BACKEND_STRUCTURE.md)**: static-site posture; no server, no API, no database
+- **[docs/architecture/APP_FLOW.md](docs/architecture/APP_FLOW.md)**: entry routes, per-audience journeys, error and empty states
+
+## Steward
+
+ULC framework was first introduced by Foad Shafighi MIES, IALD, CLD in 2026 at the National Lighting Bureau AI Think Tank in New York.
+
+## Governance
+
+ULC is governed openly through the Schema Change Proposal process on GitHub. See [github.com/ulcspec/ULC](https://github.com/ulcspec/ULC) for governance documents, contribution guidelines, and the broader community.
 
 ## License
 
-MIT — see `LICENSE` (matches the upstream ULC spec repo).
+MIT. See `LICENSE` (matches the upstream ULC spec repo).

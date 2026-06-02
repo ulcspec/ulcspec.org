@@ -1,0 +1,837 @@
+---
+// /downloads — v1 download hub. Lead content: the 5-prompt designer LLM
+// catalog (Tier 1 designer activation surface). Canonical example records
+// follow, then the JSON Schema, then the Go reference validator binaries.
+//
+// Spec:          docs/tasks/sections/downloads.md
+// Copy:          docs/growth/copy/downloads.md
+// Section order locked: prompts → examples → schema → CLI (per spec
+//   "Resolved decisions (2026-05-16)" → "In-page section order locked").
+//
+// Page composition: PageShell + StickyToc + PromptBlock x5 + Callout +
+// page-local example-record cards + page-local schema card + page-local
+// CLI release section + CrossLinkFooter. No new component primitives;
+// composes entirely from existing chrome per the surface-notes guidance.
+//
+// Per-release content (latest release tag, assets, checksums, install
+// instructions disclosure, previous-releases list) is fetched from the
+// upstream GitHub Releases API at build time via src/lib/github-releases.
+// When no release has shipped yet, the CLI section renders an explicit
+// "Not yet released" callout instead.
+
+import PageShell from '../components/PageShell.astro';
+import StickyToc from '../components/StickyToc.astro';
+import PromptBlock from '../components/PromptBlock.astro';
+import Callout from '../components/Callout.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import { TIER1_PROMPTS } from '../content/prompts/tier1-prompts';
+import {
+  fetchReleases,
+  type Platform,
+} from '../lib/github-releases';
+
+const tocItems = [
+  { href: '#prompts', label: 'Designer LLM prompts' },
+  { href: '#examples', label: 'Canonical example records' },
+  { href: '#schema', label: 'JSON Schema' },
+  { href: '#cli', label: 'Go CLI' },
+];
+
+interface ExampleRecord {
+  pattern: 'A' | 'B' | 'C' | 'D';
+  manufacturer: string;
+  product: string;
+  category: string;
+  patternRole: string;
+  filename: string;
+  url: string;
+  downloadAs: string;
+}
+
+// Local same-origin links into public/examples/. The HTML download
+// attribute (added at render site) forces the browser to save the file
+// with the canonical product-model filename (downloadAs field) instead
+// of rendering it inline. download is honored only for same-origin URLs,
+// which is why these point at /examples/* and not raw.githubusercontent.com.
+//
+// Source of truth: public/examples/pattern-{a..d}-*.ulc.json. These are
+// byte-identical to ulcspec/ULC/examples/<product-model>.ulc. Naming
+// divergence is intentional: pattern-prefixed for the validator sample
+// picker (src/components/ValidatorIsland.astro); product-model-prefixed
+// at download save-time for users.
+const exampleRecords: readonly ExampleRecord[] = [
+  {
+    pattern: 'A',
+    manufacturer: 'ERCO',
+    product: 'Quintessence',
+    category: 'recessed downlight',
+    patternRole: 'Single-SKU cutsheet model.',
+    filename: 'erco-quintessence-30416-023.ulc',
+    url: '/examples/pattern-a-erco-quintessence.ulc.json',
+    downloadAs: 'erco-quintessence-30416-023.ulc',
+  },
+  {
+    pattern: 'B',
+    manufacturer: 'Selux',
+    product: 'Aya',
+    category: 'exterior pole',
+    patternRole:
+      'Configurator with applicability blocks; 54,000 SKUs compressed into 21 records.',
+    filename: 'selux-aya-pole-sr-ho-3000k.ulc',
+    url: '/examples/pattern-b-selux-aya.ulc.json',
+    downloadAs: 'selux-aya-pole-sr-ho-3000k.ulc',
+  },
+  {
+    pattern: 'C',
+    manufacturer: 'Lumenpulse',
+    product: 'Lumenfacade',
+    category: 'RGB façade',
+    patternRole:
+      'Per-IES model with provenance classes for measured, simulated, and extended-photometry records.',
+    filename: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
+    url: '/examples/pattern-c-lumenpulse-lumenfacade.ulc.json',
+    downloadAs: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
+  },
+  {
+    pattern: 'D',
+    manufacturer: 'Vode',
+    product: 'Nexa',
+    category: 'suspended linear pendant',
+    patternRole: 'Per-foot linear-scaling model.',
+    filename: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
+    url: '/examples/pattern-d-vode-nexa.ulc.json',
+    downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
+  },
+];
+
+const platformLabel: Record<Platform, string> = {
+  'darwin-arm64': 'macOS · Apple Silicon (arm64)',
+  'darwin-amd64': 'macOS · Intel (amd64)',
+  'linux-amd64': 'Linux · amd64',
+  'linux-arm64': 'Linux · arm64',
+  'windows-amd64': 'Windows · amd64',
+};
+
+const crossLinks = [
+  { href: '/spec', labelHtml: 'Authoring patterns and schema reference' },
+  {
+    href: '/spec#how-to-use-today',
+    labelHtml: 'Two-tier consumption deep dive',
+  },
+  { href: '/for-designers', labelHtml: 'Designer-track pitch' },
+  { href: '/for-manufacturers', labelHtml: 'Manufacturer-track pitch' },
+  {
+    href: '/validator',
+    labelHtml: 'Validate in your browser without the CLI',
+  },
+  {
+    href: 'https://github.com/ulcspec/ULC',
+    labelHtml: 'Specification source on GitHub',
+  },
+];
+
+// Build-time fetch from the GitHub Releases API. Throws on rate-limit /
+// network failure so CI surfaces the problem rather than silently shipping
+// a stale download page. Falls back to a no-release state when upstream
+// has not yet cut its first release (current v1 reality).
+const releaseResult = await fetchReleases();
+
+const pageTitle = 'Downloads: designer prompts, examples, schema, CLI';
+const pageDescription =
+  'Ready-made LLM prompts for designers. Four canonical .ulc example records. The JSON Schema. The Go reference validator via GitHub Releases.';
+
+function formatPublishedDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function formatAssetSize(bytes: number): string {
+  const mib = bytes / (1024 * 1024);
+  if (mib >= 1) return `${mib.toFixed(1)} MiB`;
+  const kib = bytes / 1024;
+  return `${Math.round(kib)} KiB`;
+}
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  {/* Hero band */}
+  <section class="relative overflow-hidden">
+    <div class="dot-grid" aria-hidden="true"></div>
+    <div
+      class="relative mx-auto max-w-7xl px-6 pt-16 pb-12 md:px-10 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20"
+    >
+      <p class="small-caps text-xs md:text-sm text-[var(--text-muted)] mb-6">
+        Downloads
+      </p>
+      <h1
+        class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
+      >
+        Downloads.
+      </h1>
+      <p
+        class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
+      >
+        Designer LLM prompt templates, the four canonical example records, the JSON Schema, and the Go reference validator.
+      </p>
+    </div>
+  </section>
+
+  {/* Body: 2-col on desktop with sticky TOC sidebar, single-col on mobile */}
+  <div
+    class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12"
+  >
+    <div class="lg:pt-12">
+      <StickyToc items={tocItems} />
+    </div>
+
+    <article class="long-form pt-10 lg:pt-12 max-w-[68ch]">
+
+      {/* ── 1. DESIGNER LLM PROMPTS ─────────────────────────────────── */}
+      <section id="prompts" aria-labelledby="prompts-heading">
+        <h2 id="prompts-heading">Designer LLM prompt templates</h2>
+        <p>
+          Five ready-to-use prompts. Paste a prompt into ChatGPT, Claude, or Gemini, attach a <code>.ulc.json</code> file (download a sample from the <a href="#examples" class="link-inline">next section</a>), and the LLM produces a clean spec sheet, an apples-to-apples comparison, a luminaire-schedule-ready table, a VE sanity check, or a per-attribute source-file provenance trace. The Tier 1 consumption framing is at <a href="/spec#how-to-use-today" class="link-inline">/spec#how-to-use-today</a>.
+        </p>
+
+        <Callout intent="accent" label="Compatibility">
+          <p>
+            Any modern LLM (ChatGPT 4o / 5, Claude 4.5+ / 4.7, Gemini 2+) is suitable. The prompts work without modification across all three. Bracketed placeholders (<code>[project type]</code>, <code>[CRI, CCT options, ...]</code>) invite per-use customization.
+          </p>
+        </Callout>
+
+        {TIER1_PROMPTS.map((p, i) => (
+          <PromptBlock
+            id={p.id}
+            label={p.label}
+            text={p.text}
+            eyebrow={`Prompt ${i + 1}`}
+          />
+        ))}
+
+        <p class="mt-6">
+          <a href="#examples" class="link-inline">Try a sample <code>.ulc</code> file →</a>
+        </p>
+      </section>
+
+      {/* ── 2. CANONICAL EXAMPLE RECORDS ────────────────────────────── */}
+      <section id="examples" aria-labelledby="examples-heading">
+        <h2 id="examples-heading">Canonical example records</h2>
+        <p>
+          Four canonical reference records, one per manufacturer authoring pattern, drafted from real specification-grade manufacturer spec sheets. These are the files designers drop into the prompts above and the load-bearing test fixtures every Schema Change Proposal must continue to validate against.
+        </p>
+
+        <ul class="example-grid" aria-label="Four canonical .ulc example records">
+          {exampleRecords.map((r) => (
+            <li class="example-card">
+              <p class="example-card__pattern">Pattern {r.pattern}</p>
+              <h3 class="example-card__title">
+                {r.manufacturer} {r.product}
+                <span class="example-card__category"> · {r.category}</span>
+              </h3>
+              <p class="example-card__role">{r.patternRole}</p>
+              <a
+                class="example-card__link link"
+                href={r.url}
+                download={r.downloadAs}
+              >
+                Download <code class="example-card__filename">{r.filename}</code> →
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mt-6">
+          <a href="/spec/authoring-patterns" class="link-inline">
+            Learn more about the four authoring patterns →
+          </a>
+        </p>
+      </section>
+
+      {/* ── 3. JSON SCHEMA ──────────────────────────────────────────── */}
+      <section id="schema" aria-labelledby="schema-heading">
+        <h2 id="schema-heading">JSON Schema</h2>
+        <p>
+          ULC v0.5.1, JSON Schema Draft 2020-12. Served at <code>/schema/ulc.json</code> with <code>application/schema+json</code> content-type.
+        </p>
+        <p>
+          Tool builders integrating against ULC reference this file directly. Any JSON Schema Draft 2020-12 library can validate ULC records without additional configuration.
+        </p>
+
+        <div class="schema-card">
+          <div class="schema-card__head">
+            <p class="schema-card__filename"><code>ulc.json</code></p>
+            <p class="schema-card__meta">
+              ULC v0.5.1 · Draft 2020-12
+            </p>
+          </div>
+          <a
+            class="schema-card__link link"
+            href="/schema/ulc.json"
+            download="ulc.json"
+          >
+            Download <code>ulc.json</code> →
+          </a>
+        </div>
+
+        <p class="mt-6">
+          <a href="/spec/schema" class="link-inline">
+            Browse the schema with field-level documentation →
+          </a>
+        </p>
+      </section>
+
+      {/* ── 4. GO REFERENCE VALIDATOR ───────────────────────────────── */}
+      <section id="cli" aria-labelledby="cli-heading">
+        <h2 id="cli-heading">Go reference validator</h2>
+        <p>
+          The canonical reference implementation: <code>ulc</code>, a single-file Go binary that validates records against the schema, verifies source-file hashes, and regenerates the <code>index</code> block. Released via GitHub Releases on the spec repository.
+        </p>
+
+        {releaseResult.kind === 'no-release' ? (
+          <Callout intent="accent" label="Not yet released">
+            <p>
+              The Go reference validator (<code>ulc</code>) has not yet shipped its first release. Watch the <a href="https://github.com/ulcspec/ULC/releases" class="link-inline" rel="noopener">spec repository releases page</a> for the announcement; this download surface picks up the latest release automatically on the next site build.
+            </p>
+          </Callout>
+        ) : (
+          <div class="release-block">
+            <div class="release-block__head">
+              <p class="release-block__tag"><code>ulc {releaseResult.latest.tag}</code></p>
+              <p class="release-block__date">
+                Released {formatPublishedDate(releaseResult.latest.publishedAt)}
+              </p>
+              <a
+                class="release-block__notes-link link-inline"
+                href={releaseResult.latest.htmlUrl}
+                rel="noopener"
+              >
+                Release notes on GitHub →
+              </a>
+            </div>
+
+            <p class="release-block__intro">
+              Pick the binary for your platform. Each download is accompanied by the full SHA-256 checksum for integrity verification.
+            </p>
+
+            <ul class="release-asset-list" aria-label="Per-platform binary downloads">
+              {releaseResult.latest.assets.map((a) => (
+                <li class="release-asset">
+                  <p class="release-asset__platform">
+                    {a.platform ? platformLabel[a.platform] : a.name}
+                  </p>
+                  <p class="release-asset__filename"><code>{a.name}</code></p>
+                  <p class="release-asset__size">{formatAssetSize(a.size)}</p>
+                  <a
+                    class="release-asset__download"
+                    href={a.downloadUrl}
+                    download={a.name}
+                    rel="noopener"
+                  >
+                    Download →
+                  </a>
+                  {a.sha256 ? (
+                    <p
+                      class="release-asset__sha"
+                      aria-label={`SHA-256 checksum for ${a.name}`}
+                    >
+                      <span class="sr-only">SHA-256: </span>{a.sha256}
+                    </p>
+                  ) : (
+                    <p class="release-asset__sha-fallback">
+                      Verify against the SHA-256 in the <a
+                        href={releaseResult.latest.htmlUrl}
+                        class="link-inline"
+                        rel="noopener">release notes</a>.
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <details class="release-install">
+              <summary>Install instructions</summary>
+              <div class="release-install__body">
+                <p>
+                  <strong>macOS / Linux:</strong> Mark the downloaded file executable: <code>chmod +x ulc-&lt;platform&gt;-&lt;arch&gt;</code>. Move it onto your <code>PATH</code>, for example <code>/usr/local/bin/ulc</code>. Run <code>ulc --version</code> to confirm.
+                </p>
+                <p>
+                  <strong>Windows:</strong> Download the <code>.exe</code>. Add the containing directory to your <code>PATH</code> environment variable. Open a new terminal and run <code>ulc --version</code> to confirm.
+                </p>
+              </div>
+            </details>
+
+            {releaseResult.previous.length > 0 && (
+              <section
+                class="previous-releases"
+                aria-labelledby="previous-releases-heading"
+              >
+                <h3 id="previous-releases-heading">Previous releases</h3>
+                <p>
+                  The five most-recent stable releases are listed below with version, release date, and a link to the release notes on GitHub. For the full release history, see the <a href="https://github.com/ulcspec/ULC/releases" class="link-inline" rel="noopener">Releases page on the spec repository</a>.
+                </p>
+                <ul class="previous-releases__list">
+                  {releaseResult.previous.map((r) => (
+                    <li>
+                      <a class="link-inline" href={r.htmlUrl} rel="noopener">
+                        <code>{r.tag}</code>
+                      </a>
+                      <span class="previous-releases__date">
+                        {formatPublishedDate(r.publishedAt)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
+      </section>
+
+      <CrossLinkFooter links={crossLinks} />
+    </article>
+  </div>
+</PageShell>
+
+<style>
+  /* Long-form prose system. Mirrored from /for-designers and
+     /for-manufacturers; any change here must land on both sibling
+     surfaces too. The next long-form consumer (/spec) consolidates
+     these as `prose-long-form` in DESIGN_SYSTEM.md / global.css per
+     PR-A2 (cross-surface graduation). */
+  .long-form {
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 1.0625rem;
+  }
+  .long-form > section {
+    margin-top: 4rem;
+    scroll-margin-top: 5rem;
+  }
+  .long-form > section:first-child {
+    margin-top: 0;
+  }
+  .long-form p {
+    margin: 1rem 0 0 0;
+  }
+  .long-form p:last-child {
+    margin-bottom: 0;
+  }
+  .long-form strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .long-form code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+  .long-form a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .long-form a:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  .long-form h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.875rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.75rem 0;
+  }
+  @media (min-width: 768px) {
+    .long-form h2 {
+      font-size: 2.25rem;
+    }
+  }
+  .long-form h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin: 1.75rem 0 0.5rem 0;
+  }
+  @media (min-width: 768px) {
+    .long-form h3 {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* Link variants — mirrored from sibling surfaces. */
+  .link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding: 0.375rem 0;
+  }
+  .link:hover {
+    color: var(--accent-warm-deep);
+  }
+  .link-inline {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .link-inline:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  /* ── Canonical example records card grid ──────────────────────────── */
+  .example-grid {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 768px) {
+    .example-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+  }
+  .example-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-elevated);
+    padding: 1.125rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .example-card__pattern {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.6875rem;
+    color: var(--accent-warm);
+    margin: 0 0 0.375rem 0;
+  }
+  .example-card__title {
+    margin: 0 0 0.25rem 0 !important;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .example-card__category {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  .example-card__role {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin: 0.25rem 0 0.75rem 0;
+    flex: 1;
+  }
+  .example-card__link {
+    margin-top: auto;
+    font-size: 0.9375rem;
+  }
+  .example-card__filename {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    word-break: break-all;
+  }
+
+  /* ── JSON Schema card ─────────────────────────────────────────────── */
+  .schema-card {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-elevated);
+    padding: 1.125rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  @media (min-width: 640px) {
+    .schema-card {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+  }
+  .schema-card__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .schema-card__filename {
+    margin: 0 !important;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text);
+  }
+  .schema-card__meta {
+    margin: 0 !important;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+  }
+  .schema-card__link {
+    font-size: 0.9375rem;
+  }
+
+  /* ── Release block (latest) ──────────────────────────────────────── */
+  .release-block {
+    margin-top: 1.5rem;
+  }
+  .release-block__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.75rem 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .release-block__tag {
+    margin: 0 !important;
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .release-block__date {
+    margin: 0 !important;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+  }
+  .release-block__notes-link {
+    /* Inherits color + underline from .link-inline; only the placement
+       (push to right of the head row on wide viewports) lives here. The
+       margin-left is dropped below 640px so it stacks below the date
+       on narrow viewports rather than orphan-aligning to the right edge
+       on its own wrapped line. */
+    font-size: 0.9375rem;
+  }
+  @media (min-width: 640px) {
+    .release-block__notes-link {
+      margin-left: auto;
+    }
+  }
+  .release-block__intro {
+    margin-top: 1rem !important;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+
+  .release-asset-list {
+    list-style: none;
+    margin: 1.25rem 0 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .release-asset-list {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+  }
+  .release-asset {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-elevated);
+    padding: 0.875rem 1.125rem 1rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .release-asset__platform {
+    margin: 0 0 0.25rem 0 !important;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+  }
+  .release-asset__filename {
+    margin: 0 0 0.5rem 0 !important;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    word-break: break-all;
+  }
+  .release-asset__size {
+    margin: 0 0 0.625rem 0 !important;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+  }
+  .release-asset__download {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 0.9375rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: baseline;
+    padding: 0.375rem 0;
+  }
+  .release-asset__download:hover {
+    color: var(--accent-warm-deep);
+  }
+  .release-asset__sha {
+    margin: 0.5rem 0 0 0 !important;
+    font-family: var(--font-mono);
+    /* 12px floor + --text-muted clears WCAG AA 4.5:1 against --bg-elevated
+       in both themes; --text-subtle at 11px failed the design-alignment
+       audit. The full 64-char hex stays selectable for clipboard verification. */
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    word-break: break-all;
+    overflow-wrap: anywhere;
+    user-select: all;
+  }
+  .release-asset__sha-fallback {
+    margin-top: 0.5rem !important;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    font-style: italic;
+  }
+
+  .release-install {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    padding: 0;
+  }
+  .release-install > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.875rem 1.125rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 8px;
+    min-height: 44px;
+  }
+  .release-install > summary::-webkit-details-marker { display: none; }
+  .release-install > summary::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--text-muted);
+    border-bottom: 2px solid var(--text-muted);
+    transform: rotate(45deg);
+    transition: transform 200ms ease;
+    flex-shrink: 0;
+  }
+  .release-install[open] > summary::after {
+    transform: rotate(225deg);
+  }
+  .release-install__body {
+    padding: 0 1.125rem 1rem 1.125rem;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+  .release-install__body p {
+    margin: 0.5rem 0 0 0;
+  }
+  .release-install__body code {
+    font-family: var(--font-mono);
+    background: color-mix(in oklab, var(--text-subtle) 8%, transparent);
+    border-radius: 4px;
+    padding: 0.0625rem 0.25rem;
+    color: var(--text);
+  }
+
+  /* ── Previous releases list ──────────────────────────────────────── */
+  .previous-releases {
+    margin-top: 2.5rem !important;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .previous-releases h3 {
+    margin-top: 0 !important;
+  }
+  .previous-releases__list {
+    list-style: none;
+    margin: 1rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .previous-releases__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    padding: 0.375rem 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 0.9375rem;
+  }
+  .previous-releases__list li:last-child {
+    border-bottom: none;
+  }
+  .previous-releases__date {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+
+  /* ── Print styles ────────────────────────────────────────────────── */
+  @media print {
+    .example-grid,
+    .schema-card,
+    .release-block,
+    .release-asset-list,
+    .previous-releases {
+      page-break-inside: avoid;
+    }
+    .example-card,
+    .schema-card,
+    .release-asset {
+      border-color: #000;
+    }
+    /* Force install-instructions disclosure open in print so the air-gapped
+       install workflow noted in the spec edge case has the steps printed. */
+    .release-install:not([open]) > summary + .release-install__body {
+      display: block;
+    }
+    .release-install > summary::after {
+      display: none;
+    }
+    /* Operationally-correct user persona ("here is a printable reference
+       document, not a screenshot of the screen"): expose the link target
+       inline next to download anchors so the reader sees URLs on paper.
+       The :not([href^="#"]) guard skips in-page anchors. */
+    .example-card__link[href]:not([href^="#"])::after,
+    .schema-card__link[href]:not([href^="#"])::after,
+    .release-asset__download[href]:not([href^="#"])::after {
+      content: ' (' attr(href) ')';
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      color: #000;
+      word-break: break-all;
+    }
+    /* SHA-256 forced to full ink black with exact color rendering so it
+       stays readable on a laser printer (default driver behavior may
+       desaturate muted greys below readability threshold). */
+    .release-asset__sha {
+      color: #000 !important;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+</style>

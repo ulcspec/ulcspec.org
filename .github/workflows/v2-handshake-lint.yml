@@ -1,22 +1,21 @@
 
 name: ulcspec.org v2-handshake-lint
 
+# Runs on every PR to main (no paths filter). This job is a required status
+# check in the "Target Main" ruleset, and a path-filtered required check never
+# reports on PRs that miss those paths, which silently blocks the merge. The
+# steps below already guard on file presence, so this stays cheap when the
+# launchpad envelope is untouched.
 on:
   pull_request:
-    paths:
-      - ".launchpad/**"
-      - ".harness/**"
-      - "scripts/compound/**"
-      - "scripts/hooks/**"
-      - "scripts/maintenance/**"
-      - "lefthook.yml"
+    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
-  handshake-lint:
-    name: handshake-lint
+  v2-handshake-lint:
+    name: v2-handshake-lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

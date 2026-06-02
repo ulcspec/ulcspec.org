@@ -1,0 +1,35 @@
+---
+// Shared page wrapper. Composes the layout + sticky nav + main landmark +
+// footer so per-route pages drop in as a single <PageShell> tag with their
+// content in the default slot.
+//
+// Per-page <title> / description / OG / canonical pass through to Layout.
+// Per-page head injection (JSON-LD, preloads, etc.) goes via <slot name="head">.
+
+import Layout from '../layouts/main.astro';
+import Nav from './Nav.astro';
+import SiteFooter from './SiteFooter.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+
+const { title, description, ogImage, canonical } = Astro.props;
+---
+
+<Layout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  canonical={canonical}
+>
+  <slot name="head" slot="head" />
+  <Nav />
+  <main id="main">
+    <slot />
+  </main>
+  <SiteFooter />
+</Layout>

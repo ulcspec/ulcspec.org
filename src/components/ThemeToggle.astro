@@ -1,0 +1,74 @@
+---
+// Theme toggle. Persists pref in localStorage; falls back to OS preference.
+// Storage key shared with the layout bootstrap (src/lib/theme.ts).
+import Button from './Button.astro';
+---
+
+<Button
+  variant="ghost"
+  size="icon"
+  id="theme-toggle"
+  ariaLabel="Toggle theme"
+  title="Toggle theme"
+>
+  <svg
+    class="h-5 w-5 hidden dark-only"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path
+      d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3l1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3l1.42-1.42"
+    ></path>
+  </svg>
+  <svg
+    class="h-5 w-5 hidden light-only"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path>
+  </svg>
+</Button>
+
+<style>
+  :root[data-theme='dark'] .dark-only {
+    display: inline-block;
+  }
+  :root[data-theme='light'] .light-only {
+    display: inline-block;
+  }
+</style>
+
+<script>
+  import { THEME_STORAGE_KEY, type ThemeName } from '../lib/theme';
+
+  const NEXT: Record<ThemeName, ThemeName> = { light: 'dark', dark: 'light' };
+
+  function resolveCurrent(): ThemeName {
+    const attr = document.documentElement.getAttribute('data-theme');
+    return attr === 'light' ? 'light' : 'dark';
+  }
+
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const next = NEXT[resolveCurrent()];
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {
+        /* ignore */
+      }
+    });
+  }
+</script>
