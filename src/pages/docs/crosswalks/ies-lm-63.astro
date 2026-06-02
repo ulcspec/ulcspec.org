@@ -1,8 +1,7 @@
 ---
-// /spec/crosswalks/ies-lm-63, placeholder. The four crosswalks (GLDF,
-// ETIM, IES LM-63, EULUMDAT) are status="planned" at v1 per the
-// crosswalks index page. PR-1b wires the upstream MDX once the mapping
-// documents land in ulcspec/ULC (mappings/<standard>-crosswalk.md).
+// /docs/crosswalks/ies-lm-63: planned crosswalk (status="planned" at v1; see
+// the crosswalks index). Renders here once the ULC-to-IES-LM-63 mapping is
+// published in the spec repository.
 
 import Callout from '../../../components/Callout.astro';
 import PageShell from '../../../components/PageShell.astro';
@@ -11,21 +10,21 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 
 <PageShell
   title="IES LM-63 crosswalk - ULC specification"
-  description="Field-by-field crosswalk between ULC and IES LM-63, the IESNA photometric data format. Documentation in progress; the upstream MDX wires up in PR-1b."
+  description="Field-by-field crosswalk between ULC and IES LM-63, the IESNA photometric data format. Planned; not yet published."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">IES LM-63 crosswalk.</h1>
 
-    <Callout intent="default" label="Planned (documentation in progress)">
+    <Callout intent="default" label="Planned">
       <p>
-        This crosswalk is planned at v1. The upstream mapping document
-        will land at <code>mappings/ies-lm-63-crosswalk.md</code> in
-        <a href="https://github.com/ulcspec/ULC">ulcspec/ULC</a>; PR-1b
-        wires it onto this route via the spec-sync Content Loader.
+        This crosswalk is planned. When the ULC-to-IES LM-63 mapping is
+        published in the
+        <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>,
+        it will render here.
       </p>
       <p>
-        For now, see the <a href="/docs/crosswalks">crosswalks overview</a>
-        for the four planned crosswalks and their context.
+        For now, see the <a href="/docs/crosswalks">crosswalks overview</a> for
+        all four planned crosswalks and their context.
       </p>
     </Callout>
   </SpecDocsLayout>
