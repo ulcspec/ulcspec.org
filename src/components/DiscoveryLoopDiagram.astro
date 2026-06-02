@@ -21,6 +21,15 @@ const stages: readonly Stage[] = [
   { label: 'Aggregator interpretation', sub: 'becomes the data layer', loss: true },
   { label: "Designer's tool", sub: 'consumes the interpretation', loss: false },
 ];
+
+interface Props {
+  /** Audience-framed caption. Defaults to the manufacturer-seat framing. */
+  caption?: string;
+}
+
+const {
+  caption = "Today's discovery loop, from the manufacturer's seat. Loss accumulates at the extraction and aggregator-interpretation hops.",
+} = Astro.props;
 ---
 
 <figure class="dl-fig">
@@ -41,7 +50,7 @@ const stages: readonly Stage[] = [
     ))}
   </div>
   <figcaption class="dl-cap">
-    Today's discovery loop, from the manufacturer's seat. Loss accumulates at the extraction and aggregator-interpretation hops.
+    {caption}
   </figcaption>
 </figure>
 

@@ -13,6 +13,7 @@ import PromptBlock from '../components/PromptBlock.astro';
 import Callout from '../components/Callout.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 import BeforeAfterDiagram from '../components/BeforeAfterDiagram.astro';
+import DiscoveryLoopDiagram from '../components/DiscoveryLoopDiagram.astro';
 import {
   TIER1_PROMPT_RENDER,
   TIER1_PROMPT_COMPARE,
@@ -32,8 +33,8 @@ const crossLinks = [
   { href: '/docs#how-to-use-today', labelHtml: 'Two-tier consumption deep dive' },
   { href: '/downloads#examples', labelHtml: 'Sample records + LLM prompts' },
   { href: '/governance', labelHtml: 'Stewardship and open license' },
-  { href: '/for-manufacturers', labelHtml: 'Read the manufacturer-track pitch' },
-  { href: '/#adopters', labelHtml: 'See current adopters' },
+  { href: '/for-manufacturers', labelHtml: 'Read the manufacturer track' },
+  { href: '/#adopters', labelHtml: 'Adoption status' },
 ];
 
 const pageTitle = 'ULC for lighting designers: the data layer upgrade';
@@ -80,6 +81,7 @@ const pageDescription = 'Specifying is moving from PDFs to AI. ULC feeds your to
         <p>
           The limit on AI in specification isn't the model. It's the data layer underneath. ULC fixes the data layer.
         </p>
+        <DiscoveryLoopDiagram caption="Today's discovery loop, from the specifier's seat. What reaches your tools is an extraction layer's guess, not the manufacturer's source." />
       </section>
 
       {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
