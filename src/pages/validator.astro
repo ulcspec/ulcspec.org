@@ -1,5 +1,5 @@
 ---
-// /validator — interactive in-browser .ulc.json validator.
+// /validator: interactive in-browser .ulc.json validator.
 //
 // Section spec:  docs/tasks/sections/validator.md
 // Copy:          docs/growth/copy/validator.md
@@ -18,17 +18,18 @@ import PageShell from '../components/PageShell.astro';
 import Callout from '../components/Callout.astro';
 import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 import ValidatorIsland from '../components/ValidatorIsland.astro';
+import HashVerifyDiagram from '../components/HashVerifyDiagram.astro';
 
 const pageTitle = 'The ULC validator';
 const pageDescription =
-  'Drag a .ulc.json file to check schema conformance against ULC v0.5.1 (JSON Schema Draft 2020-12). Files never leave your browser. Optional SHA-256 hash verification of declared source files.';
+  'Drag a .ulc.json file to check it against the ULC schema (JSON Schema Draft 2020-12). Files never leave your browser. Drop the source PDF, IES, or LDT alongside to verify its SHA-256 hashes.';
 
 const crossLinks = [
   { href: '/docs', labelHtml: 'Field reference and authoring patterns' },
-  { href: '/for-designers', labelHtml: 'Designer track: verify a <code>.ulc</code> from a rep' },
-  { href: '/for-manufacturers', labelHtml: 'Manufacturer track: publish your first record' },
-  { href: '/downloads', labelHtml: 'Download the canonical Go CLI' },
-  { href: 'https://github.com/ulcspec/ULC', labelHtml: 'The spec repository on GitHub' },
+  { href: '/for-designers', labelHtml: 'ULC for designers' },
+  { href: '/for-manufacturers', labelHtml: 'ULC for manufacturers' },
+  { href: '/downloads', labelHtml: 'Download the Go CLI' },
+  { href: 'https://github.com/ulcspec/ULC', labelHtml: 'The spec on GitHub' },
 ];
 ---
 
@@ -39,14 +40,9 @@ const crossLinks = [
       <p class="eyebrow">/validator</p>
       <h1 class="hero__h1">Validate a <code>.ulc.json</code> record.</h1>
       <p class="hero__sub">
-        Drop a file to check schema conformance against ULC v0.5.1 (JSON Schema
-        Draft 2020-12). Source files (PDF, IES, LDT, ULD) can be dropped
-        alongside to verify SHA-256 hashes.
-      </p>
-      <p class="hero__audiences">
-        Designers verifying a <code>.ulc</code> file from a manufacturer rep,
-        or software vendors testing their own conformance, are both first-class
-        consumers of this surface.
+        Drop a file to check it against the ULC schema (JSON Schema Draft
+        2020-12). Add its source PDF, IES, or LDT and the validator verifies
+        their SHA-256 hashes against the record, all in your browser.
       </p>
       <div class="privacy-badge" role="note" aria-label="Privacy notice">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -57,7 +53,7 @@ const crossLinks = [
       </div>
     </header>
 
-    {/* Drop zone + paste + sample + result panel — interactive island */}
+    {/* Drop zone + paste + sample + result panel, interactive island */}
     <ValidatorIsland />
 
     {/* Idle-state explainer */}
@@ -68,28 +64,68 @@ const crossLinks = [
           <h3>Schema conformance</h3>
           <p>
             Every required field is present, every value is the right type,
-            and every enumerated value falls inside the closed-enum taxonomy
-            declared by the spec.
+            and every enumerated value falls inside the closed taxonomy the
+            spec defines.
           </p>
         </li>
         <li>
           <h3>JSON parse</h3>
           <p>
-            Malformed JSON is caught with line and column references before
-            schema validation runs. Common issues: trailing comma, unescaped
-            quote, missing brace.
+            Malformed JSON is caught first, with the line and column, before
+            schema checks run. Usual suspects: a trailing comma, an unescaped
+            quote, a missing brace.
           </p>
         </li>
         <li>
           <h3>Source-file hash verification</h3>
           <p>
-            Drop the PDF, IES, LDT, or ULD files declared in the record's
-            <code>source_files</code> block and the validator computes
-            SHA-256 hashes in your browser and verifies them against the
-            declared values.
+            Drop the PDF, IES, or LDT files the record declares in its
+            <code>source_files</code> block and the validator recomputes their
+            SHA-256 hashes in your browser, then checks them against the record.
           </p>
         </li>
       </ol>
+    </section>
+
+    {/* Hash mechanism. Pays off the "tamper-evident" line featured on the
+        landing and audience pages. The one place the full SHA-256 mechanism
+        is taught. */}
+    <section class="mechanism" aria-labelledby="mechanism-h2">
+      <h2 id="mechanism-h2">What a hash match proves.</h2>
+      <p>
+        A ULC record claims that every value traces back to the manufacturer's
+        own datasheet, IES, and LDT files. But a JSON file is just text: easy
+        to copy, easy to edit. So how do you know the record matches the real
+        source files, and that no one changed a lumen output or a CRI after
+        the fact?
+      </p>
+      <p>
+        ULC doesn't embed the source files; it fingerprints them. Each declared
+        source file carries a SHA-256 hash: a 64-character fingerprint computed
+        from the file's exact bytes. The same file always produces the same
+        fingerprint. Change a single byte, even one invisible character, and
+        the fingerprint changes completely. You can't run it backward to
+        recover the file, and you can't craft a different file that lands on
+        the same fingerprint.
+      </p>
+      <p>
+        Drop the original PDF, IES, or LDT next to the record and the validator
+        recomputes each fingerprint in your browser, then compares it to the
+        one the record declares. A match means this is the exact file the
+        record was built from, unchanged. A mismatch means the file and the
+        record disagree, and you know not to trust the record's numbers. Anyone
+        can run this check, with any SHA-256 tool, without trusting a server,
+        the person who sent the file, or even this validator.
+      </p>
+
+      <HashVerifyDiagram />
+
+      <Callout intent="default" label="Tamper-evident, not trust-me">
+        <p>
+          You don't take a ULC record's numbers on faith. With the source files
+          in hand, anyone can prove the record traces to them, byte for byte.
+        </p>
+      </Callout>
     </section>
 
     {/* Validator-fidelity disclosure */}
@@ -181,17 +217,9 @@ const crossLinks = [
     color: var(--text-muted);
     line-height: 1.55;
     max-width: 44rem;
-    margin: 0 0 0.875rem 0;
-  }
-  .hero__audiences {
-    font-size: 0.9375rem;
-    color: var(--text-subtle);
-    line-height: 1.55;
-    max-width: 44rem;
     margin: 0 0 1.5rem 0;
   }
-  .hero__sub code,
-  .hero__audiences code {
+  .hero__sub code {
     font-family: var(--font-mono);
     font-size: 0.95em;
     color: var(--accent-warm);
@@ -261,6 +289,31 @@ const crossLinks = [
     max-width: 44rem;
   }
   .checks code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  /* Hash mechanism */
+  .mechanism {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .mechanism h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1.25rem 0;
+    color: var(--text);
+  }
+  .mechanism p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    max-width: 44rem;
+  }
+  .mechanism code {
     font-family: var(--font-mono);
     font-size: 0.95em;
     color: var(--accent-warm);
