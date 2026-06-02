@@ -6,14 +6,14 @@
 // Tier 2 prose, neutrality framing, and audience-aware cross-links per
 // copy artifact docs/growth/copy/spec.md (How to use ULC today section).
 // The Tier 1 prompt is rendered from the SSOT
-// src/content/prompts/tier1-prompts.ts (TIER1_PROMPT_RENDER) — fourth
+// src/content/prompts/tier1-prompts.ts (TIER1_PROMPT_RENDER), fourth
 // consumer of that SSOT after homepage, /for-designers x3, and
 // /downloads#prompts (forthcoming). PromptBlock id `tier1-spec-render`
 // is unique across all five tier1-* consumers in the codebase.
 //
 // The trailing cross-link block is in-flow surface copy, not page-footer
-// chrome; the third bullet references "below" within this section. Do
-// not fold into <CrossLinkFooter>.
+// chrome; keep it inside this section rather than folding it into
+// <CrossLinkFooter>.
 //
 // Single-surface (/docs landing) consumer.
 
@@ -25,20 +25,18 @@ import { TIER1_PROMPT_RENDER } from '../content/prompts/tier1-prompts';
 <section id="how-to-use-today" class="two-tier" aria-labelledby="how-to-use-today-h">
   <h2 id="how-to-use-today-h" class="two-tier__h">How to use ULC today</h2>
   <p class="two-tier__lead">
-    ULC files work with the tools designers, manufacturers' engineering
-    leads, and software vendors already use today, without waiting for
-    ecosystem maturity. There are two tiers.
+    ULC files work with the tools you already use, no waiting for the
+    ecosystem to catch up. There are two tiers.
   </p>
 
   <div class="two-tier__tier">
     <p class="two-tier__eyebrow">Tier 1</p>
     <h3 class="two-tier__sub">Generic LLMs parse <code>.ulc</code> files natively.</h3>
     <p class="two-tier__body">
-      Drag a <code>.ulc.json</code> from <code>examples/</code> into ChatGPT,
-      Claude, or Gemini alongside the prompt below and the LLM produces a
-      useful spec-sheet rendering, cross-product comparison, or attribute
-      lookup. No setup. No installation. The activation surface is the LLM
-      you already have open.
+      Drag a <code>.ulc.json</code> into ChatGPT, Claude, or Gemini with the
+      prompt below, and you get back a clean spec sheet, a cross-product
+      comparison, or a quick attribute lookup. No setup, no install: the tool
+      is the LLM you already have open.
     </p>
     <PromptBlock
       id="tier1-spec-render"
@@ -64,14 +62,12 @@ import { TIER1_PROMPT_RENDER } from '../content/prompts/tier1-prompts';
     <p class="two-tier__eyebrow">Tier 2</p>
     <h3 class="two-tier__sub">Lighting-domain specialty consumption tools.</h3>
     <p class="two-tier__body">
-      Specialty consumption tools add on-demand fetching of the linked
-      IES / LDT photometric files and built-in resolution for industry-
-      shorthand glossary: L90, TM-21, CCR, SVM, melanopic DER, IES-C,
-      CIE 97 maintenance-factor tables. One specialty tool, LightingAgent.AI,
-      is in development today. The specialty layer is the consumption-layer
-      audience this spec page also serves; tool builders implementing this
-      tier should consult the schema reference plus the four canonical
-      reference records plus the relevant crosswalks (when landed).
+      Lighting-domain tools go further: they fetch the linked IES and LDT
+      files on demand and resolve industry shorthand a generic model would
+      miss, like TM-21 lumen maintenance, melanopic ratios, and
+      maintenance-factor tables. One such tool, LightingAgent.AI, is in
+      development today. Building one yourself? Start from the schema
+      reference, the four canonical records, and the relevant crosswalks.
     </p>
   </div>
 
@@ -87,21 +83,24 @@ import { TIER1_PROMPT_RENDER } from '../content/prompts/tier1-prompts';
     <ul>
       <li>
         <strong>Designers:</strong>
-        full designer-track activation flywheel
+        the full designer track
         <a href="/for-designers" class="two-tier__link two-tier__link--inline">
           /for-designers <span aria-hidden="true">→</span>
         </a>
       </li>
       <li>
         <strong>Manufacturers:</strong>
-        full manufacturer-track publication pitch
+        the full manufacturer track
         <a href="/for-manufacturers" class="two-tier__link two-tier__link--inline">
           /for-manufacturers <span aria-hidden="true">→</span>
         </a>
       </li>
       <li>
-        <strong>Software vendors and AI tool builders:</strong>
-        continue to the schema reference and crosswalks below.
+        <strong>Building tools:</strong>
+        start with the schema reference
+        <a href="/docs/schema" class="two-tier__link two-tier__link--inline">
+          /docs/schema <span aria-hidden="true">→</span>
+        </a>
       </li>
     </ul>
   </div>
