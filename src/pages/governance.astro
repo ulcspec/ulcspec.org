@@ -22,23 +22,16 @@ import CrossLinkFooter from '../components/CrossLinkFooter.astro';
 
 const tocItems = [
   { href: '#stewardship', label: 'Stewardship' },
-  { href: '#license', label: 'License and governance' },
+  { href: '#license', label: 'Open by license' },
   { href: '#industry', label: 'Industry engagement' },
-  { href: '#genesis', label: 'Genesis' },
-  { href: '#pilots', label: 'Pilots' },
-  { href: '#faq', label: 'The FAQ' },
+  { href: '#faq', label: 'FAQ' },
 ];
 
 const faqItems = [
   {
-    id: 'q-longevity',
-    question: 'Will this be around in 5 years?',
-    answerHtml: `<p>Three structural answers. One, MIT license: the standard cannot be captured by any single party. Two, neutral stewardship by a practicing designer; the field set reflects specifier needs, not vendor roadmaps. Three, <code>GOVERNANCE.md</code> plus the Schema Change Proposal process means future schema changes go through open review.</p><p>If the original steward steps away, the standard is structurally able to continue. The MIT license means no single party owns it. The <code>GOVERNANCE.md</code> document defines how stewardship transitions. Anyone can fork. Anyone can become the next steward.</p>`,
-  },
-  {
-    id: 'q-designer-steward',
-    question: 'Why a designer-steward and not a trade body?',
-    answerHtml: `<p>Trade bodies that govern adjacent standards have commercial software products coupled to their stewardship. That coupling shapes design decisions: which fields get priority, which integration paths get easy paths, which fields stay in the schema. A practicing designer has no such coupling.</p><p>The steward specifies. The standard reflects what specifiers need, not what a planning-tool vendor's roadmap needs.</p>`,
+    id: 'q-gldf',
+    question: 'How does ULC relate to GLDF?',
+    answerHtml: `<p>They solve different problems at different layers, and a manufacturer can publish both. GLDF (Global Lighting Data Format) is the rich XML container the DIALux and RELUX planning ecosystems read for photometric planning; ULC is a lightweight JSON record optimized for datasheet data and direct consumption by AI and design tools. ULC does not replace GLDF and is not a competitor to it. A field-level crosswalk between the two is planned, so a value expressed in one can map to the other. GLDF is governed by DIAL, with whom ULC is in active dialogue.</p>`,
   },
   {
     id: 'q-formal-standards',
@@ -57,37 +50,9 @@ const faqItems = [
   },
   {
     id: 'q-funding',
-    question: 'How is this funded, and what happens if funding goes away?',
-    answerHtml: `<p>ULC is not funded. There is no commercial entity, no SaaS layer, no subscription. The steward maintains it as part of the same professional practice that informs the field set.</p><p>The MIT license means the standard is structurally portable: if the original steward stops maintaining it, anyone can fork and continue. There is no funding line for anything to "go away with".</p>`,
+    question: 'How is this funded?',
+    answerHtml: `<p>ULC is not a business. No company owns it, there is no subscription, and nothing is paywalled. The steward maintains it as part of the same practice that informs the schema.</p><p>Because it is MIT-licensed and openly governed, the standard survives regardless of any one person or funding source: if the steward ever stops maintaining it, anyone can fork and continue.</p>`,
   },
-];
-
-// Crosswalk status table. Values are honest pre-launch: all four are
-// "planned" at v1. As a crosswalk lands in ulcspec/ULC (e.g.
-// gldf-crosswalk.md ships), the corresponding row flips planned → landed.
-// Section spec §Edge Cases row 2 documents this content-update trigger.
-type CrosswalkStatus = 'planned' | 'in-progress' | 'landed';
-
-interface CrosswalkRow {
-  format: string;
-  governedBy: string;
-  status: CrosswalkStatus;
-}
-
-// Exhaustive Record lookup so a new CrosswalkStatus variant fails the
-// type-check until a label is added. Mirrors the proofRows pattern in
-// /for-manufacturers (the "third surface, same shape" discipline).
-const crosswalkStatusLabels: Record<CrosswalkStatus, string> = {
-  planned: 'Planned',
-  'in-progress': 'In progress',
-  landed: 'Landed',
-};
-
-const crosswalks: readonly CrosswalkRow[] = [
-  { format: 'GLDF', governedBy: 'DIAL', status: 'planned' },
-  { format: 'ETIM', governedBy: 'ETIM International', status: 'planned' },
-  { format: 'IES LM-63', governedBy: 'IES', status: 'planned' },
-  { format: 'EULUMDAT', governedBy: 'industry de-facto', status: 'planned' },
 ];
 
 // Cross-link footer destinations. The /spec and /spec#crosswalks entries
@@ -121,12 +86,12 @@ const pageDescription = 'Open standard, MIT-licensed, neutrally stewarded.';
       <h1
         class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
       >
-        Stewardship, license, and industry engagement.
+        Open by license. Neutral by design.
       </h1>
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
       >
-        ULC is stewarded by lighting professionals, for everyone who reads a luminaire datasheet during their work. MIT-licensed, with active dialogue with the bodies that govern adjacent standards.
+        ULC is MIT-licensed and stewarded by a practicing lighting designer, not a software vendor or a trade body, and built to outlast any single maintainer.
       </p>
     </div>
   </section>
@@ -151,10 +116,9 @@ const pageDescription = 'Open standard, MIT-licensed, neutrally stewarded.';
 
       {/* ── 1. STEWARDSHIP ─────────────────────────────────────────────── */}
       <section id="stewardship" aria-labelledby="stewardship-heading">
-        <p class="step-num">Stewardship</p>
-        <h2 id="stewardship-heading">Stewarded by lighting professionals.</h2>
+        <h2 id="stewardship-heading">Stewarded by a designer, not a vendor.</h2>
         <p>
-          ULC is stewarded by lighting professionals, for everyone who reads a luminaire datasheet during their work.
+          ULC is stewarded by Foad Shafighi, a practicing lighting designer, not a software company and not a trade body. The schema reflects what specifiers need because the steward specifies: the taxonomy uses the categories designers use, and the provenance fields answer the questions a spec audit asks.
         </p>
 
         <div class="credential-block" role="group" aria-label="Steward credentials">
@@ -166,130 +130,57 @@ const pageDescription = 'Open standard, MIT-licensed, neutrally stewarded.';
           <p class="credential-block__neg">Not a software vendor. Not a trade body.</p>
         </div>
 
-        {/* LightingAgent.AI disclosure placed before the specifier-side
-            structural defense so the disclosure lands before any case for
-            the steward is made. Storyboard Step 7 "upfront" framing. */}
         <Callout intent="warning" label="LightingAgent.AI disclosure">
           <p>
-            The same founder also runs LightingAgent.AI, the first production consumer of ULC. The structural answer to the conflict is that ULC's repository lives at <code>github.com/ulcspec/ULC</code>, not under any LightingAgent organization. The MIT license and the open Schema Change Proposal process mean anyone can fork, anyone can submit changes, anyone can implement a competing consumer.
-          </p>
-          <p>
-            That choice is permanent at the license layer. The full structural answer is in the <a href="#q-lightingagent" class="link-inline">"Is this just LightingAgent's data layer?"</a> objection below.
+            The same founder also builds LightingAgent.AI, the first tool to consume ULC. The standard is deliberately not owned by it: the repository lives at <code>github.com/ulcspec/ULC</code>, not under any LightingAgent organization, it is MIT-licensed, and anyone can fork it or build a competing consumer. That separation is permanent at the license layer; the fuller answer is in the <a href="#q-lightingagent" class="link-inline">FAQ</a> below.
           </p>
         </Callout>
-
-        <p>
-          The schema's field set, taxonomy, and design priorities reflect specifier-side needs because the steward specifies. The closed-enum taxonomy uses the categories specifiers use. The provenance metadata answers the questions specification audits ask. The metadata-only constraint reflects the IP framing specifiers expect when integrating manufacturer files into a project.
-        </p>
       </section>
 
       {/* ── 2. LICENSE AND GOVERNANCE ──────────────────────────────────── */}
       <section id="license" aria-labelledby="license-heading">
-        <p class="step-num">License and governance</p>
-        <h2 id="license-heading">MIT-licensed, open Schema Change Proposal process.</h2>
+        <h2 id="license-heading">Open by license, open to change.</h2>
         <p>
-          ULC is published under the MIT license. The full text is in <code>LICENSE</code> at the project root and in the spec repository. Anyone can use ULC. Anyone can fork it. Anyone can build commercial products on top of it. No royalty, no warranty, no licensing committee.
+          ULC is MIT-licensed: anyone can use it, fork it, or build commercial products on it, with no royalty and no committee. Schema changes go through an open Schema Change Proposal process: anyone can file one, review happens in public, and the four canonical reference records are the fixtures every change must still satisfy.
+        </p>
+        <p>
+          Because the license is permissive and the governance is public, the standard does not depend on one person. If the steward ever steps away, anyone can fork and continue.
         </p>
 
         <Callout intent="accent" label="The governance document">
           <p>
-            The full governance document lives in the spec repository: <a href="https://github.com/ulcspec/ULC/blob/main/GOVERNANCE.md" rel="noopener external" class="link-inline"><code>github.com/ulcspec/ULC/GOVERNANCE.md</code> <span aria-hidden="true">↗</span></a>. It defines who maintains, how decisions are made, how stewardship transitions, and how Schema Change Proposals flow from filing to merge.
-          </p>
-        </Callout>
-
-        <h3 id="scp-process">The Schema Change Proposal process.</h3>
-        <p>
-          Schema Change Proposals are the open channel for evolving ULC. Anyone can submit one via the spec repository. SCPs follow a published review flow: filing, public discussion, maintainer review, merge or rejection with rationale. The four canonical reference records in <code>examples/</code> have been the load-bearing input on every schema iteration so far.
-        </p>
-
-        <Callout intent="default" label="If the steward steps away">
-          <p>
-            The standard is structurally able to continue. The MIT license means no single party owns it. The <code>GOVERNANCE.md</code> document defines how stewardship transitions. The SCP process means schema evolution does not depend on one person.
-          </p>
-          <p>
-            Anyone can fork. Anyone can become the next steward. The structural longevity story is the actual safeguard, not the personal one.
+            The full model, who maintains, how decisions are made, how stewardship transitions, lives in the spec repository at <a href="https://github.com/ulcspec/ULC/blob/main/GOVERNANCE.md" rel="noopener external" class="link-inline"><code>github.com/ulcspec/ULC/GOVERNANCE.md</code> <span aria-hidden="true">↗</span></a>.
           </p>
         </Callout>
       </section>
 
       {/* ── 3. INDUSTRY ENGAGEMENT ─────────────────────────────────────── */}
       <section id="industry" aria-labelledby="industry-heading">
-        <p class="step-num">Industry engagement</p>
-        <h2 id="industry-heading">Active dialogue with the bodies that govern adjacent standards.</h2>
+        <h2 id="industry-heading">In dialogue with the industry.</h2>
         <p>
-          ULC is in active dialogue with DIAL (which governs DIALux and GLDF), the LIA, and the IES. ULC describes these relationships as active dialogue, not endorsement. Formal endorsement is a separate, longer process ULC has not pursued at v1.
+          ULC is in active dialogue with DIAL (which governs DIALux and GLDF), the IES, and the LIA. That is dialogue, not endorsement; formal endorsement is a longer process ULC has not pursued at this stage. Formal-standards bodies like IEEE, ISO, and CEN move on multi-year cycles, so ULC ships the working spec now and stays structured to align with a formal process later. Crosswalks to GLDF, ETIM, IES LM-63, and EULUMDAT are planned, each one requiring coordination with its governing body.
         </p>
-
-        <h3 id="crosswalks-heading">Planned crosswalks.</h3>
         <p>
-          The crosswalks below define how ULC translates to and from the formats that govern adjacent layers of the lighting data stack. All four are planned at v1: ULC v1 ships the standard itself, and crosswalk specs are next in the roadmap because each one requires coordination with its governing body. Row status flips as each crosswalk lands in the spec repository.
+          ULC was introduced at IALD Enlighten Europe 2025 in Valencia and developed through dialogue following the National Lighting Bureau AI Think Tank in New York, in 2026.
         </p>
-
-        <table class="crosswalk-table" aria-label="ULC crosswalk status">
-          <thead>
-            <tr>
-              <th scope="col">Format</th>
-              <th scope="col">Governed by</th>
-              <th scope="col">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {crosswalks.map((row) => (
-              <tr>
-                <th scope="row" class="crosswalk-format">{row.format}</th>
-                <td class="crosswalk-governed">{row.governedBy}</td>
-                <td>
-                  <span class={`cross-status cross-status--${row.status}`}>
-                    {crosswalkStatusLabels[row.status]}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <p class="pilot-cta">
+          Evaluating a pilot, or want to get involved? Write to the steward at{' '}
+          <a
+            href="mailto:contact@ulcspec.org?subject=ULC%20inquiry"
+            class="link"
+          >contact@ulcspec.org</a>, or open an issue on{' '}
+          <a href="https://github.com/ulcspec/ULC" rel="noopener external" class="link-inline">GitHub <span aria-hidden="true">↗</span></a>.
+        </p>
       </section>
 
       {/* ── 4. GENESIS ─────────────────────────────────────────────────── */}
-      <section id="genesis" aria-labelledby="genesis-heading">
-        <p class="step-num">Genesis</p>
-        <h2 id="genesis-heading">Introduced at the National Lighting Bureau AI Think Tank 2026 in New York.</h2>
-        <p>
-          The talk framed the data-layer problem behind AI-mediated specifier discovery, named the dual-track activation flywheel, where designers consume and ask their preferred manufacturer reps for ULC files, and manufacturers publish and surface in AI-mediated discovery, and proposed ULC as the open standard the industry needed.
-        </p>
-      </section>
+{/* genesis folded into Industry engagement above */}
 
       {/* ── 5. PILOTS ──────────────────────────────────────────────────── */}
-      <section id="pilots" aria-labelledby="pilots-heading">
-        <p class="step-num">Pilots</p>
-        <h2 id="pilots-heading">Pilot conversations are underway.</h2>
-        <p>
-          The earliest pilots, with manufacturers and software vendors, shape the schema through the Schema Change Proposal process; later adopters get the standard once it is table-stakes.
-        </p>
-
-        <Callout intent="default" label="The canonical adopters register">
-          <p>
-            The canonical adoption register lives on the homepage at <a href="/#adopters" class="link-inline">/#adopters</a>. At v1 the register is honestly empty; it will populate as manufacturers publish <code>.ulc</code> files for their products. The register is not duplicated here.
-          </p>
-        </Callout>
-
-        <p class="pilot-cta">
-          If you are evaluating a pilot, write directly to the steward:{' '}
-          <a
-            href="mailto:contact@ulcspec.org?subject=Pilot%20inquiry"
-            class="link"
-          >contact@ulcspec.org</a>.
-        </p>
-
-        <p class="pilot-cross">
-          The full manufacturer-track pitch is at{' '}
-          <a href="/for-manufacturers" class="link-inline">/for-manufacturers <span aria-hidden="true">→</span></a>. The full designer-track pitch is at{' '}
-          <a href="/for-designers" class="link-inline">/for-designers <span aria-hidden="true">→</span></a>.
-        </p>
-      </section>
+{/* pilots section dropped: pilot contact folded into Industry engagement; the adopters register lives on the homepage */}
 
       {/* ── 6. THE FAQ ─────────────────────────────────────────────────── */}
       <section id="faq" aria-labelledby="faq-heading">
-        <p class="step-num">The FAQ</p>
         <h2 id="faq-heading">Common questions.</h2>
         <FaqAccordion items={faqItems} />
       </section>
