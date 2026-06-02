@@ -1,7 +1,7 @@
 ---
-// /for-manufacturers: manufacturer-track audience landing page. Discovery-led,
+// /for-manufacturers: manufacturer audience landing page. Discovery-led,
 // less-is-more register (v3 copy overhaul), with a designer-demand callout in
-// the Insight section to surface the dual-track activation flywheel.
+// the Insight section linking the supply and demand sides.
 //
 // Spec:          docs/tasks/sections/for-manufacturers.md
 // Copy:          docs/growth/copy/for-manufacturers.md
@@ -26,7 +26,7 @@ const tocItems = [
 const crossLinks = [
   { href: '/validator', labelHtml: 'Try the validator on a candidate <code>.ulc</code> file' },
   { href: '/docs', labelHtml: 'Authoring patterns and PIM mapping guides' },
-  { href: '/docs#how-to-use-today', labelHtml: 'Two-tier consumption deep dive' },
+  { href: '/docs#how-to-use-today', labelHtml: 'How to use ULC today' },
   { href: '/governance', labelHtml: 'Stewardship and open license' },
   { href: '/#adopters', labelHtml: 'Adoption status' },
   { href: '/for-designers', labelHtml: 'Demand side: the designer track' },
@@ -43,9 +43,6 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
     <div
       class="relative mx-auto max-w-7xl px-6 pt-16 pb-12 md:px-10 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20"
     >
-      <p class="small-caps text-xs md:text-sm text-[var(--text-muted)] mb-6">
-        Manufacturer track
-      </p>
       <h1
         class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
       >
@@ -71,13 +68,13 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       <section id="insight" aria-labelledby="insight-heading">
         <h2 id="insight-heading">Where product discovery is going</h2>
         <p>
-          Specifier discovery is moving from the designer opening your PDF to the designer asking an AI which luminaire fits. The manufacturers whose data is machine-readable are the ones that surface in the answer; the rest depend on whatever the AI guessed off the PDF. The bottleneck isn't the AI. It's the data layer underneath.
+          Specifier discovery is moving from the designer opening your PDF to the designer asking an AI which luminaire fits. Machine-readable data is what surfaces in the answer; the rest depends on whatever the AI guessed off the PDF. The bottleneck isn't the AI. It's the data layer underneath.
         </p>
         <DiscoveryLoopDiagram />
 
         <Callout intent="accent" label="Designer demand, in motion">
           <p>
-            Designers are starting to ask their reps for ULC files. That demand is the flywheel, and it's why publishing early matters. The demand side is at <a href="/for-designers" class="link-inline">/for-designers</a>.
+            Designers are starting to ask their reps for ULC files, and the more they ask, the more it pays to already have published. The demand side is at <a href="/for-designers" class="link-inline">/for-designers</a>.
           </p>
         </Callout>
       </section>
@@ -91,7 +88,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
         <ManufacturerFlowDiagram />
         <Callout intent="default" label="What ULC touches">
           <p>
-            It doesn't replace your PDF, IES, LDT, reps, distributors, or PIM. It integrates with your PIM through the published mapping guides. What it replaces is the aggregator's guess as the data your customers' tools actually read; the aggregator can still exist, it just stops being the source of truth.
+            It doesn't replace your PDF, IES, LDT, reps, distributors, or PIM. It integrates with your PIM through the published mapping guides. What it replaces is the aggregator's guess as the source your customers' tools read. The aggregator can still exist; it just stops being the source of truth.
           </p>
         </Callout>
       </section>

@@ -63,9 +63,10 @@ const crossLinks = [
         <li>
           <h3>Schema conformance</h3>
           <p>
-            Every required field is present, every value is the right type,
-            and every enumerated value falls inside the closed taxonomy the
-            spec defines.
+            Every required field is present and every value is the right type.
+            Full schema validation, including that every enumerated value
+            falls inside the closed taxonomy the spec defines, runs in the
+            canonical Go CLI and is being wired into this in-browser check.
           </p>
         </li>
         <li>
@@ -139,29 +140,26 @@ const crossLinks = [
         </summary>
         <div class="fidelity__body">
           <p>
-            This in-browser validator uses Ajv against the canonical JSON
-            Schema. The Go CLI available from <a href="/downloads">/downloads</a>
-            is the canonical reference implementation. The two are tested in
-            CI against the four canonical reference records and are expected
-            to agree on PASS or FAIL.
+            This in-browser validator runs a structural pre-check against the
+            canonical JSON Schema. The Go CLI available from <a href="/downloads">/downloads</a>
+            is the canonical reference implementation and runs the complete
+            schema check today; both are tested in CI against the four
+            canonical reference records.
           </p>
-          <p>
-            If you see a disagreement between the two on the same record,
-            that is a bug; file an issue in the spec repository and the CI
-            parity test is strengthened in response.
-          </p>
-          <Callout intent="default" label="At v1 first-draft">
+          <Callout intent="default" label="What runs today">
             <p>
-              The in-browser engine ships with a minimal structural
-              pre-validator (top-level required fields, type checks, source
-              metadata extraction) and the full Ajv consumption of the
-              schema lands in the next PR. SHA-256 hash verification is
-              fully wired today via browser SubtleCrypto. The four
-              canonical reference records in
+              In your browser, the engine parses the JSON, confirms the
+              top-level required fields are present and correctly typed,
+              reads the source metadata, and verifies SHA-256 hashes (fully
+              live via SubtleCrypto). Full schema validation against the
+              canonical JSON Schema, including the closed-taxonomy enum
+              checks, is being wired in. The four canonical reference records
+              in
               <a href="/examples/pattern-a-erco-quintessence.ulc.json">
                 <code>/examples/</code>
               </a>
-              all PASS the pre-validator.
+              all pass the pre-check; for the complete check today, use the
+              Go CLI.
             </p>
           </Callout>
           <p class="fidelity__crosslink">
