@@ -1,24 +1,17 @@
 ---
-// Site footer: steward + license, primary navigation, and project links.
-// Governance lives here now (moved out of the header). Repo URLs kept visible
-// for open-source transparency. navLinks mirrors the header (Nav.astro).
+// Site footer: steward + license (left), governance + repo links (right).
+// No footer "Navigate" menu: the header nav is sticky and always on screen,
+// so a footer nav would only duplicate it. Governance lives here now (moved
+// out of the header); repo URLs kept visible for open-source transparency.
 const year = new Date().getFullYear();
-
-const navLinks = [
-  { href: '/for-designers', label: 'For Designers' },
-  { href: '/for-manufacturers', label: 'For Manufacturers' },
-  { href: '/validator', label: 'Validator' },
-  { href: '/docs', label: 'Docs' },
-  { href: '/downloads', label: 'Downloads' },
-];
 ---
 
 <footer
   class="border-t border-token mt-6"
   style="background: var(--bg);"
 >
-  <div class="mx-auto max-w-7xl px-6 py-12 md:px-10 md:py-14">
-    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1.6fr] md:gap-12">
+  <div class="mx-auto max-w-7xl px-6 py-10 md:px-10 md:py-12">
+    <div class="grid gap-6 md:grid-cols-2">
       {/* Brand + license */}
       <div class="grid gap-2 content-start max-w-md text-sm">
         <p class="text-[var(--text-muted)] leading-relaxed">
@@ -34,54 +27,30 @@ const navLinks = [
         </p>
       </div>
 
-      {/* Primary navigation */}
-      <nav aria-label="Footer" class="text-sm">
-        <p class="small-caps text-xs text-[var(--text-subtle)] mb-3">Navigate</p>
-        <ul class="grid gap-2">
-          {navLinks.map((link) => (
-            <li>
-              <a
-                href={link.href}
-                class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors"
-              >{link.label}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* Project */}
-      <div class="text-sm">
-        <p class="small-caps text-xs text-[var(--text-subtle)] mb-3">Project</p>
-        <ul class="grid gap-2">
-          <li>
-            <a
-              href="/governance"
-              class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors"
-            >Governance</a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/ulcspec/ULC"
-              rel="noopener external"
-              class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5"
-            >
-              <span>Specification on GitHub:</span>
-              <code class="font-mono break-all">github.com/ulcspec/ULC</code>
-              <span aria-hidden="true">↗</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/ulcspec/ulcspec.org"
-              rel="noopener external"
-              class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5"
-            >
-              <span>Site source:</span>
-              <code class="font-mono break-all">github.com/ulcspec/ulcspec.org</code>
-              <span aria-hidden="true">↗</span>
-            </a>
-          </li>
-        </ul>
+      {/* Governance + repos */}
+      <div class="grid gap-2 content-start md:justify-self-end text-sm md:max-w-md">
+        <a
+          href="/governance"
+          class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors"
+        >Governance</a>
+        <a
+          href="https://github.com/ulcspec/ULC"
+          rel="noopener external"
+          class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5"
+        >
+          <span>Specification on GitHub:</span>
+          <code class="font-mono break-all">github.com/ulcspec/ULC</code>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a
+          href="https://github.com/ulcspec/ulcspec.org"
+          rel="noopener external"
+          class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors inline-flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5"
+        >
+          <span>Site source:</span>
+          <code class="font-mono break-all">github.com/ulcspec/ulcspec.org</code>
+          <span aria-hidden="true">↗</span>
+        </a>
       </div>
     </div>
   </div>
