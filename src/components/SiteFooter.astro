@@ -10,8 +10,8 @@ const year = new Date().getFullYear();
 >
   <div class="mx-auto max-w-7xl px-6 py-8 md:px-10 md:py-10">
     <div class="grid gap-6 md:grid-cols-2">
-      <div class="max-w-md">
-        <p class="text-sm text-[var(--text-muted)] leading-relaxed">
+      <div class="grid gap-2 content-start max-w-md text-sm">
+        <p class="text-[var(--text-muted)] leading-relaxed">
           Stewarded by <a
             href="https://www.linkedin.com/in/foadshafighi/"
             target="_blank"
@@ -19,9 +19,12 @@ const year = new Date().getFullYear();
             class="text-[var(--text-muted)] hover:text-[var(--accent-warm)] transition-colors underline underline-offset-4"
           >Foad Shafighi</a>, MIES IALD CLD.
         </p>
+        <p class="text-xs text-[var(--text-subtle)] leading-relaxed">
+          © {year} ULC contributors. MIT-licensed. The Universal Luminaire Cutsheet specification is an open standard.
+        </p>
       </div>
 
-      <div class="grid gap-2 md:justify-self-end text-sm md:max-w-md">
+      <div class="grid gap-2 content-start md:justify-self-end text-sm md:max-w-md">
         <a
           href="https://github.com/ulcspec/ULC"
           rel="noopener external"
@@ -42,10 +45,5 @@ const year = new Date().getFullYear();
         </a>
       </div>
     </div>
-
-    <p class="mt-6 text-xs text-[var(--text-subtle)]">
-      © {year} ULC contributors. MIT-licensed. The Universal Luminaire Cutsheet specification
-      is an open standard.
-    </p>
   </div>
 </footer>
