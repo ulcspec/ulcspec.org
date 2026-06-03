@@ -174,7 +174,7 @@ function buildEnum(name: string): TaxonomyEnum | null {
     title: def.title ?? name,
     description: def.description ?? '',
     values: def.enum,
-    usedBy: [...(usage[name] ?? [])].sort(),
+    usedBy: [...(usage[name] ?? [])].filter((f) => f.length > 0).sort(),
   };
 }
 
@@ -221,3 +221,40 @@ export function getTaxonomyStats(): { enumCount: number; valueCount: number } {
   }
   return { enumCount, valueCount };
 }
+
+// --- build-time integrity guard (never-untrue) -----------------------------
+//
+// Runs once when this module is imported during `astro build`. Every taxonomy
+// enum the ULC schema actually $refs must resolve to a non-empty set of real
+// field names. If a future upstream reshape (at a spec-sync pin bump) ever
+// desyncs walkUsage from the schema shape, this fails the build loudly instead
+// of shipping a /docs/taxonomy page that silently shows a referenced enum as
+// used by nothing. The independent ref scan does not trust walkUsage's own
+// bookkeeping, which is the point of a guard.
+(function assertUsageIntegrity(): void {
+  const referenced = new Set<string>();
+  const collect = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      value.forEach(collect);
+      return;
+    }
+    if (!value || typeof value !== 'object') return;
+    const node = value as Record<string, unknown>;
+    const ref = node.$ref;
+    if (typeof ref === 'string' && ref.startsWith(TAXONOMY_REF_PREFIX)) {
+      referenced.add(ref.slice(TAXONOMY_REF_PREFIX.length));
+    }
+    Object.values(node).forEach(collect);
+  };
+  collect(ulc);
+
+  const orphaned = [...referenced]
+    .filter((name) => taxonomyDefs[name])
+    .filter((name) => ![...(usage[name] ?? [])].some((f) => f.length > 0));
+
+  if (orphaned.length > 0) {
+    throw new Error(
+      `[taxonomy-reference] ${orphaned.length} taxonomy enum(s) are $ref'd by the ULC schema but resolved to an empty "used by" set (${orphaned.join(', ')}). walkUsage is out of sync with the vendored schema shape; fix the walk before /docs/taxonomy can be trusted.`,
+    );
+  }
+})();

@@ -260,3 +260,21 @@ export function getSchemaMeta(): { version: string; fieldCount: number; sectionC
   const fieldCount = sections.reduce((n, s) => n + s.fields.length, 0);
   return { version: typeof ulc.title === 'string' ? ulc.title : 'ULC', fieldCount, sectionCount: sections.length };
 }
+
+// --- build-time integrity guard (never-untrue) -----------------------------
+//
+// Runs once when this module is imported during `astro build`. If a future
+// upstream reshape (at a spec-sync pin bump) ever makes `flatten` stop
+// recursing, or guts the schema, the page would silently render far fewer
+// fields. Fail the build instead. The floors sit well below the current counts
+// (~35 sections / ~398 fields) so legitimate schema growth never trips them.
+(function assertSchemaIntegrity(): void {
+  const { fieldCount, sectionCount } = getSchemaMeta();
+  const SECTION_FLOOR = 25;
+  const FIELD_FLOOR = 250;
+  if (sectionCount < SECTION_FLOOR || fieldCount < FIELD_FLOOR) {
+    throw new Error(
+      `[schema-reference] schema reference collapsed below the sanity floor (${sectionCount} sections / ${fieldCount} fields; floor ${SECTION_FLOOR}/${FIELD_FLOOR}). The vendored schema shape likely changed in a way the loader no longer flattens; fix before shipping /docs/schema.`,
+    );
+  }
+})();
