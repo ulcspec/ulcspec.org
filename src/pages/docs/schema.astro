@@ -1,36 +1,140 @@
 ---
 import PageShell from '../../components/PageShell.astro';
 import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
-import Callout from '../../components/Callout.astro';
+import OnThisPage from '../../components/OnThisPage.astro';
+import type { Heading } from '../../lib/spec-headings';
+import { getSchemaSections, getCommonTypeSections, getSchemaMeta } from '../../lib/schema-reference';
+
+const sections = getSchemaSections();
+const commonTypes = getCommonTypeSections();
+const { fieldCount } = getSchemaMeta();
+
+const headings: Heading[] = [
+  ...sections.map((s) => ({ id: s.id, label: s.name, depth: 2 as const })),
+  ...commonTypes.map((s) => ({ id: s.id, label: s.name, depth: 3 as const })),
+];
 ---
 
 <PageShell
   title="Schema reference - ULC specification"
-  description="ULC JSON Schema (Draft 2020-12). Every field documented with type, required or optional status, description, allowed values, and example."
+  description="ULC JSON Schema (Draft 2020-12), field by field. Every block and field with its type, required status, constraints, allowed values, and a link to the taxonomy enum it draws from."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Schema reference.</h1>
     <p class="page-intro">
-      ULC's JSON Schema, written to JSON Schema Draft 2020-12 (the current
-      version of the JSON Schema standard), defines every field, type,
-      constraint, and enumeration in the format. Each field is documented
-      with type, required or optional status, description, allowed values,
-      and an example. The schema file itself is served at
-      <code>/schema/ulc.json</code> with the
-      <code>application/schema+json</code> content-type.
+      The ULC record schema, written to JSON Schema Draft 2020-12, field by
+      field. Each block below is a table of its fields with type, required
+      status, constraints, and description; categorical fields link to the
+      <a href="/docs/taxonomy" class="link-inline">taxonomy</a> enum they draw
+      from, and value composites (provenanced numbers, dual-unit measurements,
+      file references) are documented once under
+      <a href="#common-types" class="link-inline">Common types</a>. The machine
+      file is served at <a href="/schema/ulc.json"><code>/schema/ulc.json</code></a>.
+      This page documents {fieldCount} fields.
     </p>
 
-    <Callout intent="default" label="Reference in progress">
-      <p>
-        The browsable, field-by-field reference is still being built. In the
-        meantime, read the schema directly: it's served at
-        <a href="/schema/ulc.json"><code>/schema/ulc.json</code></a>, and the
-        annotated source lives in the
-        <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>.
-      </p>
-    </Callout>
+    <div class="sch-filter">
+      <label class="sch-filter__label" for="sch-search">Filter</label>
+      <input
+        type="search"
+        id="sch-search"
+        class="sch-filter__input"
+        placeholder="Filter by field, type, or block (e.g. cct, ProvenancedNumber, attestation)"
+        autocomplete="off"
+        spellcheck="false"
+        aria-describedby="sch-filter-status"
+      />
+      <p id="sch-filter-status" class="sch-filter__status" role="status" aria-live="polite"></p>
+    </div>
+
+    {[...sections, null, ...commonTypes].map((section) => (
+      section === null ? (
+        <h2 id="common-types" class="sch-divider">Common types</h2>
+      ) : (
+        <section
+          class="sch-section"
+          id={section.id}
+          data-section
+          data-search={`${section.name} ${section.description}`.toLowerCase()}
+          aria-labelledby={`${section.id}-h`}
+        >
+          <h3 id={`${section.id}-h`} class="sch-section__title">
+            <a href={`#${section.id}`} class="sch-section__anchor">{section.name}</a>
+          </h3>
+          {section.description && <p class="sch-section__desc">{section.description}</p>}
+          <div class="sch-table-scroll">
+            <table class="sch-table">
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">Type and description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {section.fields.map((f) => (
+                  <tr data-field data-search={`${f.path} ${f.typeLabel} ${f.description} ${f.constraints}`.toLowerCase()}>
+                    <td class="sch-td-field">
+                      <code>{f.path}</code>
+                      {f.required && <span class="sch-req" title="Required field">required</span>}
+                    </td>
+                    <td class="sch-td-details">
+                      <span class="sch-type">
+                        {f.typeLink ? (
+                          <a href={f.typeLink} class="sch-typelink"><code>{f.typeLabel}</code></a>
+                        ) : (
+                          <code>{f.typeLabel}</code>
+                        )}
+                        {f.constraints && <span class="sch-constraints">{f.constraints}</span>}
+                      </span>
+                      {f.description && <span class="sch-desc-text">{f.description}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    ))}
+
+    <p class="sch-empty" data-empty hidden>No field matches that filter.</p>
+
+    <OnThisPage slot="onThisPage" headings={headings} label="Blocks" />
   </SpecDocsLayout>
 </PageShell>
+
+<script>
+  // Client-side filter: hide field rows whose searchable text misses any query
+  // token, then hide sections left with no visible rows. Progressive enhancement.
+  const input = document.getElementById('sch-search') as HTMLInputElement | null;
+  const status = document.getElementById('sch-filter-status');
+  const empty = document.querySelector('[data-empty]') as HTMLElement | null;
+  const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-section]'));
+
+  function apply(query: string): void {
+    const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
+    let visibleSections = 0;
+    for (const sec of sections) {
+      const secHay = sec.dataset.search ?? '';
+      const sectionMatches = tokens.every((t) => secHay.includes(t));
+      let visibleRows = 0;
+      const rows = Array.from(sec.querySelectorAll<HTMLElement>('[data-field]'));
+      for (const row of rows) {
+        const hay = row.dataset.search ?? '';
+        // A row shows if it matches, or if the whole section name matches the query.
+        const match = tokens.length === 0 || sectionMatches || tokens.every((t) => hay.includes(t));
+        row.hidden = !match;
+        if (match) visibleRows += 1;
+      }
+      sec.hidden = visibleRows === 0;
+      if (visibleRows > 0) visibleSections += 1;
+    }
+    if (empty) empty.hidden = visibleSections !== 0;
+    if (status) status.textContent = tokens.length === 0 ? '' : `${visibleSections} block${visibleSections === 1 ? '' : 's'} match`;
+  }
+
+  input?.addEventListener('input', () => apply(input.value));
+</script>
 
 <style>
   .page-h1 {
@@ -50,9 +154,136 @@ import Callout from '../../components/Callout.astro';
     margin: 0 0 1.5rem 0;
     max-width: 44rem;
   }
-  .page-intro code {
-    font-family: var(--font-mono);
-    font-size: 0.92em;
-    color: var(--accent-warm);
+  .page-intro code { font-family: var(--font-mono); font-size: 0.92em; color: var(--accent-warm); }
+
+  .sch-filter { margin: 0 0 2rem 0; }
+  .sch-filter__label {
+    display: block;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.375rem 0;
   }
+  .sch-filter__input {
+    width: 100%;
+    max-width: 34rem;
+    font: inherit;
+    font-size: 0.9375rem;
+    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.625rem 0.875rem;
+  }
+  .sch-filter__input:focus-visible {
+    outline: 2px solid var(--accent-warm);
+    outline-offset: 1px;
+    border-color: var(--accent-warm);
+  }
+  .sch-filter__status {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    min-height: 1.2em;
+  }
+
+  .sch-divider {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2.5rem 0 0.5rem 0;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--border);
+    scroll-margin-top: 1.5rem;
+  }
+
+  .sch-section { margin: 0 0 2.5rem 0; scroll-margin-top: 1.5rem; }
+  .sch-section__title {
+    font-family: var(--font-mono);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.375rem 0;
+  }
+  .sch-section__anchor { color: inherit; text-decoration: none; }
+  .sch-section__anchor:hover { color: var(--accent-warm); }
+  .sch-section__desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0 0 0.875rem 0;
+    max-width: 48rem;
+  }
+
+  .sch-table-scroll { overflow-x: auto; }
+  .sch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .sch-table th {
+    text-align: left;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-subtle);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+  }
+  .sch-table td {
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+    padding: 0.5rem 0.75rem;
+    vertical-align: top;
+    color: var(--text-muted);
+  }
+  /* The global `code` rule sets overflow-wrap:anywhere + word-break:break-word
+     (right for prose code spans, wrong here): reset both so these mono
+     identifiers stay on one line and the row scrolls instead of chopping the
+     name into 3-character stacks. */
+  /* Two columns: Field shrinks to its content (the global code break rules are
+     reset so identifiers stay on one line), and Type-and-description takes the
+     remaining width and wraps. This fits the narrow docs column without
+     horizontal scroll. */
+  .sch-td-field {
+    width: 1px;
+    white-space: nowrap;
+    vertical-align: top;
+    padding-right: 1.5rem;
+  }
+  .sch-td-field code {
+    font-family: var(--font-mono);
+    font-size: 0.78125rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+  .sch-req {
+    display: block;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.04em;
+    font-size: 0.625rem;
+    color: var(--accent-warm);
+    margin-top: 0.1875rem;
+  }
+  .sch-td-details { vertical-align: top; }
+  .sch-type { display: block; margin-bottom: 0.25rem; }
+  .sch-type code { font-family: var(--font-mono); font-size: 0.78125rem; color: var(--text-muted); }
+  .sch-typelink { text-decoration: none; }
+  .sch-typelink code { color: var(--accent-warm); }
+  .sch-typelink:hover code { text-decoration: underline; }
+  .sch-constraints {
+    font-family: var(--font-mono);
+    font-size: 0.71875rem;
+    color: var(--text-subtle);
+    margin-left: 0.5rem;
+  }
+  .sch-desc-text { display: block; color: var(--text-muted); }
+
+  .sch-empty { font-size: 0.9375rem; color: var(--text-subtle); padding: 1rem 0; }
 </style>
