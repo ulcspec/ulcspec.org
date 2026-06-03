@@ -1,0 +1,116 @@
+---
+// /docs/pim/custom-pim. Condensed inline mapping guide; the full deep-dive
+// lives upstream at ulcspec/ULC/mappings/pim/custom-pim.md and is linked
+// from the .full-guide-link callout at the bottom of the page. When PR-1b
+// wires up the spec-sync Content Loader, this inline content can be swapped
+// for the upstream MDX without changing the route or surrounding shell.
+
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+---
+
+<PageShell
+  title="Custom / in-house PIM mapping - ULC specification"
+  description="Field-by-field mapping patterns from a custom or in-house product-master database to a ULC record. Identity, category, dimensional, scenario expansion, asset hashing, attestation mapping; cross-link to the full upstream guide."
+>
+  <SpecDocsLayout>
+    <div class="pim-mapping-page">
+    <h1 class="page-h1">Custom / in-house PIM mapping.</h1>
+    <p class="page-intro">
+      The custom or in-house path applies to manufacturers without a commercial PIM. Two source patterns are common: a custom relational database, or spreadsheets and Word documents paired with separate photometric files. Both lead to the same ULC record shape; the difference is the ETL surface.
+    </p>
+
+    <h2>If your master is a relational database</h2>
+    <p>A typical schema:</p>
+    <ul>
+      <li><strong>Products table</strong>: one row per SKU or family, with columns for identity, category, basic dimensions, rating.</li>
+      <li><strong>Attributes table</strong> (typed columns or key/value): for values that vary per product.</li>
+      <li><strong>Categories table</strong>: hierarchical or flat.</li>
+      <li><strong>Files / assets table</strong>: cutsheet PDFs, IES, LDT; stored by pointer (S3 key, SAN path), not by bytes.</li>
+      <li><strong>Relationships table</strong>: accessory compatibility, replacement chains, kit composition.</li>
+      <li><strong>Test reports table</strong>: lab attestations with doc references.</li>
+    </ul>
+
+    <h2>If your master is spreadsheets and Word documents</h2>
+    <p>A typical setup:</p>
+    <ul>
+      <li>One spreadsheet (or Word table) per product line, with one row per SKU or per orderable configuration.</li>
+      <li>Photometric files (IES, LDT) stored separately on a file share, named by SKU or product code.</li>
+      <li>Cutsheet PDFs stored separately, often versioned by filename suffix.</li>
+    </ul>
+    <p>
+      The conversion is deterministic: the open-source <code>ulc from-sheet</code> converter turns a workbook into validated records, no hand-authoring and no scripting. Fill the published <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> (a tab per kind of data, one row per product, keyed by <code>record_id</code>; tabular data kept in Word goes into the same workbook), point each row at its IES, LDT, and cutsheet files, and run <code>ulc from-sheet</code>. The converter detects each record's authoring pattern (single-SKU cutsheet, configurator with applicability, per-IES with provenance, or per-foot linear scaling), computes the dual-unit companions, SHA-256 hashes, default provenance, and the index, then validates each record against the schema. It reads either a folder of CSVs or a native <code>.xlsx</code>.
+    </p>
+    <p>
+      The same command converts hundreds or thousands of SKUs in one pass. Records that fail validation are reported with the validator's findings as the punch list, so only passing records publish. Offline and repeatable.
+    </p>
+    <p>
+      The <a href="/validator" class="link-inline">validator</a> catches schema errors before publication. The <a href="/docs/taxonomy" class="link-inline">taxonomy reference</a> is the value-set authority for enum fields like CCT, CRI bracket, optic, and IP rating.
+    </p>
+
+    <h2>Core mapping patterns</h2>
+
+    <h3>Identity</h3>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">SQL / ORM column</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>manufacturer</code></td><td><code>product_family.manufacturer.slug</code></td></tr>
+        <tr><td>Family / model-code column</td><td><code>product_family.catalog_model</code></td></tr>
+        <tr><td>SKU / order-code column</td><td><code>configuration.catalog_number</code></td></tr>
+        <tr><td><code>series</code></td><td><code>product_family.catalog_line</code></td></tr>
+        <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Category</h3>
+    <p>Maintain a mapping table from the in-house <code>category_id</code> to ULC enum values. Store as a version-controlled config file, not as a database table; ULC enums change with schema releases and should track the spec version. Example mapping:</p>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">In-house category</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>recessed_downlight</code></td><td><code>downlight</code></td><td><code>["recessed_ceiling"]</code></td></tr>
+        <tr><td><code>linear_pendant</code></td><td><code>linear</code></td><td><code>["pendant"]</code></td></tr>
+        <tr><td><code>wallpack_exterior</code></td><td><code>bulkhead_wall_pack</code></td><td><code>["surface_wall"]</code></td></tr>
+        <tr><td><code>highbay_industrial</code></td><td><code>high_bay</code></td><td><code>["pendant", "surface_ceiling"]</code></td></tr>
+        <tr><td><code>bollard_outdoor</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Dimensional fields</h3>
+    <p>Convert single-unit columns to ULC dual-unit at emit time. Common columns:</p>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">DB column</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>overall_diameter_mm</code></td><td><code>product_family.physical_dimensions.overall_diameter</code></td></tr>
+        <tr><td><code>overall_length_mm</code></td><td><code>product_family.physical_dimensions.overall_length</code></td></tr>
+        <tr><td><code>recess_depth_mm</code></td><td><code>product_family.physical_dimensions.recess_depth</code></td></tr>
+        <tr><td><code>weight_kg</code></td><td><code>product_family.physical_dimensions.luminaire_mass</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Attestations</h3>
+    <p>Common attestation programs the in-house schema should track: DLC QPL (DesignLights Consortium Qualified Products List, a lighting-specific energy attestation), ENERGY STAR Luminaires V2.0+, UL listings (UL 1598 and similar), and lumen-maintenance attestations (LM-80 / TM-21 derived L70 / L80 / L90 hours). The emitter maps each to a ULC <code>attestations[]</code> entry with <code>program</code>, <code>status</code>, and <code>value_type</code> populated per the schema.</p>
+
+    <h2>Gotchas</h2>
+    <ol>
+      <li><strong>Schemas without scenarios.</strong> If the PIM has one row per SKU without a scenario concept, synthesize scenarios from photometric data (one scenario per IES file). If there's only one IES per SKU, that's Pattern A (simplest).</li>
+      <li><strong>Legacy free-text fields.</strong> In-house PIMs often have free-text fields mixing structured data ("90 CRI, 3000K, 120V"). Extract via regex during ETL, or flag for manual review.</li>
+      <li><strong>Unit-of-measure inconsistency.</strong> Older schemas may mix metric and Imperial in the same column. Normalize during ETL.</li>
+      <li><strong>Missing provenance history.</strong> If the PIM was hand-populated over years, default provenance to <code>{'{source: "manufacturer_direct", method: "transcribed"}'}</code> and plan a follow-up enrichment pass.</li>
+      <li><strong>No change tracking.</strong> Without CDC, the emitter either runs full sweeps or polls <code>updated_at</code> columns.</li>
+      <li><strong>Manual-edit drift in spreadsheets.</strong> Spreadsheet-based masters accumulate typos, inconsistent unit strings (<code>3000K</code> versus <code>3000 K</code>), and bracket-vs-value mismatches. Normalize before emit; flag suspicious rows for manual review.</li>
+      <li><strong>One row, multiple records.</strong> A spreadsheet row that bundles several CCTs in one cell (<code>2700K/3000K/3500K</code>) expands to multiple ULC records, one per scenario. The ETL must split.</li>
+      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>source_files[]</code> block.</li>
+    </ol>
+
+    <p class="full-guide-link">
+      Full guide with scenario expansion SQL, S3 streaming patterns, migration path to a commercial PIM, and Python + SQLAlchemy transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md</code></a>
+    </p>
+    </div>
+  </SpecDocsLayout>
+</PageShell>

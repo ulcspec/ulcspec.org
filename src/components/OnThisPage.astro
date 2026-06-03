@@ -1,0 +1,152 @@
+---
+// OnThisPage: right-rail mini-TOC for /spec/* sub-routes. Visible at
+// ≥1280px only (the third pane of the docs layout). On smaller
+// viewports the layout collapses to two-pane (sidebar + main) and
+// this rail is hidden via @media.
+//
+// Items are passed explicitly today. PR-1 wires automatic heading
+// extraction from the rendered MDX via Astro's heading slot; that's a
+// follow-on enhancement on top of this same component.
+//
+// Single-surface (/spec/* sub-routes) consumer per chrome-extraction
+// discipline.
+
+import type { Heading } from '../lib/spec-headings';
+export type { Heading };
+
+interface Props {
+  headings: readonly Heading[];
+  label?: string;
+}
+
+const { headings, label = 'On this page' } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <aside class="on-this-page" aria-label={label}>
+    <p class="on-this-page__label">{label}</p>
+    <nav>
+      <ul>
+        {headings.map((h) => (
+          <li class={`on-this-page__item on-this-page__item--depth-${h.depth}`}>
+            <a href={`#${h.id}`} class="on-this-page__link" data-otp-link={h.id}>
+              {h.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+)}
+
+<style>
+  .on-this-page {
+    display: none;
+  }
+  @media (min-width: 1280px) {
+    .on-this-page {
+      display: block;
+      position: sticky;
+      top: 6rem;
+      max-height: calc(100dvh - 8rem);
+      overflow-y: auto;
+      padding-left: 1rem;
+      padding-bottom: 2rem;
+    }
+  }
+  .on-this-page__label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.75rem 0;
+    font-weight: 600;
+  }
+  .on-this-page ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--border);
+  }
+  .on-this-page__item {
+    padding: 0;
+  }
+  .on-this-page__link {
+    display: block;
+    padding: 0.375rem 0 0.375rem 0.875rem;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    text-decoration: none;
+    transition: color 150ms ease-out, border-color 150ms ease-out;
+  }
+  .on-this-page__item--depth-3 .on-this-page__link {
+    padding-left: 1.875rem;
+    font-size: 0.78125rem;
+    color: var(--text-subtle);
+  }
+  .on-this-page__link:hover {
+    color: var(--accent-warm);
+  }
+  .on-this-page__link[aria-current='location'] {
+    color: var(--text);
+    border-left-color: var(--accent-warm);
+  }
+</style>
+
+<script>
+  // Scroll-spy parallel to StickyToc but scoped to the right-rail list.
+  // Same IntersectionObserver pattern, smaller surface.
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-otp-link]')
+  );
+  if (links.length > 0 && 'IntersectionObserver' in window) {
+    const linkMap = new Map<string, HTMLAnchorElement[]>();
+    for (const link of links) {
+      const id = link.dataset.otpLink ?? '';
+      if (!id) continue;
+      const list = linkMap.get(id) ?? [];
+      list.push(link);
+      linkMap.set(id, list);
+    }
+    const ids = Array.from(linkMap.keys());
+    const sectionEls = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const visible = new Set<string>();
+    const setCurrent = (id: string | null) => {
+      for (const link of links) link.removeAttribute('aria-current');
+      if (!id) return;
+      for (const t of linkMap.get(id) ?? []) {
+        t.setAttribute('aria-current', 'location');
+      }
+    };
+    const pickCurrent = () => {
+      let bestId: string | null = null;
+      let bestTop = Infinity;
+      for (const el of sectionEls) {
+        if (!visible.has(el.id)) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < bestTop) {
+          bestTop = rect.top;
+          bestId = el.id;
+        }
+      }
+      if (bestId) setCurrent(bestId);
+    };
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target.id);
+          else visible.delete(entry.target.id);
+        }
+        pickCurrent();
+      },
+      { rootMargin: '-72px 0px -66% 0px', threshold: 0 }
+    );
+    for (const el of sectionEls) observer.observe(el);
+  }
+</script>

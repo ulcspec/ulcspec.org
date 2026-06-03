@@ -1,0 +1,410 @@
+---
+// /validator: interactive in-browser .ulc.json validator.
+//
+// Section spec:  docs/tasks/sections/validator.md
+// Copy:          docs/growth/copy/validator.md
+//
+// Single-page interactive tool. Drop zone + paste-JSON + sample picker
+// converge on the same validation pipeline. PASS / FAIL / parse-error
+// result panel below. Source-file SHA-256 hash verification panel
+// appears when the record declares a source_files block.
+//
+// Per PRD: validator is the only material JS island and must lazy-load.
+// The ValidatorIsland module imports validator-engine.ts dynamically via
+// Astro's default deferred-module behavior; the script body executes on
+// DOMContentLoaded, the schema fetches at first interaction.
+
+import PageShell from '../components/PageShell.astro';
+import Callout from '../components/Callout.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import ValidatorIsland from '../components/ValidatorIsland.astro';
+import HashVerifyDiagram from '../components/HashVerifyDiagram.astro';
+
+const pageTitle = 'The ULC validator';
+const pageDescription =
+  'Drag a .ulc.json file to check it against the ULC schema (JSON Schema Draft 2020-12). Files never leave your browser. Drop the source PDF, IES, or LDT alongside to verify its SHA-256 hashes.';
+
+const crossLinks = [
+  { href: '/docs/schema', labelHtml: 'The full schema reference' },
+  { href: '/docs/taxonomy', labelHtml: 'The closed taxonomy of allowed values' },
+  { href: '/downloads#cli', labelHtml: 'The Go reference validator (CLI)' },
+  { href: '/downloads#examples', labelHtml: 'The four canonical example records' },
+];
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  <article class="validator-page">
+    {/* Hero band */}
+    <header class="hero">
+      <p class="eyebrow">/validator</p>
+      <h1 class="hero__h1">Validate a <code>.ulc.json</code> record.</h1>
+      <p class="hero__sub">
+        Drop a file to check it against the ULC schema (JSON Schema Draft
+        2020-12). Add its source PDF, IES, or LDT and the validator verifies
+        their SHA-256 hashes against the record, all in your browser.
+      </p>
+      <div class="privacy-badge" role="note" aria-label="Privacy notice">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+        </svg>
+        <span>Files never leave your browser.</span>
+      </div>
+    </header>
+
+    {/* Drop zone + paste + sample + result panel, interactive island */}
+    <ValidatorIsland />
+
+    {/* Idle-state explainer */}
+    <section class="explainer" aria-labelledby="explainer-h2">
+      <h2 id="explainer-h2">What this validator checks.</h2>
+      <ol class="checks">
+        <li>
+          <h3>Schema conformance</h3>
+          <p>
+            Every required field is present and every value is the right type.
+            Full schema validation, including that every enumerated value
+            falls inside the closed taxonomy the spec defines, runs in the
+            canonical Go CLI and is being wired into this in-browser check.
+          </p>
+        </li>
+        <li>
+          <h3>Conformance level</h3>
+          <p>
+            The validator computes a record's conformance level (core,
+            standard, or full) from the data it actually carries. Core is the
+            minimum identifying and photometric set, standard is what a typical
+            LM-79 report produces, and full adds the comprehensive set. Because
+            the level is computed and verified rather than self-declared, full
+            means the data is genuinely present.
+          </p>
+        </li>
+        <li>
+          <h3>JSON parse</h3>
+          <p>
+            Malformed JSON is caught first, with the line and column, before
+            schema checks run. Usual suspects: a trailing comma, an unescaped
+            quote, a missing brace.
+          </p>
+        </li>
+        <li>
+          <h3>Source-file hash verification</h3>
+          <p>
+            Drop the PDF, IES, or LDT files the record declares in its
+            <code>source_files</code> block and the validator recomputes their
+            SHA-256 hashes in your browser, then checks them against the record.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    {/* Hash mechanism. Pays off the "tamper-evident" line featured on the
+        landing and audience pages. The one place the full SHA-256 mechanism
+        is taught. */}
+    <section class="mechanism" aria-labelledby="mechanism-h2">
+      <h2 id="mechanism-h2">What a hash match proves.</h2>
+      <p>
+        A ULC record claims that every value traces back to the manufacturer's
+        own datasheet, IES, and LDT files. But a JSON file is just text: easy
+        to copy, easy to edit. So how do you know the record matches the real
+        source files, and that no one changed a lumen output or a CRI after
+        the fact?
+      </p>
+      <p>
+        ULC doesn't embed the source files; it fingerprints them. Each declared
+        source file carries a SHA-256 hash: a 64-character fingerprint computed
+        from the file's exact bytes. The same file always produces the same
+        fingerprint. Change a single byte, even one invisible character, and
+        the fingerprint changes completely. You can't run it backward to
+        recover the file, and you can't craft a different file that lands on
+        the same fingerprint.
+      </p>
+      <p>
+        Drop the original PDF, IES, or LDT next to the record and the validator
+        recomputes each fingerprint in your browser, then compares it to the
+        one the record declares. A match means this is the exact file the
+        record was built from, unchanged. A mismatch means the file and the
+        record disagree, and you know not to trust the record's numbers. Anyone
+        can run this check, with any SHA-256 tool, without trusting a server,
+        the person who sent the file, or even this validator.
+      </p>
+
+      <HashVerifyDiagram />
+
+      <Callout intent="default" label="Tamper-evident, not trust-me">
+        <p>
+          You don't take a ULC record's numbers on faith. With the source files
+          in hand, anyone can prove the record traces to them, byte for byte.
+        </p>
+      </Callout>
+    </section>
+
+    {/* Validator-fidelity disclosure */}
+    <section class="fidelity">
+      <details>
+        <summary>
+          <span>How this validator compares to the Go CLI.</span>
+          <svg class="fidelity__chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </summary>
+        <div class="fidelity__body">
+          <p>
+            This in-browser validator runs a structural pre-check against the
+            canonical JSON Schema. The Go CLI available from <a href="/downloads">/downloads</a>
+            is the canonical reference implementation and runs the complete
+            schema check today; both are tested in CI against the four
+            canonical reference records.
+          </p>
+          <Callout intent="default" label="What runs today">
+            <p>
+              In your browser, the engine parses the JSON, confirms the
+              top-level required fields are present and correctly typed,
+              reads the source metadata, and verifies SHA-256 hashes (fully
+              live via SubtleCrypto). Full schema validation against the
+              canonical JSON Schema, including the closed-taxonomy enum
+              checks, is being wired in. The four canonical reference records
+              in
+              <a href="/examples/pattern-a-erco-quintessence.ulc.json">
+                <code>/examples/</code>
+              </a>
+              all pass the pre-check; for the complete check today, use the
+              Go CLI.
+            </p>
+          </Callout>
+          <p class="fidelity__crosslink">
+            For byte-exact validation, download the Go CLI:
+            <a href="/downloads"><code>/downloads</code></a>.
+          </p>
+        </div>
+      </details>
+    </section>
+  </article>
+
+  <CrossLinkFooter links={crossLinks} />
+</PageShell>
+
+<style>
+  .validator-page {
+    margin: 0 auto;
+    max-width: 56rem;
+    padding: 4rem 1.5rem 5rem;
+  }
+  @media (min-width: 768px) {
+    .validator-page {
+      padding: 5rem 2.5rem 6rem;
+    }
+  }
+
+  .hero {
+    margin-bottom: 1rem;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    letter-spacing: 0.08em;
+    margin: 0 0 1rem 0;
+  }
+  .hero__h1 {
+    font-size: clamp(2rem, 4.5vw + 0.5rem, 3rem);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem 0;
+    color: var(--text);
+  }
+  .hero__h1 code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--accent-warm);
+    font-weight: 600;
+  }
+  .hero__sub {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    max-width: 44rem;
+    margin: 0 0 1.5rem 0;
+  }
+  .hero__sub code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  .privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+    border: 1px solid color-mix(in oklab, var(--accent-warm) 30%, var(--border));
+    border-radius: 999px;
+    color: var(--accent-warm);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .privacy-badge svg {
+    flex-shrink: 0;
+  }
+
+  /* Idle-state explainer */
+  .explainer {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .explainer h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1.75rem 0;
+    color: var(--text);
+  }
+  .checks {
+    list-style: none;
+    counter-reset: chk;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .checks li {
+    counter-increment: chk;
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .checks li::before {
+    content: counter(chk, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--accent-warm);
+  }
+  .checks h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.375rem 0;
+  }
+  .checks p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 44rem;
+  }
+  .checks code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  /* Hash mechanism */
+  .mechanism {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .mechanism h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1.25rem 0;
+    color: var(--text);
+  }
+  .mechanism p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    max-width: 44rem;
+  }
+  .mechanism code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+
+  /* Validator-fidelity disclosure */
+  .fidelity {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .fidelity details {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    padding: 0.25rem 1.25rem;
+  }
+  .fidelity summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.875rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    min-height: 44px;
+  }
+  .fidelity summary::-webkit-details-marker {
+    display: none;
+  }
+  .fidelity__chev {
+    color: var(--text-muted);
+    transition: transform 200ms ease-out;
+  }
+  .fidelity details[open] .fidelity__chev {
+    transform: rotate(180deg);
+  }
+  .fidelity__body {
+    padding: 0.5rem 0 1.25rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .fidelity__body p {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 1rem 0 0 0;
+    max-width: 44rem;
+  }
+  .fidelity__body a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .fidelity__body code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .fidelity__crosslink {
+    margin-top: 1.25rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fidelity__chev {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .privacy-badge {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .fidelity details {
+      page-break-inside: avoid;
+    }
+    .fidelity__chev {
+      display: none;
+    }
+  }
+</style>

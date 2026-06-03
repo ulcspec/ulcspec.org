@@ -1,0 +1,30 @@
+---
+// /docs/crosswalks/eulumdat: planned crosswalk (status="planned" at v1; see the
+// crosswalks index). Renders here once the ULC-to-EULUMDAT mapping is published
+// in the spec repository.
+
+import Callout from '../../../components/Callout.astro';
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+---
+
+<PageShell
+  title="EULUMDAT crosswalk - ULC specification"
+  description="Field-by-field crosswalk between ULC and EULUMDAT, the European photometric data format. Planned; not yet published."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">EULUMDAT crosswalk.</h1>
+
+    <Callout intent="default" label="Planned">
+      <p>
+        This crosswalk is planned. When the ULC-to-EULUMDAT mapping is published
+        in the <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>,
+        it will render here.
+      </p>
+      <p>
+        For now, see the <a href="/docs/crosswalks">crosswalks overview</a> for
+        all four planned crosswalks and their context.
+      </p>
+    </Callout>
+  </SpecDocsLayout>
+</PageShell>

@@ -1,0 +1,650 @@
+---
+// /for-designers: designer-track audience landing page. Discovery-led,
+// less-is-more register (v3 copy overhaul).
+//
+// Spec:          docs/tasks/sections/for-designers.md
+// Copy:          docs/growth/copy/for-designers.md
+// Positioning:   docs/growth/positioning-designer.md
+// Storyboard:    docs/growth/sales-pitch-storyboard-designer.md
+
+import PageShell from '../components/PageShell.astro';
+import StickyToc from '../components/StickyToc.astro';
+import PromptBlock from '../components/PromptBlock.astro';
+import Callout from '../components/Callout.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import BeforeAfterDiagram from '../components/BeforeAfterDiagram.astro';
+import DiscoveryLoopDiagram from '../components/DiscoveryLoopDiagram.astro';
+import {
+  TIER1_PROMPT_RENDER,
+  TIER1_PROMPT_COMPARE,
+  TIER1_PROMPT_EXTRACT,
+} from '../content/prompts/tier1-prompts';
+
+const tocItems = [
+  { href: '#insight', label: 'Where discovery is going' },
+  { href: '#introduction', label: 'What ULC is' },
+  { href: '#try-ulc-today', label: 'Try it today' },
+  { href: '#differentiated-value', label: 'What changes' },
+  { href: '#the-ask', label: 'Take action' },
+];
+
+const crossLinks = [
+  { href: '/downloads#prompts', labelHtml: 'Designer LLM prompt templates' },
+  { href: '/downloads#examples', labelHtml: 'Sample <code>.ulc</code> records to run' },
+  { href: '/docs/schema', labelHtml: "What's inside a <code>.ulc</code> record" },
+  { href: '/validator#mechanism-h2', labelHtml: 'What a SHA-256 hash match proves' },
+];
+
+const pageTitle = 'ULC for lighting designers: the data layer upgrade';
+const pageDescription = 'Specifying is moving from PDFs to AI. ULC feeds your tools real luminaire data from the manufacturer, not a guess scraped from a PDF.';
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  {/* Hero band */}
+  <section class="relative overflow-hidden">
+    <div class="dot-grid" aria-hidden="true"></div>
+    <div
+      class="relative mx-auto max-w-7xl px-6 pt-16 pb-12 md:px-10 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20"
+    >
+      <h1
+        class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
+      >
+        For everyone who specifies lighting.
+      </h1>
+      <p
+        class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
+      >
+        Specifying is moving from reading PDFs to asking AI. ULC is the open standard that gives your tools the manufacturer's real data to read, not a guess scraped from a PDF.
+      </p>
+    </div>
+  </section>
+
+  {/* Body: 2-col on desktop with sticky TOC sidebar, single-col on mobile */}
+  <div class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-14 xl:gap-16">
+    <div class="lg:pt-12">
+      <StickyToc items={tocItems} />
+    </div>
+
+    <article class="long-form pt-10 lg:pt-12 max-w-[68ch]">
+
+      {/* ── 1. INSIGHT ─────────────────────────────────────────────────── */}
+      <section id="insight" aria-labelledby="insight-heading">
+        <h2 id="insight-heading">Where product discovery is going</h2>
+        <p>
+          Product discovery is moving from opening the PDF to asking an AI which fixture fits. The tools are racing ahead; the data isn't. Luminaire specs still live in PDFs built for human eyes, so the AI guesses at the CRI, the accessory, the IP rating, and your spec inherits the guess.
+        </p>
+        <p>
+          The limit on AI in specification isn't the model. It's the data layer underneath. ULC fixes the data layer.
+        </p>
+        <DiscoveryLoopDiagram caption="Today's discovery loop, from the specifier's seat. What reaches your tools is an extraction layer's guess, not the manufacturer's source." />
+      </section>
+
+      {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
+      <section id="introduction" aria-labelledby="introduction-heading">
+        <h2 id="introduction-heading">What ULC is</h2>
+        <p>
+          ULC is the open, machine-readable standard for luminaire cutsheets: one structured record your AI, your BIM tools, and the next tool you adopt can read directly, alongside the PDF and IES files you already work with.
+        </p>
+        <BeforeAfterDiagram />
+      </section>
+
+      {/* ── 5. TRY ULC TODAY (Tier 1 activation) ───────────────────────── */}
+      <section id="try-ulc-today" aria-labelledby="try-heading">
+        <h2 id="try-heading">Try it today</h2>
+        <p>
+          You don't have to wait for the ecosystem. Drop a ULC record into ChatGPT, Claude, or Gemini with one of the prompts below; the tool reads it natively, no setup.
+        </p>
+
+        <PromptBlock
+          id={TIER1_PROMPT_RENDER.id}
+          eyebrow="Prompt 1"
+          label={TIER1_PROMPT_RENDER.label}
+          text={TIER1_PROMPT_RENDER.text}
+        />
+        <PromptBlock
+          id={TIER1_PROMPT_COMPARE.id}
+          eyebrow="Prompt 2"
+          label={TIER1_PROMPT_COMPARE.label}
+          text={TIER1_PROMPT_COMPARE.text}
+        />
+        <PromptBlock
+          id={TIER1_PROMPT_EXTRACT.id}
+          eyebrow="Prompt 3"
+          label={TIER1_PROMPT_EXTRACT.label}
+          text={TIER1_PROMPT_EXTRACT.text}
+        />
+
+        <p class="sample-link">
+          <a href="/downloads#examples">
+            Try a sample <code>.ulc</code> file <span aria-hidden="true">→</span>
+          </a>
+        </p>
+      </section>
+
+      {/* ── 6. DIFFERENTIATED VALUE (3 bullets) ────────────────────────── */}
+      <section id="differentiated-value" aria-labelledby="differentiated-value-heading">
+        <h2 id="differentiated-value-heading">What changes</h2>
+
+        <ul class="value-list">
+          <li>
+            <strong>Find the right fixture in seconds.</strong> Search "recessed downlight, tunable white, 95+ CRI, UGR under 16, two-inch aperture" across a set of ULC records and get matches back, not a stack of PDFs to read.
+          </li>
+          <li>
+            <strong>Let the luminaire schedule write itself.</strong> Hand your tools the ULC files and a template; the schedule generates from the records, not by hand.
+          </li>
+          <li>
+            <strong>Review a 100-fixture VE package in minutes.</strong> Check an 800-page submittal against your basis of design without opening every sheet.
+          </li>
+        </ul>
+
+        <Callout intent="accent" label="Accurate by construction">
+          <p>
+            Every value in a ULC record traces to the manufacturer's own source file, and each file carries a SHA-256 hash, a tamper-evident seal. So the data you spec is the manufacturer's real data, verifiably unchanged, not an aggregator's re-typing or an AI's best guess off a PDF.
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
+      <section id="the-ask" aria-labelledby="the-ask-heading">
+        <h2 id="the-ask-heading">Take action</h2>
+        <p>
+          ULC is new, and it grows the moment designers ask for it. Ask your preferred manufacturer reps one question: are you publishing ULC files yet?
+        </p>
+        <p>
+          That one question is what drives adoption. When designers ask, manufacturers publish. Read the <a href="/for-manufacturers">manufacturer track</a>, or contribute on <a
+            href="https://github.com/ulcspec/ULC"
+            target="_blank"
+            rel="noopener external"
+          >GitHub</a>.
+        </p>
+      </section>
+
+    </article>
+  </div>
+
+  <CrossLinkFooter links={crossLinks} />
+</PageShell>
+
+<style>
+  /* ── Long-form prose, designer-document register ──────────────────── */
+  .long-form {
+    color: var(--text-muted);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  .long-form > section {
+    margin-top: 4.5rem;
+    scroll-margin-top: 5rem;
+  }
+  .long-form > section:first-child {
+    margin-top: 0;
+  }
+  .long-form p {
+    margin: 0 0 1.25rem 0;
+    max-width: 68ch;
+  }
+  .long-form p:last-child {
+    margin-bottom: 0;
+  }
+  .long-form strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .long-form code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .long-form a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .long-form a:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  .step-num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.625rem 0 !important;
+  }
+
+  .long-form h2 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.5rem 0;
+    max-width: 28ch;
+  }
+  @media (min-width: 768px) {
+    .long-form h2 {
+      font-size: 2.25rem;
+    }
+  }
+  .long-form h3 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 1.75rem 0 0.75rem 0;
+  }
+  @media (min-width: 768px) {
+    .long-form h3 {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* ── Alternatives table ─────────────────────────────────────────────
+     Mobile: rows stack (one cell per row, leading "header" cell labels each).
+     Desktop ≥768px: real 3-column table with sticky header. */
+  .alt-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border-collapse: collapse;
+    width: 100%;
+    display: block;
+  }
+  .alt-table thead,
+  .alt-table tbody,
+  .alt-table tr {
+    display: block;
+  }
+  .alt-table thead {
+    display: none;
+  }
+  .alt-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.125rem;
+  }
+  .alt-table tr:last-child {
+    border-bottom: none;
+  }
+  .alt-table th[scope='row'],
+  .alt-table td {
+    display: block;
+    text-align: left;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .alt-table th[scope='row'] {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .alt-table td + td {
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .alt-table {
+      display: table;
+    }
+    .alt-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .alt-table tbody {
+      display: table-row-group;
+    }
+    .alt-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .alt-table th,
+    .alt-table td {
+      display: table-cell;
+      padding: 1.125rem 1.25rem;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .alt-table tr:last-child th,
+    .alt-table tr:last-child td {
+      border-bottom: none;
+    }
+    .alt-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+    }
+    .alt-table th[scope='row'] {
+      margin-bottom: 0;
+      width: 30%;
+    }
+    .alt-table td + td {
+      margin-top: 0;
+    }
+  }
+  .alt-table .alt-row--empty th[scope='row'] {
+    color: var(--accent-warm);
+  }
+  .alt-table .alt-row--companion {
+    background: color-mix(in oklab, var(--text-subtle) 4%, var(--bg-elevated));
+  }
+
+  /* ── Criteria list ────────────────────────────────────────────────── */
+  .criteria-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    counter-reset: criterion;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .criteria-list > li {
+    counter-increment: criterion;
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    position: relative;
+  }
+  .criteria-list > li::before {
+    content: counter(criterion, decimal-leading-zero);
+    position: absolute;
+    left: -2.5rem;
+    top: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .criteria-list > li {
+      padding-left: 1.5rem;
+    }
+    .criteria-list > li::before {
+      display: block;
+    }
+    .criteria-list {
+      padding-left: 2.5rem;
+    }
+  }
+  .criteria-list h3 {
+    margin-top: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .criteria-list h3 {
+      font-size: 1.125rem;
+    }
+  }
+  .criteria-list p {
+    font-size: 1rem;
+    margin: 0.375rem 0 0 0;
+  }
+
+  /* ── Theme blocks (3) ─────────────────────────────────────────────── */
+  .theme {
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+    margin-top: 2.5rem !important;
+    scroll-margin-top: 5rem;
+  }
+  .theme:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .theme__num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    margin: 0 0 0.5rem 0 !important;
+  }
+  .theme h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .theme h3 {
+      font-size: 1.625rem;
+    }
+  }
+  .theme .return-line {
+    font-style: italic;
+    color: var(--text);
+    border-left: 2px solid var(--accent-warm);
+    padding-left: 1rem;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+  .theme__links {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+  }
+
+  /* ── Differentiated-value bullets ─────────────────────────────────── */
+  .value-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .value-list > li {
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+  .value-list > li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding: 0.375rem 0;
+  }
+  .link:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  /* ── Try-ULC-today extras ─────────────────────────────────────────── */
+  .sample-link {
+    margin-top: 1.25rem !important;
+    font-size: 0.9375rem;
+  }
+  .sample-link a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+  }
+
+  /* ── Proof matrix ───────────────────────────────────────────────────
+     Mobile: rows stack with theme + status inline above the proof text.
+     Desktop ≥768px: 3-column layout. */
+  .proof-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+  }
+  .proof-table thead,
+  .proof-table tbody,
+  .proof-table tr {
+    display: block;
+  }
+  .proof-table thead {
+    display: none;
+  }
+  .proof-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 1.125rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    align-items: center;
+  }
+  .proof-table tr:last-child {
+    border-bottom: none;
+  }
+  .proof-table td {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .proof-table td:nth-child(1) {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .proof-table td:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .proof-table td:nth-child(3) {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+  @media (min-width: 768px) {
+    .proof-table {
+      display: table;
+    }
+    .proof-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .proof-table tbody {
+      display: table-row-group;
+    }
+    .proof-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .proof-table th,
+    .proof-table td {
+      display: table-cell;
+      padding: 0.875rem 1.125rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .proof-table tr:last-child td {
+      border-bottom: none;
+    }
+    .proof-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+      padding-bottom: 0.5rem;
+    }
+  }
+  .proof-theme {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    min-width: 1.75rem;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .status-pill--available {
+    color: var(--accent-warm);
+    border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  }
+  /* Light theme: the "Available now" pill contains visible text, so WCAG 2.2
+     AA 4.5:1 applies (text contrast), not the 3:1 non-text-UI floor. Deepen
+     the foreground to amber-700 and lift the tint to 12% on white so the
+     pill clears 4.5:1 in axe. */
+  :root[data-theme="light"] .status-pill--available {
+    color: var(--accent-warm-deep);
+    background: color-mix(in srgb, var(--accent-warm) 12%, var(--bg-elevated));
+    border-color: color-mix(in srgb, var(--accent-warm) 40%, var(--border));
+  }
+  .status-pill--pending {
+    color: var(--text-subtle);
+    border-color: var(--border);
+    background: var(--bg-elevated);
+  }
+
+  /* ── The Ask extras ───────────────────────────────────────────────── */
+  .ask-sub-heading {
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .ask-commit {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .ask-commit li {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-left: 0.25rem;
+  }
+  .ask-commit li::marker {
+    color: var(--accent-warm);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  .debrief {
+    margin-top: 1.75rem !important;
+    font-size: 0.9375rem;
+  }
+
+  /* ── Print: TOC suppressed, FAQ open by default ───────────────────── */
+  @media print {
+    .toc-mobile,
+    .toc-desktop {
+      display: none !important;
+    }
+    .long-form > section {
+      margin-top: 2rem;
+      page-break-inside: avoid;
+    }
+  }
+</style>

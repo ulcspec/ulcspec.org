@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  statuses: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -44,4 +45,326 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify locked copy survives the build (verbatim grep)
+        run: |
+          set -euo pipefail
+          BUILD=dist/index.html
+          test -f "$BUILD" || (echo "no dist/index.html"; exit 1)
+          grep -F "Luminaire datasheets were built for people to read, not for the AI now doing the reading." "$BUILD"
+          grep -F "ULC is the open, machine-readable standard for luminaire cutsheets" "$BUILD"
+          grep -F "Pulling structure back out of a PDF is slow, expensive, and error-prone" "$BUILD"
+          grep -F "ULC closes that gap" "$BUILD"
+          grep -F "a SHA-256 hash, a tamper-evident seal" "$BUILD"
+          grep -F "ULC is read, not opened." "$BUILD"
+          grep -F "Show up when a designer asks an AI which fixture fits." "$BUILD"
+          grep -F "This list fills in as manufacturers publish" "$BUILD"
+          grep -F "Universal Luminaire Cutsheet" "$BUILD"
+          # Forbidden on the landing. The first two are legacy/wrong terms; the
+          # last two enforce the vendor-neutral landing (the steward's own
+          # LightingAgent.AI / gosourcery.com are disclosed only on /governance
+          # and named in /docs, never on the neutral hub).
+          for forbidden in \
+            "Enlighten Europe" \
+            "Unified Luminaire Cut-sheet" \
+            "LightingAgent.AI" \
+            "gosourcery.com"; do
+            if grep -F "$forbidden" "$BUILD"; then
+              echo "FAIL: forbidden string '$forbidden' present on the landing"
+              exit 1
+            fi
+          done
+
+      - name: Verify /for-designers locked copy + dropped sections
+        run: |
+          set -euo pipefail
+          PAGE=dist/for-designers/index.html
+          test -f "$PAGE" || (echo "no $PAGE"; exit 1)
+          grep -F "Where product discovery is going" "$PAGE"
+          grep -F "What ULC is" "$PAGE"
+          grep -F "Try it today" "$PAGE"
+          grep -F "Render a .ulc file as a spec sheet" "$PAGE"
+          grep -F "Take action" "$PAGE"
+          if grep -F "What designers do today" "$PAGE"; then
+            echo "FAIL: dropped 'What designers do today' section still present"
+            exit 1
+          fi
+          if grep -F "What a working cutsheet layer" "$PAGE"; then
+            echo "FAIL: dropped 'What a working cutsheet layer' section still present"
+            exit 1
+          fi
+          if grep -F "Lighting-domain specialty tools" "$PAGE"; then
+            echo "FAIL: dropped 'Lighting-domain specialty tools' Callout still present"
+            exit 1
+          fi
+          if grep -F "error-prone and time-expensive part of project delivery is not design" "$PAGE"; then
+            echo "FAIL: preachy 'most error-prone... is not design' Insight line still present"
+            exit 1
+          fi
+          if grep -F "spec workflow runs through twelve PDFs open at once" "$PAGE"; then
+            echo "FAIL: preachy 'twelve PDFs open at once' workflow narration still present"
+            exit 1
+          fi
+
+      - name: Verify /for-manufacturers locked copy + dropped sections
+        run: |
+          set -euo pipefail
+          PAGE=dist/for-manufacturers/index.html
+          test -f "$PAGE" || (echo "no $PAGE"; exit 1)
+          grep -F "Where product discovery is going" "$PAGE"
+          grep -F "What ULC is" "$PAGE"
+          grep -F "How to publish" "$PAGE"
+          grep -F "From your PIM." "$PAGE"
+          grep -F "From a spreadsheet." "$PAGE"
+          grep -F "github.com/ulcspec/ULC" "$PAGE"
+          grep -F "Take action" "$PAGE"
+          grep -F "Early-mover position in the standard your peers will adopt" "$PAGE"
+          if grep -F "The four approaches" "$PAGE"; then
+            echo "FAIL: dropped 'The four approaches' section still present"
+            exit 1
+          fi
+          if grep -F "winning the AI-mediated discovery layer" "$PAGE"; then
+            echo "FAIL: dropped 'What winning looks like' section still present"
+            exit 1
+          fi
+          if grep -F "Differentiated value, three themes" "$PAGE"; then
+            echo "FAIL: dropped verbose 3-themes H2 still present"
+            exit 1
+          fi
+          if grep -F "Today, you publish PDF + IES + LDT separately" "$PAGE"; then
+            echo "FAIL: redundant 'Today, you publish PDF + IES + LDT separately' paragraph still present"
+            exit 1
+          fi
+          if grep -F "author records with LLM help" "$PAGE"; then
+            echo "FAIL: LLM-creation framing still present (the manufacturer creation path is the deterministic ulc from-sheet converter)"
+            exit 1
+          fi
+
+      - name: Verify /docs/pim mapping pages have substantive content
+        run: |
+          set -euo pipefail
+          INDEX=dist/docs/pim/index.html
+          test -f "$INDEX" || (echo "no $INDEX"; exit 1)
+          grep -F "Cloud PIM. Consumer brands" "$INDEX"
+          grep -F "Open-source PIM. European mid-market" "$INDEX"
+          grep -F "Enterprise ERP master data. Large manufacturers running SAP MM" "$INDEX"
+          grep -F "Home-grown databases or spreadsheet-based masters. Manufacturers without commercial PIM" "$INDEX"
+          if grep -F "Typical user." "$INDEX"; then
+            echo "FAIL: old 'Typical user.' trailing artifact still present on Salsify card"
+            exit 1
+          fi
+          # Each inner page must have its data-model H2 and full-guide-link to upstream
+          for pim_h2 in \
+            "Salsify data model in one page" \
+            "Akeneo data model in one page" \
+            "SAP data model in one page"; do
+            case "$pim_h2" in
+              Salsify*) slug=salsify ;;
+              Akeneo*) slug=akeneo ;;
+              SAP*) slug=sap ;;
+            esac
+            P="dist/docs/pim/${slug}/index.html"
+            test -f "$P" || (echo "FAIL: missing $P"; exit 1)
+            grep -F "$pim_h2" "$P" \
+              || (echo "FAIL: $P missing H2 '$pim_h2'"; exit 1)
+            grep -F "github.com/ulcspec/ULC/blob/main/mappings/pim/${slug}.md" "$P" \
+              || (echo "FAIL: $P missing full-guide cross-link"; exit 1)
+            if grep -F "Documentation in progress" "$P"; then
+              echo "FAIL: $P still has placeholder Callout"
+              exit 1
+            fi
+            if grep -F "spec-sync Content Loader in PR-1b" "$P"; then
+              echo "FAIL: $P still has PR-1b placeholder copy"
+              exit 1
+            fi
+          done
+          # /docs/pim/custom-pim has its own dual-H2 shape (relational database + spreadsheets and Word documents).
+          CUSTOM="dist/docs/pim/custom-pim/index.html"
+          test -f "$CUSTOM" || (echo "FAIL: missing $CUSTOM"; exit 1)
+          grep -F "If your master is a relational database" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing relational-database H2"; exit 1)
+          grep -F "If your master is spreadsheets and Word documents" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing spreadsheets H2"; exit 1)
+          grep -F "Manual-edit drift in spreadsheets." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'Manual-edit drift' gotcha"; exit 1)
+          grep -F "One row, multiple records." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'One row, multiple records' gotcha"; exit 1)
+          grep -F "Photometric file linkage." "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing 'Photometric file linkage' gotcha"; exit 1)
+          grep -F "github.com/ulcspec/ULC/blob/main/mappings/pim/custom-pim.md" "$CUSTOM" \
+            || (echo "FAIL: $CUSTOM missing full-guide cross-link"; exit 1)
+          # Cuts: ensure the preachy / manufacturer-vintage framing is gone.
+          for needle in \
+            "sub-\$50M" \
+            "Signify, Acuity, Hubbell" \
+            "1990s-era industrial" \
+            "AS/400" \
+            "iSeries" \
+            "RPG or COBOL" \
+            "Mid-2000s-era brands" \
+            "Both work" \
+            "EAV (entity-attribute-value)" \
+            "In-house PIMs usually store" \
+            "LLM-assisted" \
+            "per-row LLM call"; do
+            if grep -F "$needle" "$CUSTOM"; then
+              echo "FAIL: $CUSTOM still contains cut copy '$needle'"
+              exit 1
+            fi
+          done
+
+      - name: Verify PIM platform intros and /governance avoid audience-segmenting prose
+        run: |
+          set -euo pipefail
+          for pair in \
+            "salsify:Salsify is a cloud PIM popular with consumer-facing brands" \
+            "akeneo:Akeneo is an open-source PIM popular with European manufacturers" \
+            "sap:SAP ERP and adjacent SAP master-data products (MDG, PLM) hold the product data for most large-enterprise"; do
+            slug="${pair%%:*}"
+            needle="${pair#*:}"
+            P="dist/docs/pim/${slug}/index.html"
+            test -f "$P" || (echo "FAIL: missing $P"; exit 1)
+            if grep -F "$needle" "$P"; then
+              echo "FAIL: $P still has preachy 'X is a Y popular with...' intro"
+              exit 1
+            fi
+          done
+          GOV=dist/governance/index.html
+          test -f "$GOV" || (echo "FAIL: missing $GOV"; exit 1)
+          if grep -F "audience is everyone who reads a datasheet: lighting designers, interior designers" "$GOV"; then
+            echo "FAIL: $GOV still enumerates the full audience list"
+            exit 1
+          fi
+          if grep -F "Pilot conversations are underway with manufacturers and software vendors." "$GOV"; then
+            echo "FAIL: $GOV still has duplicate 'Pilot conversations are underway' first-sentence after the matching H2"
+            exit 1
+          fi
+
+      - name: Verify cutsheet canonicalization (no 'cut sheet' / 'cut-sheet' anywhere)
+        run: |
+          set -euo pipefail
+          if grep -riEq "cut[ -]sheet" dist/; then
+            echo "FAIL: 'cut sheet' or 'cut-sheet' present in built output. Affected files:"
+            grep -rliE "cut[ -]sheet" dist/
+            exit 1
+          fi
+          # Source-side scan catches residue in non-HTML assets (SVG aria-labels,
+          # JSON metadata) that the dist/ scan misses because dist/ only contains
+          # rasterized PNGs of those sources. docs/growth/ is design-time copy
+          # input intentionally allowlisted; runtime code under src/ + public/
+          # must be clean.
+          if grep -riEq "cut[ -]sheet" src/ public/ 2>/dev/null; then
+            echo "FAIL: 'cut sheet' or 'cut-sheet' present in source assets. Affected files:"
+            grep -rliE "cut[ -]sheet" src/ public/ 2>/dev/null
+            exit 1
+          fi
+          echo "OK: no legacy cut-sheet terminology in dist/ or src/+public/."
+
+      - name: Verify all v1 routes built
+        run: |
+          set -euo pipefail
+          for route in for-designers for-manufacturers validator docs governance downloads; do
+            f="dist/${route}/index.html"
+            test -f "$f" || (echo "FAIL: missing $f"; exit 1)
+            grep -F "ULC home" "$f" >/dev/null \
+              || (echo "FAIL: $f missing nav chrome"; exit 1)
+          done
+          echo "All 6 v1 routes built and ship nav chrome."
+
+      - name: Verify sitemap + robots + llms artifacts
+        run: |
+          set -euo pipefail
+          test -f dist/sitemap-index.xml || (echo "FAIL: dist/sitemap-index.xml missing"; exit 1)
+          test -f dist/sitemap-0.xml || (echo "FAIL: dist/sitemap-0.xml missing"; exit 1)
+          test -f dist/robots.txt || (echo "FAIL: dist/robots.txt missing"; exit 1)
+          test -f dist/llms.txt || (echo "FAIL: dist/llms.txt missing"; exit 1)
+          grep -F "Sitemap: https://ulcspec.org/sitemap-index.xml" dist/robots.txt
+          for route in for-designers for-manufacturers validator docs governance downloads; do
+            grep -F "https://ulcspec.org/${route}" dist/sitemap-0.xml \
+              || (echo "FAIL: sitemap missing route $route"; exit 1)
+          done
+          grep -F "<loc>https://ulcspec.org/</loc>" dist/sitemap-0.xml \
+            || (echo "FAIL: sitemap missing homepage"; exit 1)
+          echo "Sitemap + robots + llms artifacts OK."
+
+      - name: Validate JSON-LD structure
+        run: |
+          set -euo pipefail
+          node -e "
+            const fs = require('fs');
+            const html = fs.readFileSync('dist/index.html', 'utf8');
+            const matches = html.match(/<script type=\"application\/ld\\+json\"[^>]*>([\\s\\S]*?)<\\/script>/g);
+            if (!matches || matches.length === 0) { console.error('FAIL: no JSON-LD found'); process.exit(1); }
+            for (const m of matches) {
+              const body = m.replace(/<script[^>]*>/, '').replace(/<\\/script>/, '');
+              const parsed = JSON.parse(body);
+              const arr = Array.isArray(parsed) ? parsed : [parsed];
+              for (const obj of arr) {
+                if (!obj['@context']) { console.error('FAIL: missing @context'); process.exit(1); }
+                if (!obj['@type']) { console.error('FAIL: missing @type'); process.exit(1); }
+              }
+              console.log('JSON-LD OK: ' + arr.map(o => o['@type']).join(', '));
+            }
+          "
+
+      - name: Verify Cloudflare Analytics beacon gate (off without token)
+        run: |
+          set -euo pipefail
+          BUILD=dist/index.html
+          if grep -q "static.cloudflareinsights.com" "$BUILD"; then
+            echo "FAIL: Cloudflare beacon present in $BUILD without PUBLIC_CF_ANALYTICS_TOKEN set in CI. Gate is broken."
+            exit 1
+          fi
+          echo "Beacon correctly absent when no token is configured."
+
+      - name: Verify OG image artifact is committed
+        # The PNG cannot be byte-deterministically regenerated in CI: the SVG
+        # source declares font-family="Inter, ..." with a system fallback
+        # cascade that resolves differently on Ubuntu runners (DejaVu Sans) vs
+        # macOS local (Helvetica Neue). Re-running `pnpm og:build` here would
+        # produce a Linux-flavored PNG that never matches the macOS-flavored
+        # PNG committed to the repo. Bundling Inter into the runner is the
+        # deterministic fix; until then, we treat the committed PNG as
+        # authoritative and only guard against the realistic regression
+        # (file deleted, file zero-bytes, file is not actually a PNG).
+        # Designers regenerate locally via `pnpm og:build` whenever the SVG
+        # source changes.
+        run: |
+          set -euo pipefail
+          test -f public/og-image.png \
+            || (echo "FAIL: public/og-image.png is missing. Run 'pnpm og:build' locally and commit the result."; exit 1)
+          size=$(wc -c < public/og-image.png)
+          test "$size" -gt 10000 \
+            || (echo "FAIL: public/og-image.png is suspiciously small ($size bytes); expected >10KB."; exit 1)
+          magic=$(od -An -t x1 -N 4 public/og-image.png | tr -d ' ')
+          test "$magic" = "89504e47" \
+            || (echo "FAIL: public/og-image.png is not a valid PNG (bad magic bytes: $magic)."; exit 1)
+          echo "OG image present (${size} bytes, valid PNG header)."
+
+      - name: Lighthouse CI
+        run: pnpm exec lhci autorun
+
+      - name: Clear legacy commit-status (modern check-runs are authoritative)
+        # Post a synthetic success status to the PR head SHA so the legacy
+        # combined-status API flips from pending to success without manual
+        # intervention. github.sha on pull_request events resolves to the
+        # synthetic merge commit, not the PR head, so prefer
+        # github.event.pull_request.head.sha and fall back to github.sha
+        # on push events.
+        if: success()
+        env:
+          TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          curl -fsSL -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${TARGET_SHA}" \
+            -d '{
+              "state": "success",
+              "context": "ci/legacy-status-clear",
+              "description": "Modern check-runs all green; legacy status resolved."
+            }'
 

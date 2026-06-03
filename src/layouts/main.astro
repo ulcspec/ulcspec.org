@@ -1,17 +1,159 @@
 ---
 import '../styles/global.css';
-const { content } = Astro.props;
+import { THEME_STORAGE_KEY } from '../lib/theme';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'ULC: open machine-readable standard for luminaire cutsheets',
+  description = "The open, machine-readable standard for luminaire cutsheets: one structured JSON record that AI and design tools read directly, alongside the PDF, IES, and LDT.",
+  ogImage,
+  canonical,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
+const ogImageUrl = `${siteUrl}${ogImage ?? '/og-image.png'}`;
+
+// Cloudflare Web Analytics: edge beacon, zero cookies, no client-side JS bundle.
+// Token comes from the Cloudflare dashboard; gated on PROD so dev runs do not
+// emit beacons. Empty string in dev or when unset = beacon not rendered.
+const cfAnalyticsToken = import.meta.env.PROD
+  ? (import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN ?? '')
+  : '';
+
+// JSON-LD: WebSite + Organization. Stamped on every page via the shared layout
+// so AI crawlers and search engines have a consistent identity signal.
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'ULC',
+    alternateName: 'Universal Luminaire Cutsheet',
+    url: siteUrl,
+    description:
+      "The open, machine-readable standard for luminaire cutsheets: one structured JSON record that AI and design tools read directly, alongside the PDF, IES, and LDT.",
+    inLanguage: 'en',
+    license: 'https://opensource.org/licenses/MIT',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'ULC',
+    alternateName: 'Universal Luminaire Cutsheet',
+    url: siteUrl,
+    logo: `${siteUrl}/android-chrome-512x512.png`,
+    sameAs: [
+      'https://github.com/ulcspec/ULC',
+      'https://github.com/ulcspec/ulcspec.org',
+    ],
+    foundingDate: '2026',
+    foundingLocation: {
+      '@type': 'Place',
+      name: 'National Lighting Bureau AI Think Tank 2026, New York',
+    },
+  },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<title>{content.title}</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {/* Theme bootstrap (no-FOUC). Runs before paint. Whitelists the stored
+        value so a corrupted localStorage entry can't poison data-theme. */}
+    <script is:inline define:vars={{ THEME_KEY: THEME_STORAGE_KEY }}>
+      (function () {
+        try {
+          var stored = localStorage.getItem(THEME_KEY);
+          var valid = stored === 'light' || stored === 'dark';
+          var systemLight =
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: light)').matches;
+          var theme = valid ? stored : systemLight ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (_) {
+          /* default dark via the markup attribute */
+        }
+      })();
+    </script>
+
+    {/* Fonts: preload Inter 600 + JetBrains Mono 400, lazy-load full families */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    {/* Favicon kit */}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/android-chrome-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="/android-chrome-512x512.png"
+    />
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* JSON-LD: WebSite + Organization, stamped on every page. The `<`-escape
+        is the standard JSON-in-script guard against `</script>` breakouts in
+        any future dynamic field; harmless on today's literal-only data. */}
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
+    />
+
+    {/* Cloudflare Web Analytics: cookieless, zero JS bundle weight. Only
+        renders in production builds with a token configured. */}
+    {cfAnalyticsToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${cfAnalyticsToken}"}`}
+      />
+    )}
+
+    {/* Per-page head injection: page-specific JSON-LD, preloads, etc. */}
+    <slot name="head" />
+  </head>
+  <body class="font-sans antialiased">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+  </body>
 </html>

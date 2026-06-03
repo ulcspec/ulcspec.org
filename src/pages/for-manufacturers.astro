@@ -1,0 +1,837 @@
+---
+// /for-manufacturers: manufacturer audience landing page. Discovery-led,
+// less-is-more register (v3 copy overhaul), with a designer-demand callout in
+// the Insight section linking the supply and demand sides.
+//
+// Spec:          docs/tasks/sections/for-manufacturers.md
+// Copy:          docs/growth/copy/for-manufacturers.md
+// Positioning:   docs/growth/positioning-manufacturer.md
+// Storyboard:    docs/growth/sales-pitch-storyboard-manufacturer.md
+
+import PageShell from '../components/PageShell.astro';
+import StickyToc from '../components/StickyToc.astro';
+import Callout from '../components/Callout.astro';
+import CrossLinkFooter from '../components/CrossLinkFooter.astro';
+import DiscoveryLoopDiagram from '../components/DiscoveryLoopDiagram.astro';
+import ManufacturerFlowDiagram from '../components/ManufacturerFlowDiagram.astro';
+
+const tocItems = [
+  { href: '#insight', label: 'Where discovery is going' },
+  { href: '#introduction', label: 'What ULC is' },
+  { href: '#how-to-create', label: 'How to publish' },
+  { href: '#themes', label: 'What changes' },
+  { href: '#the-ask', label: 'Take action' },
+];
+
+const crossLinks = [
+  { href: '/docs/pim', labelHtml: 'Add a <code>.ulc</code> export from your PIM' },
+  { href: '/docs/authoring-patterns', labelHtml: 'The four authoring patterns' },
+  { href: '/docs/templates', labelHtml: 'Per-category starter templates' },
+  { href: '/docs/crosswalks/gldf', labelHtml: 'How ULC and GLDF fit together' },
+];
+
+const pageTitle = 'ULC for luminaire manufacturers: the AI-discovery layer';
+const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated. The manufacturers whose data is machine-readable are the ones AI surfaces. Pilot a publication.';
+---
+
+<PageShell title={pageTitle} description={pageDescription}>
+  {/* Hero band */}
+  <section class="relative overflow-hidden">
+    <div class="dot-grid" aria-hidden="true"></div>
+    <div
+      class="relative mx-auto max-w-7xl px-6 pt-16 pb-12 md:px-10 md:pt-24 md:pb-16 lg:pt-28 lg:pb-20"
+    >
+      <h1
+        class="hero-display max-w-5xl text-balance break-words font-display font-semibold tracking-tight text-[var(--text)] text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]"
+      >
+        For lighting manufacturers
+      </h1>
+      <p
+        class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
+      >
+        Specifier discovery is shifting from PDF to AI. The manufacturers whose data is machine-readable are the ones AI surfaces, design tools consume, and designers ask for by name.
+      </p>
+    </div>
+  </section>
+
+  {/* Body: 2-col on desktop with sticky TOC sidebar, single-col on mobile */}
+  <div class="mx-auto max-w-7xl px-6 md:px-10 pb-24 lg:grid lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-12">
+    <div class="lg:pt-12">
+      <StickyToc items={tocItems} />
+    </div>
+
+    <article class="long-form pt-10 lg:pt-12 max-w-[68ch]">
+
+      {/* ── 1. INSIGHT ─────────────────────────────────────────────────── */}
+      <section id="insight" aria-labelledby="insight-heading">
+        <h2 id="insight-heading">Where product discovery is going</h2>
+        <p>
+          Specifier discovery is moving from the designer opening your PDF to the designer asking an AI which luminaire fits. Machine-readable data is what surfaces in the answer; the rest depends on whatever the AI guessed off the PDF. The bottleneck isn't the AI. It's the data layer underneath.
+        </p>
+        <DiscoveryLoopDiagram />
+
+        <Callout intent="accent" label="Designer demand, in motion">
+          <p>
+            Designers are starting to ask their reps for ULC files, and the more they ask, the more it pays to already have published. The demand side is at <a href="/for-designers" class="link-inline">/for-designers</a>.
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 4. INTRODUCTION ────────────────────────────────────────────── */}
+      <section id="introduction" aria-labelledby="introduction-heading">
+        <h2 id="introduction-heading">What ULC is</h2>
+        <p>
+          ULC is the open, machine-readable standard for luminaire product data: the layer AI tools, design tools, and spec databases read alongside the PDF, IES, and LDT you already publish.
+        </p>
+        <ManufacturerFlowDiagram />
+        <Callout intent="default" label="What ULC touches">
+          <p>
+            It doesn't replace your PDF, IES, LDT, reps, distributors, or PIM. It integrates with your PIM through the published mapping guides. What it replaces is the aggregator's guess as the source your customers' tools read. The aggregator can still exist; it just stops being the source of truth.
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 5. HOW TO CREATE A ULC FILE ────────────────────────────────── */}
+      <section id="how-to-create" aria-labelledby="how-to-create-heading">
+        <h2 id="how-to-create-heading">How to publish</h2>
+        <p>
+          A <code>.ulc</code> file is JSON, validated against an open schema, that references your existing PDF, IES, and LDT by SHA-256 hash instead of embedding them. There are two ways to produce it.
+        </p>
+        <p>
+          <strong>From your PIM.</strong> If your data lives in Salsify, Akeneo, SAP, or a custom PIM, the structure already exists. The mapping guides at <a href="/docs" class="link-inline">/docs</a> translate your fields onto ULC's, usually a one-time integration that then runs inside your existing publishing pipeline.
+        </p>
+        <p>
+          <strong>From a spreadsheet.</strong> If your data lives in spreadsheets rather than a PIM, the open-source <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> and the <code>ulc from-sheet</code> converter turn it into validated records: one row per product, point each row at your source files, and run one command. The converter computes the schema structure, SHA-256 hashes, and dual units, then validates each record. Deterministic and offline.
+        </p>
+        <p>
+          The <a href="/validator" class="link-inline">validator</a> catches schema errors before you publish. The schema, examples, and mapping guides all live at <a href="/docs" class="link-inline">/docs</a>.
+        </p>
+      </section>
+
+      {/* ── 6. WHAT DIFFERENCE A ULC FILE MAKES (3 bullets) ────────────── */}
+      <section id="themes" aria-labelledby="themes-heading">
+        <h2 id="themes-heading">What changes</h2>
+
+        <ul class="value-list">
+          <li>
+            <strong>Found in AI-mediated discovery, with your attributes.</strong> When a designer asks an AI for a 2700K downlight under 40W, your products are in the answer with the CCT, CRI, optics, and IP rating you published, not the ones an extraction layer guessed.
+          </li>
+          <li>
+            <strong>A direct channel to the designer's tools.</strong> Their AI and design tools fetch your authoritative record from your infrastructure and parse it natively. The aggregator's interpretation stops being the data layer. Reps, distributors, and aggregator relationships stay exactly where they are.
+          </li>
+          <li>
+            <strong>Early-mover position in the standard your peers will adopt.</strong> Open, MIT-licensed, neutrally stewarded, in dialogue with DIAL, the IES, and the LIA. The first to publish are the ones the industry remembers as having defined the layer.
+          </li>
+        </ul>
+
+        <Callout intent="accent" label="You own your accuracy at the source">
+          <p>
+            When a design tool or an AI fetches your data, it fetches <em>your</em> file. Every value traces back to the PDF, IES, or LDT you published, and each file carries a SHA-256 hash, a tamper-evident seal, so anyone can confirm the data is yours and unchanged. No aggregator's re-typing, no AI's guess, can quietly misrepresent your products.
+          </p>
+        </Callout>
+      </section>
+
+      {/* ── 7. THE ASK ─────────────────────────────────────────────────── */}
+      <section id="the-ask" aria-labelledby="the-ask-heading">
+        <h2 id="the-ask-heading">Take action</h2>
+        <p>
+          Pilot it. Publish one to three of your most-specified SKUs as <code>.ulc</code> files; one product line is enough to start. The example records show the shape, the validator catches the easy mistakes, and the conversations that follow shape what the standard becomes.
+        </p>
+        <p>
+          Start at <a href="/docs" class="link-inline">/docs</a>, browse the schema and examples on <a
+            href="https://github.com/ulcspec/ULC"
+            target="_blank"
+            rel="noopener external"
+          >GitHub</a>, or read the <a href="/for-designers" class="link-inline">designer track</a> that drives the demand.
+        </p>
+      </section>
+
+    </article>
+  </div>
+
+  <CrossLinkFooter links={crossLinks} />
+</PageShell>
+
+<style>
+  /* ── Long-form prose, manufacturer-document register ─────────────────
+     Matches /for-designers' .long-form so the two audience surfaces share
+     a single prose token system. Any change here must land on /for-designers
+     too; the next long-form surface (/docs) consolidates these as
+     prose-* tokens in DESIGN_SYSTEM.md (deferred to PR-A2 per
+     for-designers-plan §10.4). */
+  .long-form {
+    color: var(--text-muted);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+  .long-form > section {
+    margin-top: 4.5rem;
+    scroll-margin-top: 5rem;
+  }
+  .long-form > section:first-child {
+    margin-top: 0;
+  }
+  .long-form p {
+    margin: 0 0 1.25rem 0;
+    max-width: 68ch;
+  }
+  .long-form p:last-child {
+    margin-bottom: 0;
+  }
+  .long-form strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .long-form code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    color: var(--accent-warm);
+  }
+  .long-form a {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .long-form a:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  .step-num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.625rem 0 !important;
+  }
+
+  .long-form h2 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.5rem 0;
+    max-width: 28ch;
+  }
+  @media (min-width: 768px) {
+    .long-form h2 {
+      font-size: 2.25rem;
+    }
+  }
+  .long-form h3 {
+    font-family: var(--font-display);
+    color: var(--text);
+    font-size: 1.25rem;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 1.75rem 0 0.75rem 0;
+  }
+  @media (min-width: 768px) {
+    .long-form h3 {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* ── Alternatives table ───────────────────────────────────────────── */
+  .alt-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    border-collapse: collapse;
+    width: 100%;
+    display: block;
+  }
+  .alt-table thead,
+  .alt-table tbody,
+  .alt-table tr {
+    display: block;
+  }
+  .alt-table thead {
+    display: none;
+  }
+  .alt-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.125rem;
+  }
+  .alt-table tr:last-child {
+    border-bottom: none;
+  }
+  .alt-table th[scope='row'],
+  .alt-table td {
+    display: block;
+    text-align: left;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--text-muted);
+  }
+  .alt-table th[scope='row'] {
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .alt-table td + td {
+    margin-top: 0.25rem;
+  }
+  @media (min-width: 768px) {
+    .alt-table {
+      display: table;
+    }
+    .alt-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .alt-table tbody {
+      display: table-row-group;
+    }
+    .alt-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .alt-table th,
+    .alt-table td {
+      display: table-cell;
+      padding: 1.125rem 1.25rem;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+    }
+    .alt-table tr:last-child th,
+    .alt-table tr:last-child td {
+      border-bottom: none;
+    }
+    .alt-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+    }
+    .alt-table th[scope='row'] {
+      margin-bottom: 0;
+      width: 30%;
+    }
+    .alt-table td + td {
+      margin-top: 0;
+    }
+  }
+  /* Companion row (the ULC fifth row), matches sibling /for-designers
+     neutral 4% mix so the two surfaces share one alt-table treatment.
+     The accent-warm row header keeps the ULC name highlighted without
+     repainting the whole row. */
+  .alt-table .alt-row--companion {
+    background: color-mix(in oklab, var(--text-subtle) 4%, var(--bg-elevated));
+  }
+  .alt-table .alt-row--companion th[scope='row'] {
+    color: var(--accent-warm);
+  }
+
+  /* ── Criteria list ────────────────────────────────────────────────── */
+  .criteria-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    counter-reset: criterion;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .criteria-list > li {
+    counter-increment: criterion;
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    position: relative;
+  }
+  .criteria-list > li::before {
+    content: counter(criterion, decimal-leading-zero);
+    position: absolute;
+    left: -2.5rem;
+    top: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .criteria-list > li {
+      padding-left: 1.5rem;
+    }
+    .criteria-list > li::before {
+      display: block;
+    }
+    .criteria-list {
+      padding-left: 2.5rem;
+    }
+  }
+  .criteria-list h3 {
+    margin-top: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .criteria-list h3 {
+      font-size: 1.125rem;
+    }
+  }
+  .criteria-list p {
+    font-size: 1rem;
+    margin: 0.375rem 0 0 0;
+  }
+
+  /* ── Theme blocks (3) ─────────────────────────────────────────────── */
+  .theme {
+    border-top: 1px solid var(--border);
+    padding-top: 2.5rem;
+    margin-top: 2.5rem !important;
+    scroll-margin-top: 5rem;
+  }
+  .theme:first-of-type {
+    border-top: none;
+    padding-top: 0;
+  }
+  .theme__num {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    margin: 0 0 0.5rem 0 !important;
+  }
+  .theme h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    max-width: 32ch;
+  }
+  @media (min-width: 768px) {
+    .theme h3 {
+      font-size: 1.625rem;
+    }
+  }
+  .theme .return-line {
+    font-style: italic;
+    color: var(--text);
+    border-left: 2px solid var(--accent-warm);
+    padding-left: 1rem;
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+
+  /* ── Theme 1 extraction-vs-ULC contrast block ────────────────────── */
+  .contrast {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .contrast {
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+  }
+  .contrast__col {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    padding: 1rem 1.125rem;
+  }
+  .contrast__col--gain {
+    border-color: color-mix(in oklab, var(--accent-warm) 35%, var(--border));
+  }
+  .contrast__label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.5rem 0;
+  }
+  .contrast__col--gain .contrast__label {
+    color: var(--accent-warm);
+  }
+  .contrast__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  .contrast__list li {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+    padding-left: 0.875rem;
+    position: relative;
+  }
+  .contrast__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--text-subtle);
+  }
+  .contrast__col--gain .contrast__list li::before {
+    background: var(--accent-warm);
+  }
+  .contrast-note {
+    font-style: italic;
+    color: var(--text);
+    font-size: 0.9375rem;
+    margin-top: 0.875rem !important;
+  }
+
+  /* ── Sources block code fragment ───────────────────────────────────── */
+  .code-block {
+    margin-top: 1rem;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.125rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--code-text);
+  }
+  .code-block code {
+    font-family: inherit;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── Inline dialogue strip (Theme 3) ───────────────────────────────
+     In-column variant of the full-width DialogueStrip.astro (which is a
+     <section>, can't drop inside an article column without breaking the
+     68ch max-width). Single bottom rule + tighter letter-spacing reads as
+     an "industry beat" inside flowing prose, not a horizontal-rule pair. */
+  .dialogue-strip {
+    margin-top: 1.5rem !important;
+    padding: 0.625rem 1.125rem 0.875rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.10em;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+  .dialogue-strip strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .dialogue-strip span {
+    color: var(--text-subtle);
+    margin: 0 0.5rem;
+  }
+
+  /* ── Link variants ────────────────────────────────────────────────── */
+  .link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding: 0.375rem 0;
+  }
+  .link:hover {
+    color: var(--accent-warm-deep);
+  }
+  /* Inline anchor inside flowing prose (does not need 44px touch target;
+     the parent line already has hit-area). */
+  .link-inline {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .link-inline:hover {
+    color: var(--accent-warm-deep);
+  }
+
+  /* ── Differentiated-value bullets ──────────────────────────────────
+     Mirrors src/pages/for-designers.astro `.value-list`. Keep the two in
+     sync until a shared prose token system lands per DESIGN_SYSTEM.md. */
+  .value-list {
+    list-style: none;
+    margin: 1.75rem 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .value-list > li {
+    border-left: 2px solid var(--accent-warm);
+    padding: 0.125rem 0 0.125rem 1.25rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 68ch;
+  }
+  .value-list > li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ── Sample-link (matches /for-designers Try-ULC-today extra) ──────── */
+  .sample-link {
+    margin-top: 1.25rem !important;
+    font-size: 0.9375rem;
+  }
+  .sample-link a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.375rem;
+  }
+
+  /* ── Proof matrix ─────────────────────────────────────────────────── */
+  .proof-table {
+    margin-top: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-elevated);
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+  }
+  .proof-table thead,
+  .proof-table tbody,
+  .proof-table tr {
+    display: block;
+  }
+  .proof-table thead {
+    display: none;
+  }
+  .proof-table tr {
+    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 1.125rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.25rem 0.75rem;
+    align-items: center;
+  }
+  .proof-table tr:last-child {
+    border-bottom: none;
+  }
+  .proof-table td {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .proof-table td:nth-child(1) {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .proof-table td:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+  }
+  .proof-table td:nth-child(3) {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+  @media (min-width: 768px) {
+    .proof-table {
+      display: table;
+    }
+    .proof-table thead {
+      display: table-header-group;
+      background: var(--bg);
+    }
+    .proof-table tbody {
+      display: table-row-group;
+    }
+    .proof-table tr {
+      display: table-row;
+      padding: 0;
+    }
+    .proof-table th,
+    .proof-table td {
+      display: table-cell;
+      padding: 0.875rem 1.125rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .proof-table tr:last-child td {
+      border-bottom: none;
+    }
+    .proof-table th[scope='col'] {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+      color: var(--text-subtle);
+      text-align: left;
+      font-weight: 500;
+      padding-bottom: 0.5rem;
+    }
+  }
+  .proof-theme {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-warm);
+    min-width: 1.75rem;
+  }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.05em;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .status-pill--available {
+    color: var(--accent-warm);
+    border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  }
+  /* Caveat pill: distinguishable from --available by a leading "∗" glyph
+     injected via ::before (presentation in CSS, label data stays clean)
+     plus a distinct "With caveat" label text (cf. for-designers' parallel
+     "Available now" / "Pending" pair). bg/border mix raised so the pill
+     still clears WCAG 2.2 AA in light theme. */
+  .status-pill--available-caveat {
+    color: var(--accent-warm);
+    border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 10%, var(--bg-elevated));
+  }
+  .status-pill--available-caveat::before {
+    content: '∗ ';
+    font-weight: 600;
+  }
+  .status-pill--pending {
+    color: var(--text-subtle);
+    border-color: var(--border);
+    background: var(--bg-elevated);
+  }
+
+  /* ── The Pilot section extras ─────────────────────────────────────── */
+  .pilot-sub-heading {
+    margin-top: 2rem;
+    font-size: 1rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    color: var(--text-subtle);
+    font-weight: 500;
+  }
+  .pilot-list {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin: 1rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+  }
+  .pilot-list li {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    padding-left: 0.25rem;
+  }
+  .pilot-list li::marker {
+    color: var(--accent-warm);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+  /* Visually differentiates "What we agree on at kickoff" from the preceding
+     "What a pilot looks like" list. Same decimal numbering, but a left-border
+     + tinted background reads as a bounded acceptance-criteria block instead
+     of a continuation of the checklist. */
+  .pilot-list--criteria {
+    border-left: 2px solid var(--accent-warm);
+    background: color-mix(in oklab, var(--accent-warm) 4%, var(--bg-elevated));
+    padding: 1rem 1.25rem 1rem 2rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 1rem !important;
+  }
+  .pilot-cta {
+    margin-top: 1.75rem !important;
+    font-size: 0.9375rem;
+  }
+  .pilot-cross {
+    margin-top: 1rem !important;
+    font-size: 0.9375rem;
+    color: var(--text-subtle);
+  }
+
+  /* Forward-to-team share affordance. Visually understated to match the
+     industry-document register, sits between the mailto CTA and the
+     designer cross-link as a "and here is how you forward this internally"
+     beat, not a competing call-to-action. */
+  .pilot-share {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+  }
+  .pilot-share__label {
+    margin: 0 !important;
+    color: var(--text-subtle);
+  }
+  .pilot-share__btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.875rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--text);
+    cursor: pointer;
+    min-height: 44px;
+    transition: color 150ms ease-out, border-color 150ms ease-out;
+  }
+  .pilot-share__btn:hover {
+    color: var(--accent-warm);
+    border-color: color-mix(in oklab, var(--accent-warm) 40%, var(--border));
+  }
+  .pilot-share__btn .hidden {
+    display: none;
+  }
+
+  /* Screen-reader-only utility for the URL source + status live region. The
+     fallback path needs the source element selectable (not display:none) so
+     the user can still hand-copy with Cmd/Ctrl+C if the Clipboard API is
+     unavailable. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ── Print: TOC suppressed, FAQ open by default ───────────────────── */
+  @media print {
+    .toc-mobile,
+    .toc-desktop {
+      display: none !important;
+    }
+    .long-form > section {
+      margin-top: 2rem;
+      page-break-inside: avoid;
+    }
+    /* Share-button is a no-op on paper. */
+    .pilot-share {
+      display: none;
+    }
+  }
+</style>
+

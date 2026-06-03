@@ -1,0 +1,82 @@
+---
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import SectionCard from '../../../components/SectionCard.astro';
+
+const platforms: readonly { slug: string; title: string; description: string }[] = [
+  { slug: 'salsify', title: 'Salsify', description: 'Cloud PIM. Consumer brands, retail-syndicated lines, mid-market lighting.' },
+  { slug: 'akeneo', title: 'Akeneo', description: 'Open-source PIM. European mid-market, PHP-stack manufacturers.' },
+  { slug: 'sap', title: 'SAP', description: 'Enterprise ERP master data. Large manufacturers running SAP MM.' },
+  { slug: 'custom-pim', title: 'Custom / in-house', description: 'Home-grown databases or spreadsheet-based masters. Manufacturers without commercial PIM.' },
+];
+---
+
+<PageShell
+  title="PIM mapping guides - ULC specification"
+  description="How to add a ULC export path alongside existing exports for Salsify, Akeneo, SAP, and custom / in-house PIMs."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">PIM mapping guides.</h1>
+    <p class="page-intro">
+      ULC maps onto any PIM with the same field-by-field pattern. These
+      guides walk four common setups: a cloud attribute PIM (Salsify), an
+      open-source PIM (Akeneo), SAP ERP material master, and the
+      spreadsheets or in-house database many manufacturers still use.
+      Whatever system holds your product data, the approach is the same:
+      map your fields to ULC and add the export alongside what you already
+      publish.
+    </p>
+
+    <ul class="pim-cards">
+      {platforms.map((p) => (
+        <li>
+          <SectionCard
+            href={`/docs/pim/${p.slug}`}
+            title={p.title}
+            description={p.description}
+            eyebrow="PIM mapping"
+          />
+        </li>
+      ))}
+    </ul>
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) { .page-h1 { font-size: 2.75rem; } }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 2rem 0;
+    max-width: 44rem;
+  }
+  .pim-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .pim-cards > li {
+    display: flex;
+  }
+  .pim-cards > li > * {
+    flex: 1;
+  }
+  @media (min-width: 640px) {
+    .pim-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

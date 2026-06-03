@@ -1,0 +1,186 @@
+---
+// /docs/authoring-patterns: renders upstream MDX via the spec-sync
+// Content Loader. PR-1a validates the loader end-to-end on this single
+// sub-route; PR-1b folds the remaining five sub-routes onto the same
+// pattern.
+
+import { getEntry, render } from 'astro:content';
+
+import Callout from '../../components/Callout.astro';
+import PageShell from '../../components/PageShell.astro';
+import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
+import { manifestEntryForRouteOrThrow } from '../../lib/spec-sync';
+
+const manifest = manifestEntryForRouteOrThrow('/docs/authoring-patterns');
+const entry = await getEntry('spec', 'authoring-patterns');
+
+let Content: Awaited<ReturnType<typeof render>>['Content'] | null = null;
+let renderError: string | null = null;
+if (entry) {
+  try {
+    const rendered = await render(entry);
+    Content = rendered.Content;
+  } catch (err) {
+    renderError = err instanceof Error ? err.message : String(err);
+  }
+} else {
+  renderError = 'Upstream entry not found in the spec collection.';
+}
+---
+
+<PageShell
+  title="Authoring patterns - ULC specification"
+  description="The four real-world manufacturer publishing shapes ULC supports: per-SKU, per-photometric-scenario, per-IES with provenance, per-foot linear scaling."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">Authoring patterns.</h1>
+
+    {
+      Content ? (
+        <article class="spec-prose">
+          <Content />
+        </article>
+      ) : (
+        <Callout intent="warning" label="Content load failed">
+          <p>
+            The upstream MDX body could not be rendered.
+            {renderError ? <span> Error: <code>{renderError}</code></span> : null}
+          </p>
+          <p>
+            Source: <code>{`ulcspec/ULC/${manifest.upstreamPath}`}</code>.
+            Retry the build, or pin a different commit in
+            <code>spec-sync.config.ts</code>.
+          </p>
+        </Callout>
+      )
+    }
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) {
+    .page-h1 {
+      font-size: 2.75rem;
+    }
+  }
+
+  /* Long-form upstream prose, scoped to this page until PR-A2 graduates
+     prose tokens to global.css + DESIGN_SYSTEM.md. */
+  .spec-prose {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text);
+    max-width: 44rem;
+  }
+  .spec-prose :global(h2) {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2.5rem 0 1rem 0;
+  }
+  .spec-prose :global(h3) {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 600;
+    color: var(--text);
+    margin: 2rem 0 0.75rem 0;
+  }
+  .spec-prose :global(p) {
+    margin: 0 0 1.1rem 0;
+    color: var(--text-muted);
+  }
+  .spec-prose :global(p:first-child) {
+    color: var(--text);
+    font-size: 1.125rem;
+  }
+  .spec-prose :global(ul),
+  .spec-prose :global(ol) {
+    margin: 0 0 1.25rem 1.25rem;
+    color: var(--text-muted);
+  }
+  .spec-prose :global(li) {
+    margin: 0 0 0.5rem 0;
+  }
+  .spec-prose :global(li > p) {
+    margin: 0 0 0.5rem 0;
+  }
+  .spec-prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent-warm);
+    background: color-mix(in oklab, var(--accent-warm) 6%, var(--bg-elevated));
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+  .spec-prose :global(pre) {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    line-height: 1.55;
+  }
+  .spec-prose :global(pre code) {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+  }
+  .spec-prose :global(blockquote) {
+    border-left: 3px solid var(--accent-warm);
+    margin: 1.5rem 0;
+    padding: 0.25rem 0 0.25rem 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .spec-prose :global(a) {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .spec-prose :global(a:hover) {
+    color: var(--accent-warm-deep);
+  }
+  .spec-prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95em;
+  }
+  .spec-prose :global(th),
+  .spec-prose :global(td) {
+    border-bottom: 1px solid var(--border);
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+  }
+  .spec-prose :global(th) {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .spec-prose :global(td) {
+    color: var(--text-muted);
+  }
+  .spec-prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+</style>

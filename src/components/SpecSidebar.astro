@@ -1,0 +1,252 @@
+---
+// SpecSidebar: cross-route nav for /spec/*. Distinct from StickyToc
+// (which is single-page anchor scroll-spy). Lists every spec sub-route
+// grouped by content area, with the current route highlighted.
+//
+// Sticky on desktop ≥1024px; collapses to a <details> accordion on
+// mobile. The mobile accordion sits at the top of the page above the
+// main content; the desktop sidebar sits in the left column of
+// <SpecDocsLayout>.
+//
+// Single-surface (/spec/*) consumer. The list of routes is hand-
+// authored here so it stays stable; PR-1's content loader uses
+// SPEC_SYNC.files as the source of truth for routes that need it.
+
+interface NavItem {
+  href: string;
+  label: string;
+}
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+interface Props {
+  /** Current route used for highlighting; defaults to request pathname. */
+  current?: string;
+}
+
+const { current = Astro.url.pathname } = Astro.props;
+
+const sections: readonly NavSection[] = [
+  {
+    label: 'Start here',
+    items: [
+      { href: '/docs', label: 'Overview' },
+    ],
+  },
+  {
+    label: 'Reference',
+    items: [
+      { href: '/docs/authoring-patterns', label: 'Pattern guide' },
+      { href: '/docs/schema', label: 'Schema reference' },
+      { href: '/docs/taxonomy', label: 'Taxonomy' },
+    ],
+  },
+  {
+    label: 'Templates',
+    items: [
+      { href: '/docs/templates', label: 'All categories' },
+      { href: '/docs/templates/downlight', label: 'Downlight' },
+      { href: '/docs/templates/linear-pendant', label: 'Linear pendant' },
+      { href: '/docs/templates/wall-pack', label: 'Wall-pack' },
+      { href: '/docs/templates/high-bay', label: 'High-bay' },
+      { href: '/docs/templates/bollard', label: 'Bollard' },
+      { href: '/docs/templates/wall-sconce', label: 'Wall-sconce' },
+    ],
+  },
+  {
+    label: 'PIM mapping',
+    items: [
+      { href: '/docs/pim', label: 'All platforms' },
+      { href: '/docs/pim/salsify', label: 'Salsify' },
+      { href: '/docs/pim/akeneo', label: 'Akeneo' },
+      { href: '/docs/pim/sap', label: 'SAP' },
+      { href: '/docs/pim/custom-pim', label: 'Custom / in-house' },
+    ],
+  },
+  {
+    label: 'Crosswalks',
+    items: [
+      { href: '/docs/crosswalks', label: 'Overview' },
+    ],
+  },
+] as const;
+
+const normalize = (path: string): string =>
+  path.endsWith('/') && path.length > 1 ? path.slice(0, -1) : path;
+
+// Exact-route match only; anchor-suffixed hrefs match their base route.
+// Anchor-precise highlighting (scroll-spy) is OnThisPage's job, not this
+// cross-route sidebar's job.
+const isCurrent = (href: string): boolean => {
+  const route = normalize((href.split('#')[0] ?? ''));
+  return route === normalize(current);
+};
+---
+
+{/* Mobile: collapsed accordion */}
+<details class="spec-sidebar-mobile">
+  <summary>
+    <span class="spec-sidebar-mobile__label">Spec navigation</span>
+    <svg
+      class="spec-sidebar-mobile__chev"
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </summary>
+  <nav aria-label="Spec navigation">
+    {sections.map((section) => (
+      <div class="spec-sidebar__group">
+        <p class="spec-sidebar__group-label">{section.label}</p>
+        <ul class="spec-sidebar__list">
+          {section.items.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="spec-sidebar__link"
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</details>
+
+{/* Desktop: sticky sidebar */}
+<aside class="spec-sidebar-desktop" aria-label="Spec navigation">
+  <nav>
+    {sections.map((section) => (
+      <div class="spec-sidebar__group">
+        <p class="spec-sidebar__group-label">{section.label}</p>
+        <ul class="spec-sidebar__list">
+          {section.items.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="spec-sidebar__link"
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</aside>
+
+<style>
+  .spec-sidebar-mobile {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    padding: 0.125rem 1rem;
+    margin: 0 0 1.5rem 0;
+  }
+  @media (min-width: 1024px) {
+    .spec-sidebar-mobile {
+      display: none;
+    }
+  }
+  .spec-sidebar-mobile > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.875rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+  }
+  .spec-sidebar-mobile > summary::-webkit-details-marker {
+    display: none;
+  }
+  .spec-sidebar-mobile__label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: var(--text-subtle);
+  }
+  .spec-sidebar-mobile__chev {
+    color: var(--text-muted);
+    transition: transform 200ms ease-out;
+  }
+  .spec-sidebar-mobile[open] .spec-sidebar-mobile__chev {
+    transform: rotate(180deg);
+  }
+  .spec-sidebar-mobile nav {
+    padding-bottom: 0.75rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.75rem;
+  }
+
+  .spec-sidebar-desktop {
+    display: none;
+  }
+  @media (min-width: 1024px) {
+    .spec-sidebar-desktop {
+      display: block;
+      position: sticky;
+      top: 6rem;
+      max-height: calc(100dvh - 8rem);
+      overflow-y: auto;
+      padding-right: 1rem;
+      padding-bottom: 2rem;
+    }
+  }
+
+  .spec-sidebar__group + .spec-sidebar__group {
+    margin-top: 1.5rem;
+  }
+  .spec-sidebar__group-label {
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.1em;
+    font-size: 0.6875rem;
+    color: var(--text-subtle);
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+  }
+  .spec-sidebar__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .spec-sidebar__link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+    margin-left: -0.75rem;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 150ms ease-out, background 150ms ease-out;
+  }
+  .spec-sidebar__link:hover {
+    color: var(--accent-warm);
+    background: color-mix(in oklab, var(--accent-warm) 5%, transparent);
+  }
+  .spec-sidebar__link[aria-current='page'] {
+    color: var(--text);
+    background: color-mix(in oklab, var(--accent-warm) 10%, transparent);
+    font-weight: 600;
+    box-shadow: inset 2px 0 0 var(--accent-warm);
+  }
+</style>

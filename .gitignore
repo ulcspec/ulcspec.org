@@ -57,3 +57,34 @@ generated_images/
 .launchpad/backups/
 # LaunchPad scaffold tempdirs (composition + single-adapter wrapping)
 .lp-tmp/
+# Growth-toolkit strategic artifacts (private; mirrored from ULC repo)
+docs/growth/
+# Internal strategic / process artifacts (not for public visibility)
+docs/tasks/
+docs/brainstorms/
+.launchpad/brainstorm-summary.md
+.launchpad/rationale.md
+
+# Browser automation session state (Playwright MCP / Playwright)
+.playwright-mcp/
+.playwright/
+playwright-report/
+test-results/
+
+# Claude Code workspace state (per-user; not for team commit)
+.claude/
+
+# macOS junk (extends .DS_Store rule above)
+._*
+.Spotlight-V100
+.Trashes
+
+# Local environment variables (per-environment overrides)
+.env.*.local
+
+# IDE state (vim swapfiles; .idea/ already covered above)
+*.swp
+*.swo
+
+# iCloud / backup bundles
+*.bundle

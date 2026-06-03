@@ -1,0 +1,112 @@
+---
+// Step 1 visualization: where the spec-time hours go today.
+// Six-stage sequence + bleed indicator. Inline HTML/CSS so the figure is
+// themeable, accessible, and zero-network. Hand-authored SVG art is a Phase B
+// item per docs/architecture/DESIGN_SYSTEM.md.
+//
+// Accessible name comes from <figcaption> and aria-label on the diagram itself.
+//
+// Single-surface consumer as of 2026-05-16 (/for-designers only). Do NOT
+// treat this as a reusable primitive: it carries page-local terminology and
+// rhetorical choices specific to the designer-track Step 1 insight. Promote
+// to src/components/figures/* with a generalized API only when a second
+// surface needs the same diagram or a sibling.
+
+const stages = [
+  'Design intent',
+  'PDF cross-referencing',
+  'Reference-library lookup',
+  'Rep ping',
+  'Writing Luminaire Schedule',
+  'VE review (repeat)',
+];
+---
+
+<figure class="wh-fig">
+  <div
+    class="wh-grid"
+    role="img"
+    aria-label="Today's spec workflow: design intent moves through PDF cross-referencing, reference-library lookup, rep ping, writing the luminaire schedule, and VE review, with hours bleeding into the cross-referencing and rep ping stages."
+  >
+    {stages.map((stage, i) => (
+      <div class={`wh-stage ${(i === 1 || i === 3) ? 'wh-stage--bleed' : ''}`}>
+        <span class="wh-stage__num">{String(i + 1).padStart(2, '0')}</span>
+        <span class="wh-stage__label">{stage}</span>
+        {(i === 1 || i === 3) && (
+          <span class="wh-stage__bleed" aria-hidden="true">hours bleed</span>
+        )}
+      </div>
+    ))}
+  </div>
+  <figcaption class="wh-cap">
+    Today's spec workflow. Hours bleed at the cross-referencing and rep-ping stages.
+  </figcaption>
+</figure>
+
+<style>
+  .wh-fig {
+    margin: 2rem 0 0 0;
+  }
+  .wh-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    background: var(--bg-elevated);
+  }
+  @media (min-width: 768px) {
+    .wh-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.625rem;
+      padding: 1.5rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .wh-grid {
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+    }
+  }
+  .wh-stage {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.75rem 0.875rem;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-height: 88px;
+  }
+  .wh-stage--bleed {
+    border-color: color-mix(in oklab, var(--accent-warm) 50%, var(--border));
+    background: color-mix(in oklab, var(--accent-warm) 5%, var(--bg));
+  }
+  .wh-stage__num {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-subtle);
+    letter-spacing: 0.06em;
+  }
+  .wh-stage__label {
+    font-size: 0.8125rem;
+    color: var(--text);
+    line-height: 1.35;
+    font-weight: 500;
+  }
+  .wh-stage__bleed {
+    margin-top: auto;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+    font-size: 0.6875rem;
+    color: var(--accent-warm);
+  }
+  .wh-cap {
+    margin-top: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--text-subtle);
+    line-height: 1.5;
+  }
+</style>

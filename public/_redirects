@@ -1,0 +1,2 @@
+/spec              /docs              301
+/spec/*            /docs/:splat       301

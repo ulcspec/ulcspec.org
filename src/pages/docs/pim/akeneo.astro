@@ -1,0 +1,100 @@
+---
+// /docs/pim/akeneo. Condensed inline mapping guide; the full deep-dive
+// lives upstream at ulcspec/ULC/mappings/pim/akeneo.md and is linked from
+// the .full-guide-link callout at the bottom of the page. When PR-1b wires
+// up the spec-sync Content Loader, this inline content can be swapped for
+// the upstream MDX without changing the route or surrounding shell.
+
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+---
+
+<PageShell
+  title="Akeneo PIM mapping - ULC specification"
+  description="Field-by-field mapping from an Akeneo product catalog to a ULC record. Family / variant split, dual-unit conversion, asset hashing, completeness rules; cross-link to the full upstream guide."
+>
+  <SpecDocsLayout>
+    <div class="pim-mapping-page">
+    <h1 class="page-h1">Akeneo PIM mapping.</h1>
+    <p class="page-intro">
+      This guide shows how an Akeneo installation emits ULC records.
+    </p>
+
+    <h2>Akeneo data model in one page</h2>
+    <ul>
+      <li><strong>Products</strong> are the core entity, identified by identifier (SKU).</li>
+      <li><strong>Families</strong> group products that share an attribute set (downlight family vs linear-pendant family vs bollard family).</li>
+      <li><strong>Attribute groups</strong> are a global organizational layer; families reference attributes that belong to those groups. The same <code>electrical</code> or <code>photometry</code> attribute group can serve multiple families (downlight, linear, bollard).</li>
+      <li><strong>Variants and variant groups</strong> model SKU-level variation. Parent product-models hold shared attributes; variants carry per-SKU differences (CCT, distribution, finish).</li>
+      <li><strong>Categories</strong> are a separate hierarchy from families, used for marketing navigation and channel filtering.</li>
+      <li><strong>Channels</strong> define per-channel localization and completeness rules. A ULC emit channel can enforce that only records with complete photometric data ship.</li>
+      <li><strong>Asset Manager</strong> (Enterprise Edition) holds cutsheet PDFs, IES files, and LDT files as Asset Families. <strong>Reference Entities</strong> (also Enterprise-only) model structured entities like brand or designer. <strong>Community Edition has neither</strong>: file and image attributes on the product itself are the only built-in option, and the emitter streams those directly.</li>
+      <li><strong>API:</strong> REST with OAuth2 for both reads and writes.</li>
+    </ul>
+
+    <p><strong>Identity:</strong> a product's identifier (the SKU) is a user-editable attribute and can change, so anchor ULC emit integrations on Akeneo's stable internal product ID, and map the identifier to <code>configuration.catalog_number</code>.</p>
+
+    <h2>Core mapping</h2>
+
+    <h3>Identity</h3>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">Akeneo</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td>Product <code>identifier</code></td><td><code>configuration.catalog_number</code></td></tr>
+        <tr><td>Product model code (parent)</td><td><code>product_family.family_id</code>, <code>product_family.catalog_model</code></td></tr>
+        <tr><td>Brand attribute</td><td><code>product_family.manufacturer.slug</code></td></tr>
+        <tr><td>Product line / series</td><td><code>product_family.catalog_line</code></td></tr>
+        <tr><td>Derived full slug</td><td><code>record_id</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Family to primary category</h3>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">Akeneo family</th><th scope="col"><code>primary_category</code></th><th scope="col"><code>mounting_types</code></th></tr></thead>
+      <tbody>
+        <tr><td><code>downlight_recessed</code></td><td><code>downlight</code></td><td><code>["recessed_ceiling"]</code></td></tr>
+        <tr><td><code>linear_pendant</code></td><td><code>linear</code></td><td><code>["pendant"]</code></td></tr>
+        <tr><td><code>wall_pack_exterior</code></td><td><code>bulkhead_wall_pack</code></td><td><code>["surface_wall"]</code></td></tr>
+        <tr><td><code>high_bay_industrial</code></td><td><code>high_bay</code></td><td><code>["pendant", "surface_ceiling"]</code></td></tr>
+        <tr><td><code>bollard_outdoor</code></td><td><code>bollard</code></td><td><code>["surface_floor"]</code></td></tr>
+        <tr><td><code>sconce_interior</code></td><td><code>sconce</code></td><td><code>["surface_wall"]</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Dimensional and photometric</h3>
+    <p>Akeneo's <code>pim_catalog_metric</code> attribute type carries both value and unit (<code>{'{amount: 113, unit: "MILLIMETER"}'}</code>). The API also uses <code>pim_catalog_simpleselect</code> (enum), <code>pim_catalog_file</code>, and <code>pim_catalog_image</code> as exact type-code strings for filter queries. The emitter converts metric values to ULC dual-unit at emit time. Common mappings:</p>
+    <div class="pim-map-scroll">
+    <table class="pim-map">
+      <thead><tr><th scope="col">Akeneo attribute</th><th scope="col">ULC path</th></tr></thead>
+      <tbody>
+        <tr><td><code>overall_diameter</code> (<code>pim_catalog_metric</code>, MILLIMETER)</td><td><code>product_family.physical_dimensions.overall_diameter</code></td></tr>
+        <tr><td><code>weight</code> (<code>pim_catalog_metric</code>, KILOGRAM)</td><td><code>product_family.physical_dimensions.luminaire_mass</code></td></tr>
+        <tr><td><code>input_power_w</code></td><td><code>electrical.input_power_w.value</code></td></tr>
+        <tr><td><code>total_luminous_flux_lm</code></td><td><code>photometry.total_luminous_flux_lm.value</code></td></tr>
+        <tr><td><code>cct_k</code> (<code>pim_catalog_simpleselect</code>)</td><td><code>colorimetry.nominal_cct_k</code></td></tr>
+        <tr><td><code>cri_ra</code></td><td><code>colorimetry.cri_ra.value</code></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>Unit codes (MILLIMETER, KILOGRAM, CELSIUS) are typical defaults but Akeneo measurement families are user-configurable. The emitter's mapping table must record the actual unit code in use per attribute, not assume defaults.</p>
+
+    <h2>Gotchas</h2>
+    <ol>
+      <li><strong>Product-model vs variant split.</strong> Akeneo's 2-level model (parent product-model + variants) maps exactly onto ULC's <code>product_family</code> (shared) vs <code>configuration</code> (per-scenario) split.</li>
+      <li><strong>Attribute completeness.</strong> Tie the ULC emit to a <code>ulc_export</code> channel's completeness so partially-populated SKUs don't ship as broken ULC records.</li>
+      <li><strong>Metric unit drift.</strong> If variants store the same attribute in different units, normalize before computing the companion.</li>
+      <li><strong>Reference entity depth (Enterprise).</strong> Attestations like UL-listed or DLC-qualified can be modeled as reference entities with structured attributes; walk these into <code>attestations[]</code>.</li>
+      <li><strong>Published vs draft.</strong> Never emit ULC from a draft product. Wait for the workflow to publish.</li>
+    </ol>
+
+    <p class="full-guide-link">
+      Full guide with emit-flow pseudocode, channel completeness configuration, and PHP transform skeleton: <a href="https://github.com/ulcspec/ULC/blob/main/mappings/pim/akeneo.md" target="_blank" rel="noopener external"><code>github.com/ulcspec/ULC/blob/main/mappings/pim/akeneo.md</code></a>
+    </p>
+    </div>
+  </SpecDocsLayout>
+</PageShell>

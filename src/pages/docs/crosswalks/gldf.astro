@@ -1,0 +1,30 @@
+---
+// /docs/crosswalks/gldf: planned crosswalk (status="planned" at v1; see the
+// crosswalks index). Renders here once the ULC-to-GLDF mapping is published in
+// the spec repository.
+
+import Callout from '../../../components/Callout.astro';
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+---
+
+<PageShell
+  title="GLDF crosswalk - ULC specification"
+  description="Field-by-field crosswalk between ULC and GLDF, the DIAL-stewarded XML container for the DIALux and RELUX planning ecosystems. Planned; not yet published."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">GLDF crosswalk.</h1>
+
+    <Callout intent="default" label="Planned">
+      <p>
+        This crosswalk is planned. When the ULC-to-GLDF mapping is published in
+        the <a href="https://github.com/ulcspec/ULC" rel="noopener external">spec repository</a>,
+        it will render here.
+      </p>
+      <p>
+        For now, see the <a href="/docs/crosswalks">crosswalks overview</a> for
+        all four planned crosswalks and their context.
+      </p>
+    </Callout>
+  </SpecDocsLayout>
+</PageShell>

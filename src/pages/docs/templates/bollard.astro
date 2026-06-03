@@ -1,0 +1,27 @@
+---
+// /docs/templates/bollard: per-category template page. The upstream template
+// (templates/bollard.ulc.json + templates/bollard.md) renders here once the
+// docs loader covers these routes; until then the page points to the spec repo.
+
+import Callout from '../../../components/Callout.astro';
+import PageShell from '../../../components/PageShell.astro';
+import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+---
+
+<PageShell
+  title="Bollard template - ULC specification"
+  description="ULC authoring template for bollard luminaires. Starter JSON skeleton and guide in the spec repository's templates/ directory."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">Bollard template.</h1>
+
+    <Callout intent="default" label="Get the template">
+      <p>
+        The bollard authoring template lives in the spec repository:
+        <code>bollard.ulc.json</code> is a starter JSON skeleton to fill in and
+        validate, and <code>bollard.md</code> is the guide. Both are under
+        <a href="https://github.com/ulcspec/ULC/tree/main/templates" rel="noopener external"><code>templates/</code></a>.
+      </p>
+    </Callout>
+  </SpecDocsLayout>
+</PageShell>

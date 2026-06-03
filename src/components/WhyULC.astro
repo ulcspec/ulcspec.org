@@ -1,0 +1,39 @@
+---
+// "Why ULC" homepage section. Two-paragraph text-only block, grounded in the
+// upstream README's framing of the problem (PDF fragmentation, AI-scale
+// consumption gap). Replaces the prior LLM-prompt quick-win block from v1.
+---
+
+<section
+  class="relative border-t border-token"
+  style="background: var(--bg-elevated);"
+>
+  <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28 lg:py-32">
+    <div class="max-w-3xl">
+      <h2
+        class="font-display text-3xl md:text-4xl font-semibold tracking-tight leading-tight"
+      >
+        Why ULC
+      </h2>
+      <p class="mt-6 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+        Luminaire data has lived for decades in PDF datasheets, IES photometric
+        files, and EULUMDAT (LDT) files: each formatted its own way, each
+        written to be read by a person. That worked when a designer opened one
+        datasheet at a time. It breaks the moment a design tool or an AI agent
+        has to read a hundred of them to answer a single question.
+      </p>
+      <p class="mt-5 text-base md:text-lg text-[var(--text-muted)] leading-relaxed">
+        Pulling structure back out of a PDF is slow, expensive, and error-prone,
+        whether a designer does it by hand across twelve datasheets or an AI
+        does it across the five hundred pages of a submittal. The bottleneck
+        isn't the AI; it's the data. ULC closes that gap: one structured JSON
+        record per attested photometric scenario. Every ULC record fingerprints
+        each of its source files with a SHA-256 hash, a tamper-evident seal,
+        and ties every value back to the file it came from, so anyone can
+        confirm the data is the manufacturer's real data, unchanged. The datasheet, IES, and LDT stay
+        exactly where they are. ULC just makes their contents readable by
+        machine.
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,1 +1,364 @@
 @import "tailwindcss";
+
+/* ============================================================
+   ULC design tokens
+   Source: docs/architecture/DESIGN_SYSTEM.md
+   ============================================================ */
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --color-bg: #0a0a0a;
+  --color-bg-elevated: #161616;
+  --color-bg-overlay: #1f1f1f;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1a1;
+  --color-text-subtle: #6b7280;
+  --color-border: #262626;
+  --color-accent-glow: #fcd34d;
+  --color-accent-warm: #fbbf24;
+  --color-accent-warm-deep: #f59e0b;
+  --color-accent-cool: #38bdf8;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0a0a;
+  --bg-elevated: #161616;
+  --bg-overlay: #1f1f1f;
+  --bg-translucent: color-mix(in oklab, #0a0a0a 80%, transparent);
+  --text: #fafafa;
+  --text-muted: #a1a1a1;
+  --text-subtle: #6b7280;
+  --border: #262626;
+  --accent-glow: #fcd34d;
+  --accent-warm: #fbbf24;
+  --accent-warm-deep: #f59e0b;
+  --accent-cool: #38bdf8;
+  --on-accent: #0a0a0a;
+  --code-bg: #161616;
+  --code-text: #fafafa;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fafaf7;
+  --bg-elevated: #ffffff;
+  --bg-overlay: #ffffff;
+  --bg-translucent: color-mix(in oklab, #fafaf7 80%, transparent);
+  --text: #1a1a1a;
+  --text-muted: #525252;
+  --text-subtle: #737373;
+  --border: #e5e5e0;
+  --accent-glow: #fbbf24;
+  /* Light-theme amber: amber-700 (5.02:1 vs white) and amber-800 (7.09:1 vs
+     white) clear WCAG AA 4.5:1 for normal text. Earlier values (amber-600
+     #d97706 and amber-700 #b45309) hit only 3.18 / 4.66:1; the first failed
+     Lighthouse accessibility on the light theme. Dark-theme amber stays
+     #fbbf24 (amber-400) where the dark bg is the contrast partner. */
+  --accent-warm: #b45309;
+  --accent-warm-deep: #92400e;
+  --accent-cool: #0284c7;
+  --on-accent: #0a0a0a;
+  --code-bg: #f5f5f0;
+  --code-text: #1a1a1a;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+/* Focus ring, accessible across themes. Lets each component keep its own
+   border-radius; the outline-offset handles visual separation. */
+:focus-visible {
+  outline: 2px solid var(--accent-warm);
+  outline-offset: 3px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  z-index: 100;
+}
+.skip-link:focus-visible {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* Warm-glow effect on hero H1 (dark theme only) */
+.hero-display {
+  text-shadow:
+    0 0 32px rgba(252, 211, 77, 0.18),
+    0 0 8px rgba(251, 191, 36, 0.1);
+}
+:root[data-theme="light"] .hero-display {
+  text-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-display {
+    text-shadow: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Perforated dot pattern overlay, applied via .dot-grid */
+.dot-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(252, 211, 77, 0.35) 1px,
+    transparent 0
+  );
+  background-size: 16px 16px;
+  mask-image: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0) 75%
+  );
+}
+:root[data-theme="light"] .dot-grid {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(20, 20, 20, 0.22) 1px,
+    transparent 0
+  );
+}
+
+/* Theme-aware utility colors driven by tokens */
+.text-soft {
+  color: var(--text-muted);
+}
+.text-subtle {
+  color: var(--text-subtle);
+}
+.bg-elevated {
+  background: var(--bg-elevated);
+}
+.border-token {
+  border-color: var(--border);
+}
+.accent-warm {
+  color: var(--accent-warm);
+}
+
+/* Code/prompt block treatment. Spec mandates horizontal scroll over wrap
+   (hero.md edge cases): prompt-text integrity matters more than no-scroll on
+   a copyable artifact. */
+.prompt-block {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  background: var(--code-bg);
+  color: var(--code-text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  white-space: pre;
+  overflow-x: auto;
+  user-select: text;
+  -webkit-overflow-scrolling: touch;
+  /* iOS Safari hides scrollbars by default; telegraph horizontal-scroll
+     affordance via a narrow right-edge gradient mask so users know the
+     prompt extends past the visible edge. 6px fade is wide enough to
+     read as scroll-affordance on iOS but narrow enough that non-overflowing
+     prompts don't show visible trailing-character softening. */
+  mask-image: linear-gradient(to right, black calc(100% - 6px), transparent);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black calc(100% - 6px),
+    transparent
+  );
+}
+.prompt-block:focus-visible {
+  outline-offset: 4px;
+}
+
+/* Small-caps treatment for the active-dialogue strip */
+.small-caps {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   /docs/pim/* inner pages: inline mapping guide typography
+   ------------------------------------------------------------
+   The 4 PIM inner pages (salsify, akeneo, sap, custom-pim)
+   render condensed inline content (intro + H2/H3 + lists +
+   mapping tables + full-guide-link callout). Scoped to
+   .pim-mapping-page so other surfaces are not affected.
+   When PR-1b wires up the spec-sync Content Loader and swaps
+   inline content for upstream MDX, these selectors still apply
+   to the rendered MDX body. Keep in sync with the per-page
+   .spec-prose treatment in /docs/authoring-patterns.
+   ============================================================ */
+.pim-mapping-page .page-h1 {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 1.25rem 0;
+}
+@media (min-width: 768px) {
+  .pim-mapping-page .page-h1 {
+    font-size: 2.75rem;
+  }
+}
+.pim-mapping-page .page-intro {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0 0 2rem 0;
+  max-width: 44rem;
+}
+.pim-mapping-page h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--text);
+  margin: 2.5rem 0 1rem 0;
+}
+.pim-mapping-page h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  color: var(--text);
+  margin: 2rem 0 0.75rem 0;
+}
+.pim-mapping-page p,
+.pim-mapping-page ul,
+.pim-mapping-page ol {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+  max-width: 44rem;
+}
+.pim-mapping-page ul,
+.pim-mapping-page ol {
+  padding-left: 1.5rem;
+}
+.pim-mapping-page li {
+  margin: 0 0 0.5rem 0;
+}
+.pim-mapping-page li::marker {
+  color: var(--accent-warm);
+}
+.pim-mapping-page strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.pim-mapping-page code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--accent-warm);
+}
+.pim-mapping-page a {
+  color: var(--accent-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pim-mapping-page a:hover {
+  color: var(--accent-warm-deep);
+}
+
+/* Inline mapping tables used in /docs/pim/* inner pages */
+.pim-map-scroll {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  -webkit-overflow-scrolling: touch;
+}
+.pim-map-scroll > .pim-map {
+  margin: 0;
+  min-width: 32rem;
+}
+.pim-map {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.pim-map thead {
+  background: var(--bg);
+}
+.pim-map th[scope="col"] {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  text-align: left;
+  font-weight: 500;
+  padding: 0.875rem 1rem;
+}
+.pim-map td {
+  padding: 0.875rem 1rem;
+  vertical-align: top;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+.pim-map code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--accent-warm);
+}
+
+.full-guide-link {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  background: color-mix(in oklab, var(--accent-warm) 8%, var(--bg-elevated));
+  border-left: 3px solid var(--accent-warm);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+.full-guide-link a {
+  color: var(--accent-warm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.full-guide-link code {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  color: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
