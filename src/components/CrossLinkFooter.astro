@@ -1,8 +1,8 @@
 ---
-// Contextual cross-link band used at the bottom of long-form audience pages
-// (/for-designers, /for-manufacturers). Five named outbound links + maintainer
-// credential. Designed so the consuming page provides the link list with
-// page-appropriate framing copy.
+// Contextual "Learn more" band at the bottom of long-form pages. The consuming
+// page provides a short list of page-specific deep links: relevant to that page
+// and surfacing buried content (a /docs subpage or a section anchor), never
+// header-reachable filler.
 
 interface LinkItem {
   href: string;
@@ -20,7 +20,7 @@ interface Props {
   label?: string;
 }
 
-const { links, label = 'Keep going' } = Astro.props;
+const { links, label = 'Learn more' } = Astro.props;
 ---
 
 <section
