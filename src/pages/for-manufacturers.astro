@@ -101,7 +101,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
           <strong>From your PIM.</strong> If your data lives in Salsify, Akeneo, SAP, or a custom PIM, the structure already exists. The mapping guides at <a href="/docs" class="link-inline">/docs</a> translate your fields onto ULC's, usually a one-time integration that then runs inside your existing publishing pipeline.
         </p>
         <p>
-          <strong>From cutsheets and spreadsheets.</strong> If your data lives in spreadsheets, documents, and photometric files, author records with LLM help using the four <a href="https://github.com/ulcspec/ULC/tree/main/examples" target="_blank" rel="noopener external" class="link-inline">example records</a> as templates: copy the closest pattern, drop in your values, reference your source files.
+          <strong>From a spreadsheet.</strong> If your data lives in spreadsheets rather than a PIM, the open-source <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> and the <code>ulc from-sheet</code> converter turn it into validated records: one row per product, point each row at your source files, and run one command. The converter computes the schema structure, SHA-256 hashes, and dual units, then validates each record. Deterministic and offline.
         </p>
         <p>
           The <a href="/validator" class="link-inline">validator</a> catches schema errors before you publish. The schema, examples, and mapping guides all live at <a href="/docs" class="link-inline">/docs</a>.
