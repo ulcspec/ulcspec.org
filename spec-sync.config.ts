@@ -36,12 +36,12 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Pinned to the current upstream HEAD at PR-1a land time
-  // (2026-05-17). Advance via:
+  // Pinned to the v0.6.0 release commit (PR #25, 2026-06-03), which ships the
+  // computed-conformance model (PR #24). Advance via:
   //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
   // and rebuild. The badge auto-detects a real SHA and renders it.
-  upstreamCommit: '6eb8edab5132df977fb3d9da0348d8de9018dba6',
-  upstreamVersion: 'v0.5.1',
+  upstreamCommit: '0999ebc66db8893b29f131ebdd5990c2bdc526e8',
+  upstreamVersion: 'v0.6.0',
   upstreamEditBranch: 'main',
   files: [
     {

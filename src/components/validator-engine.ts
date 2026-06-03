@@ -51,7 +51,7 @@ export interface ValidationResult {
   manufacturer: { slug: string; display: string } | null;
   /** Catalog model string if extractable. */
   model: string | null;
-  /** Declared ULC version, e.g. "0.3.0". */
+  /** Declared ULC version, e.g. "0.6.0". */
   version: string | null;
   /**
    * Computed conformance level read from `index.conformance_level`
