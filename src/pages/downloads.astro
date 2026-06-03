@@ -140,6 +140,7 @@ const platformLabel: Record<Platform, string> = {
   'darwin-amd64': 'macOS · Intel (amd64)',
   'linux-amd64': 'Linux · amd64',
   'linux-arm64': 'Linux · arm64',
+  'windows-arm64': 'Windows · arm64',
   'windows-amd64': 'Windows · amd64',
 };
 
@@ -151,8 +152,8 @@ const crossLinks = [
 
 // Build-time fetch from the GitHub Releases API. Throws on rate-limit /
 // network failure so CI surfaces the problem rather than silently shipping
-// a stale download page. Falls back to a no-release state when upstream
-// has not yet cut its first release (current v1 reality).
+// a stale download page. Falls back to a no-release state when upstream has
+// no published (non-draft, non-prerelease) releases.
 const releaseResult = await fetchReleases();
 
 const pageTitle = 'Downloads: designer prompts, examples, schema, CLI';
@@ -317,7 +318,7 @@ function formatAssetSize(bytes: number): string {
       <section id="cli" aria-labelledby="cli-heading">
         <h2 id="cli-heading">Go reference validator</h2>
         <p>
-          The canonical reference implementation: <code>ulc</code>, a single-file Go binary that validates records against the schema, verifies source-file hashes, and regenerates the <code>index</code> block. Released via GitHub Releases on the spec repository.
+          The canonical reference implementation: <code>ulc</code>, a single-file Go binary that validates records against the schema, verifies source-file hashes, regenerates the <code>index</code> block, and converts a manufacturer <a href="/for-manufacturers#how-to-create" class="link-inline">workbook into validated records</a> with <code>ulc from-sheet</code>. Released via GitHub Releases on the spec repository.
         </p>
 
         {releaseResult.kind === 'no-release' ? (

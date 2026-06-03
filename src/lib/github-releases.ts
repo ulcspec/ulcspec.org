@@ -43,6 +43,7 @@ export type Platform =
   | 'darwin-amd64'
   | 'linux-amd64'
   | 'linux-arm64'
+  | 'windows-arm64'
   | 'windows-amd64';
 
 // Recognized binary-asset filename suffixes. Upstream uses underscore-
@@ -50,13 +51,14 @@ export type Platform =
 // projects use dash separators. Match both. The order here is the
 // display order in the UI; `resolvePlatform` returns the first match
 // and `sort` orders the asset list by `PLATFORM_PATTERNS` index. Patterns
-// using shared affixes (linux-arm64 vs linux-amd64) must list arm64
+// using shared affixes (linux / windows arm64 vs amd64) must list arm64
 // before amd64 so substring overlap does not mis-classify.
 const PLATFORM_PATTERNS = [
   ['darwin-arm64', /darwin[_-]arm64|macos[_-]arm64/i],
   ['darwin-amd64', /darwin[_-](amd64|x86_64)|macos[_-](amd64|x86_64)/i],
   ['linux-arm64', /linux[_-]arm64/i],
   ['linux-amd64', /linux[_-](amd64|x86_64)/i],
+  ['windows-arm64', /windows[_-]arm64/i],
   ['windows-amd64', /windows[_-](amd64|x86_64)/i],
 ] as const satisfies ReadonlyArray<readonly [Platform, RegExp]>;
 
