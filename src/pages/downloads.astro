@@ -29,6 +29,8 @@ import {
   fetchReleases,
   type Platform,
 } from '../lib/github-releases';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 const tocItems = [
   { href: '#prompts', label: 'Designer LLM prompts' },
@@ -115,6 +117,23 @@ const exampleRecords: readonly ExampleRecord[] = [
     downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
   },
 ];
+
+// Build-time guard (never-untrue): each card's static `level` must match the
+// builder-computed index.conformance_level in the vendored example record it
+// labels. Re-syncing the examples can change a computed level, so read each
+// file at build and fail the build rather than silently ship a stale badge.
+for (const rec of exampleRecords) {
+  const file = join(process.cwd(), 'public', rec.url);
+  const parsed = JSON.parse(readFileSync(file, 'utf8')) as {
+    index?: { conformance_level?: string };
+  };
+  const computed = parsed.index?.conformance_level;
+  if (computed !== rec.level) {
+    throw new Error(
+      `downloads: example ${rec.filename} card declares level "${rec.level}" but ${rec.url} has index.conformance_level "${computed ?? '(missing)'}". Update the card level (or re-sync the example) so the badge matches the record.`,
+    );
+  }
+}
 
 const platformLabel: Record<Platform, string> = {
   'darwin-arm64': 'macOS · Apple Silicon (arm64)',

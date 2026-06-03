@@ -50,18 +50,19 @@ export const SPEC_SYNC = {
       route: '/docs/authoring-patterns',
       fallbackTitle: 'Authoring patterns',
     },
-    {
-      upstreamPath: 'schema/ulc.schema.json',
-      id: 'schema',
-      route: '/docs/schema',
-      fallbackTitle: 'Schema reference',
-    },
-    {
-      upstreamPath: 'schema/taxonomy.schema.json',
-      id: 'taxonomy',
-      route: '/docs/taxonomy',
-      fallbackTitle: 'Taxonomy',
-    },
+    // NOTE: /docs/schema and /docs/taxonomy are intentionally NOT synced here.
+    // They render at build time from the vendored public/schema/{ulc,taxonomy}.json
+    // via src/lib/{schema,taxonomy}-reference.ts, which is the single source of
+    // truth for those pages. Declaring spec-sync entries for them too would fetch
+    // a second copy at the pinned commit and create a drift vector against the
+    // vendored files (bump one without the other and the pages would silently
+    // render the stale representation). The vendored JSON is the one copy.
+    //
+    // The templates/* and pim/* entries below are pre-declared for the planned
+    // loader wiring (PR-1b): their pages are honest stubs today and do not yet
+    // read the spec collection, but keeping the manifest entries warms the
+    // content cache for that wiring and keeps the spec-nav-coverage build check
+    // (src/lib/__build-checks__/spec-nav-coverage.ts) honest.
     {
       upstreamPath: 'templates/downlight.md',
       id: 'templates/downlight',
