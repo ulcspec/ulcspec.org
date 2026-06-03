@@ -258,7 +258,5 @@ export function getCommonTypeSections(): SchemaSection[] {
 export function getSchemaMeta(): { version: string; fieldCount: number; sectionCount: number } {
   const sections = [...getSchemaSections(), ...getCommonTypeSections()];
   const fieldCount = sections.reduce((n, s) => n + s.fields.length, 0);
-  const idx = defs.Index?.properties?.ulc_version;
-  void idx;
   return { version: typeof ulc.title === 'string' ? ulc.title : 'ULC', fieldCount, sectionCount: sections.length };
 }
