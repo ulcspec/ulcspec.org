@@ -28,7 +28,13 @@ const root = join(here, '..');
 
 const srcPath = join(root, 'src/assets/logo-cropped-transparent.png');
 
-// Glow-core bounding box of the "ULC" wordmark within the 1470x827 source,
+// The WORDMARK crop box below is calibrated against this exact source canvas.
+// It is asserted at startup so a future logo resize fails fast with a clear
+// message instead of silently extracting the wrong region (garbled favicon) or
+// throwing a cryptic sharp out-of-bounds error.
+const SOURCE_DIMS = { width: 1470, height: 827 };
+
+// Glow-core bounding box of the "ULC" wordmark within the SOURCE_DIMS source,
 // measured by thresholding luminance > 200 on opaque pixels, then expanded by a
 // small halo margin so the soft glow is not clipped hard. Excludes the dim tan
 // subtitle that sits below.
@@ -111,6 +117,20 @@ function buildIco(entries) {
   });
 
   return Buffer.concat([header, dir, ...dataChunks]);
+}
+
+// Fail fast if the source no longer matches the canvas the WORDMARK crop box
+// was measured against. Without this, a resized logo would either crash inside
+// sharp.extract() with a cryptic out-of-bounds error or, worse, extract the
+// wrong region and emit a garbled favicon with no diagnostic.
+const { width: srcW, height: srcH } = await sharp(srcPath).metadata();
+if (srcW !== SOURCE_DIMS.width || srcH !== SOURCE_DIMS.height) {
+  throw new Error(
+    `generate-favicons: ${srcPath} is ${srcW}x${srcH}, but the WORDMARK crop box ` +
+      `is calibrated for ${SOURCE_DIMS.width}x${SOURCE_DIMS.height}. Re-measure the ` +
+      `wordmark glow bounding box (luminance > 200 on opaque pixels) and update ` +
+      `WORDMARK + SOURCE_DIMS before regenerating.`,
+  );
 }
 
 const tiles = new Map();
