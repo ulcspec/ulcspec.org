@@ -15,7 +15,8 @@
     "lint": "echo 'lint not yet configured' && exit 0",
     "format": "echo 'format not yet configured' && exit 0",
     "test": "echo 'no tests yet' && exit 0",
-    "og:build": "node scripts/generate-og-image.mjs"
+    "og:build": "node scripts/generate-og-image.mjs",
+    "favicon:build": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
