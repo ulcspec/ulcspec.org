@@ -1,7 +1,7 @@
 // Build-time loader for the /docs/taxonomy enum reference.
 //
 // Reads the vendored taxonomy + schema JSON (public/schema/*.json) at build
-// time, groups the 81 closed-enum taxonomies into reader-facing sections, and
+// time, groups the 82 closed-enum taxonomies into reader-facing sections, and
 // computes, per enum, which ULC schema fields consume it (the "used by"
 // cross-reference). The page renders the returned model; no client data fetch.
 //
@@ -117,7 +117,7 @@ const GROUP_DEFS: ReadonlyArray<{ id: string; title: string; members: readonly s
   {
     id: 'electrical',
     title: 'Electrical and control',
-    members: ['ControlGearType', 'DimmingMethod', 'DimmingProtocol', 'ThermalControlMethod', 'AdaptiveLightingMode'],
+    members: ['ControlGearType', 'DimmingMethod', 'DimmingProtocol', 'DimmingCurve', 'ThermalControlMethod', 'AdaptiveLightingMode'],
   },
   {
     id: 'photometry',

@@ -6,7 +6,7 @@
 // full Ajv (JSON Schema Draft 2020-12) wire-up is gated on the `ajv` dep
 // addition (see validator-plan.md OQ-1) and lands in the implementation PR.
 //
-// All four canonical reference records in `public/examples/` PASS this
+// All five canonical reference records in `public/examples/` PASS this
 // pre-validator. Random JSON FAILs with line-anchored "missing required"
 // errors. Malformed JSON FAILs with line+col reference.
 //
@@ -51,12 +51,13 @@ export interface ValidationResult {
   manufacturer: { slug: string; display: string } | null;
   /** Catalog model string if extractable. */
   model: string | null;
-  /** Declared ULC version, e.g. "0.6.0". */
+  /** Declared ULC version, e.g. "0.8.0". */
   version: string | null;
   /**
-   * Computed conformance level read from `index.conformance_level`
-   * ("core" / "standard" / "full"). The builder computes this from the
-   * data the record carries; it is never hand-declared. Null when absent.
+   * Computed conformance level read from `index.conformance_level`: one of the
+   * three grades "core" / "standard" / "full", or "incomplete" (the floor, below
+   * core). The builder computes this from the data the record carries; it is
+   * never hand-declared. Null when absent.
    */
   conformanceLevel: string | null;
   /** Source-file declarations from the record's `source_files` block. */

@@ -28,7 +28,7 @@ const crossLinks = [
   { href: '/docs/schema', labelHtml: 'The full schema reference' },
   { href: '/docs/taxonomy', labelHtml: 'The closed taxonomy of allowed values' },
   { href: '/downloads#cli', labelHtml: 'The Go reference validator (CLI)' },
-  { href: '/downloads#examples', labelHtml: 'The four canonical example records' },
+  { href: '/downloads#examples', labelHtml: 'The five canonical example records' },
 ];
 ---
 
@@ -71,12 +71,16 @@ const crossLinks = [
         <li>
           <h3>Conformance level</h3>
           <p>
-            The validator computes a record's conformance level (core,
-            standard, or full) from the data it actually carries. Core is the
-            minimum identifying and photometric set, standard is what a typical
-            LM-79 report produces, and full adds the comprehensive set. Because
-            the level is computed and verified rather than self-declared, full
-            means the data is genuinely present.
+            A record's conformance level is computed by the reference builder
+            from the data it carries and stamped into the record; this validator
+            surfaces it, and the Go CLI recomputes and verifies it. There are
+            three grades: Core is the minimum identifying, photometric, and safety
+            set; Standard is what a typical LM-79 report produces; and Full adds
+            the accredited test-report set. Below them is the floor, Incomplete: a
+            record that has not yet met Core, which always carries a roadmap.
+            Because the level is computed and verified rather than self-declared,
+            a record shows the level its data earns.
+            <a href="/docs/conformance">How conformance is graded →</a>
           </p>
         </li>
         <li>
@@ -153,7 +157,7 @@ const crossLinks = [
             This in-browser validator runs a structural pre-check against the
             canonical JSON Schema. The Go CLI available from <a href="/downloads">/downloads</a>
             is the canonical reference implementation and runs the complete
-            schema check today; both are tested in CI against the four
+            schema check today; both are tested in CI against the five
             canonical reference records.
           </p>
           <Callout intent="default" label="What runs today">
@@ -163,7 +167,7 @@ const crossLinks = [
               reads the source metadata, and verifies SHA-256 hashes (fully
               live via SubtleCrypto). Full schema validation against the
               canonical JSON Schema, including the closed-taxonomy enum
-              checks, is being wired in. The four canonical reference records
+              checks, is being wired in. The five canonical reference records
               in
               <a href="/examples/pattern-a-erco-quintessence.ulc.json">
                 <code>/examples/</code>

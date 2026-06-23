@@ -36,12 +36,15 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Pinned to the v0.6.0 release commit (PR #25, 2026-06-03), which ships the
-  // computed-conformance model (PR #24). Advance via:
+  // Pinned to the v0.8.1 release commit (tag v0.8.1), which ships the
+  // three-grades-above-an-incomplete-floor conformance model, the five
+  // example records, and the v0.8.1 schema and taxonomy. v0.8.1 corrects the
+  // source_files field description in the schema; the synced markdown is
+  // unchanged from v0.8.0. Advance via:
   //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
   // and rebuild. The badge auto-detects a real SHA and renders it.
-  upstreamCommit: '0999ebc66db8893b29f131ebdd5990c2bdc526e8',
-  upstreamVersion: 'v0.6.0',
+  upstreamCommit: '4077e701eaf9e37fc8b8ac163e459b2e8c398628',
+  upstreamVersion: 'v0.8.1',
   upstreamEditBranch: 'main',
   files: [
     {
@@ -58,47 +61,11 @@ export const SPEC_SYNC = {
     // vendored files (bump one without the other and the pages would silently
     // render the stale representation). The vendored JSON is the one copy.
     //
-    // The templates/* and pim/* entries below are pre-declared for the planned
-    // loader wiring (PR-1b): their pages are honest stubs today and do not yet
-    // read the spec collection, but keeping the manifest entries warms the
-    // content cache for that wiring and keeps the spec-nav-coverage build check
+    // The pim/* entries below are pre-declared for the planned loader wiring
+    // (PR-1b): their pages are honest stubs today and do not yet read the spec
+    // collection, but keeping the manifest entries warms the content cache for
+    // that wiring and keeps the spec-nav-coverage build check
     // (src/lib/__build-checks__/spec-nav-coverage.ts) honest.
-    {
-      upstreamPath: 'templates/downlight.md',
-      id: 'templates/downlight',
-      route: '/docs/templates/downlight',
-      fallbackTitle: 'Downlight template',
-    },
-    {
-      upstreamPath: 'templates/linear-pendant.md',
-      id: 'templates/linear-pendant',
-      route: '/docs/templates/linear-pendant',
-      fallbackTitle: 'Linear pendant template',
-    },
-    {
-      upstreamPath: 'templates/wall-pack.md',
-      id: 'templates/wall-pack',
-      route: '/docs/templates/wall-pack',
-      fallbackTitle: 'Wall-pack template',
-    },
-    {
-      upstreamPath: 'templates/high-bay.md',
-      id: 'templates/high-bay',
-      route: '/docs/templates/high-bay',
-      fallbackTitle: 'High-bay template',
-    },
-    {
-      upstreamPath: 'templates/bollard.md',
-      id: 'templates/bollard',
-      route: '/docs/templates/bollard',
-      fallbackTitle: 'Bollard template',
-    },
-    {
-      upstreamPath: 'templates/wall-sconce.md',
-      id: 'templates/wall-sconce',
-      route: '/docs/templates/wall-sconce',
-      fallbackTitle: 'Wall-sconce template',
-    },
     {
       upstreamPath: 'mappings/pim/salsify.md',
       id: 'pim/salsify',

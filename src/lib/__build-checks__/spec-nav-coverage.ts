@@ -1,5 +1,5 @@
-// Build-time drift check: every /spec/templates/* and /spec/pim/* manifest
-// entry must have a sidebar nav item, and vice versa.
+// Build-time drift check: every /docs/pim/* manifest entry must have a
+// sidebar nav item, and vice versa.
 //
 // Imported once from src/content.config.ts so it executes during
 // `astro build` and `astro check` (module load runs the assertion at the
@@ -12,18 +12,9 @@
 
 import { SPEC_SYNC } from '../../../spec-sync.config';
 
-// Mirror of the templates + pim sub-route hrefs declared in
-// SpecSidebar.astro's `sections` data. Sourced manually for editorial
-// integrity; this file is the lock that keeps them in sync.
-const SIDEBAR_TEMPLATES_ROUTES = [
-  '/docs/templates/downlight',
-  '/docs/templates/linear-pendant',
-  '/docs/templates/wall-pack',
-  '/docs/templates/high-bay',
-  '/docs/templates/bollard',
-  '/docs/templates/wall-sconce',
-] as const;
-
+// Mirror of the PIM sub-route hrefs declared in SpecSidebar.astro's
+// `sections` data. Sourced manually for editorial integrity; this file is
+// the lock that keeps them in sync.
 const SIDEBAR_PIM_ROUTES = [
   '/docs/pim/salsify',
   '/docs/pim/akeneo',
@@ -31,28 +22,23 @@ const SIDEBAR_PIM_ROUTES = [
   '/docs/pim/custom-pim',
 ] as const;
 
-const SIDEBAR_TEMPLATES_AND_PIM_ROUTES = [
-  ...SIDEBAR_TEMPLATES_ROUTES,
-  ...SIDEBAR_PIM_ROUTES,
-];
-
 /**
- * Drift check is intentionally scoped to /spec/templates/* and /spec/pim/*.
- * Future /spec/crosswalks/* manifest entries are not covered here; the
- * crosswalks index renders SectionCard links directly from a separate
- * source-of-truth in /spec/crosswalks/index.astro. Broaden this predicate
- * when crosswalk sub-routes are wired in PR-1b.
+ * Drift check is intentionally scoped to /docs/pim/*. Future
+ * /docs/crosswalks/* manifest entries are not covered here; the crosswalks
+ * index renders SectionCard links directly from a separate source-of-truth
+ * in /docs/crosswalks/index.astro. Broaden this predicate when crosswalk
+ * sub-routes are wired in PR-1b.
  */
-function isTemplatesOrPim(route: string): boolean {
-  return route.startsWith('/docs/templates/') || route.startsWith('/docs/pim/');
+function isPim(route: string): boolean {
+  return route.startsWith('/docs/pim/');
 }
 
-const manifestTemplatesAndPim: readonly string[] = SPEC_SYNC.files
-  .filter((f) => isTemplatesOrPim(f.route))
+const manifestPim: readonly string[] = SPEC_SYNC.files
+  .filter((f) => isPim(f.route))
   .map((f) => f.route);
 
-const manifestSet = new Set<string>(manifestTemplatesAndPim);
-const sidebarSet = new Set<string>(SIDEBAR_TEMPLATES_AND_PIM_ROUTES);
+const manifestSet = new Set<string>(manifestPim);
+const sidebarSet = new Set<string>(SIDEBAR_PIM_ROUTES);
 
 const inManifestNotSidebar = [...manifestSet].filter((r) => !sidebarSet.has(r));
 const inSidebarNotManifest = [...sidebarSet].filter((r) => !manifestSet.has(r));

@@ -65,7 +65,7 @@
             id="paste-input"
             rows="10"
             spellcheck="false"
-            placeholder='{"ulc_version": "0.6.0", "record_id": "..."}'
+            placeholder='{"ulc_version": "0.8.0", "record_id": "..."}'
           ></textarea>
           <button type="button" id="paste-validate" class="paste-disclosure__cta">
             Validate
@@ -82,12 +82,13 @@
         </summary>
         <div class="sample-disclosure__body">
           <p class="sample-disclosure__intro">
-            Four canonical reference records. Pick one and the validator loads it as if you had dropped it yourself.
+            Five canonical reference records. Pick one and the validator loads it as if you had dropped it yourself.
           </p>
           <ul class="sample-list">
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-a-erco-quintessence.ulc.json">ERCO Quintessence downlight (Pattern A)</button></li>
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-b-selux-aya.ulc.json">Selux Aya pole (Pattern B)</button></li>
-            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade.ulc.json">Lumenpulse Lumenfacade façade (Pattern C)</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade-rgb.ulc.json">Lumenpulse Lumenfacade RGB façade (Pattern C)</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade-rgbw.ulc.json">Lumenpulse Lumenfacade RGBW façade (Pattern C)</button></li>
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-d-vode-nexa.ulc.json">Vode Nexa linear suspended pendant (Pattern D)</button></li>
           </ul>
         </div>
@@ -943,7 +944,7 @@
     if (result.conformanceLevel) {
       const level = escapeHtml(capitalize(result.conformanceLevel));
       rows.push(
-        `<dt>Conformance level</dt><dd><span class="conformance-pill" title="Computed by the validator from the data this record carries, not self-declared.">${level}</span> <span class="conformance-note">computed</span></dd>`,
+        `<dt>Conformance level</dt><dd><span class="conformance-pill" title="Computed by the reference builder from the data this record carries, not self-declared.">${level}</span> <span class="conformance-note">computed</span></dd>`,
       );
     }
     rows.push(`<dt>Sources</dt><dd>${result.sources.length} declared</dd>`);

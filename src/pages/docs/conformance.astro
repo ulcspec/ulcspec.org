@@ -1,0 +1,461 @@
+---
+// /docs/conformance: the conceptual home for the conformance model.
+//
+// Hand-authored narrative (not a generated reference table), distilled from
+// the canonical rubric in ulcspec/ULC docs/methodology.md ("The conformance
+// rubric", "Why the tiers fall where they do", "Applicability predicates").
+// Current-state only: this page describes what the standard IS, with no
+// version-diff or changelog framing.
+//
+// Copyright boundary: explains the general, public CSI MasterFormat
+// Division 26 evidence-escalation principle only. No proprietary master-
+// specification text is reproduced.
+
+import PageShell from '../../components/PageShell.astro';
+import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
+import Callout from '../../components/Callout.astro';
+
+interface RoadmapRow {
+  record: string;
+  grade: string;
+  toStandard: string;
+  toFull: string;
+}
+
+const roadmap: readonly RoadmapRow[] = [
+  {
+    record: 'ERCO Quintessence',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'zonal lumens, measurement uncertainty and corrections, instrumentation depth, and TM-30 detail (accredited test report).',
+  },
+  {
+    record: 'Selux Aya',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+  },
+  {
+    record: 'Lumenpulse Lumenfacade (RGB)',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+  },
+  {
+    record: 'Lumenpulse Lumenfacade (RGBW)',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+  },
+  {
+    record: 'Vode Nexa',
+    grade: 'Core',
+    toStandard: 'a MacAdam SDCM step (from the datasheet, per ANSI C78.377).',
+    toFull: 'zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+  },
+];
+---
+
+<PageShell
+  title="Conformance - ULC specification"
+  description="How ULC computes a record's conformance level: three grades (Core, Standard, Full) above an Incomplete floor, why the cut points mirror a Division 26 construction specification, and why a fixture is graded only on what its form requires."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">Conformance.</h1>
+    <p class="page-intro">
+      A ULC record's conformance level is computed, never declared. The reference
+      builder grades each record from the data it actually carries and stamps the
+      result; the validator recomputes it and checks it, so there is no way to
+      assert or inflate a level by hand.
+    </p>
+
+    {/* ── Three grades, and a floor ─────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">Three grades, and a floor</h2>
+      <p>
+        ULC has three conformance grades, Core, Standard, and Full. Each adds a
+        deeper class of evidence than the one below, and a record earns the
+        highest one its data fully supports.
+      </p>
+      <dl class="cf-levels">
+        <dt>Core</dt>
+        <dd>
+          The entry grade: the minimum a fixture must carry to be specified and
+          ordered at all. Mandatory product data (identity, classification, the
+          headline photometric and electrical values, one-line colorimetry), an
+          attached cutsheet, and a recognized safety listing. It sits below the LM-79 selection data and
+          the accredited test evidence the higher grades add.
+        </dd>
+        <dt>Standard</dt>
+        <dd>
+          Core plus the full LM-79 selection-grade specification: maximum
+          intensity, symmetry and coordinate system, materials, test conditions,
+          an LM-79 attestation, a lumen-maintenance framework, and the conditional
+          rows the fixture's form calls for. This is the data a Division 26
+          lighting specification selects products on, which is why it ranks above
+          Core. A Standard record is missing only the TM-30 color detail and the
+          accredited third-party test evidence that lift it to Full.
+        </dd>
+        <dt>Full</dt>
+        <dd>
+          Everything: Standard plus the independently-certified characterization
+          an accredited test report supplies. Zonal lumens, an operating point,
+          measurement uncertainty, applied corrections, instrumentation depth, a
+          method-backed lumen-maintenance projection, and, for white-light
+          fixtures, TM-30 color detail.
+        </dd>
+      </dl>
+      <p>
+        Below the grades sits the floor, <strong>Incomplete</strong>: where a
+        record sits until it meets Core. Not a grade. A single missing Core
+        requirement holds it here, even one that already carries Standard- or
+        Full-grade data elsewhere. The tooling never refuses it: a record with
+        nothing but its identity still grades Incomplete, and always carries a
+        roadmap to Core. Identity is the one thing a record must carry to exist
+        at all (manufacturer, catalog model, and family id); a record without it
+        is malformed, not Incomplete.
+      </p>
+      <p>
+        Grading is a cumulative gate: a record earns a grade only when it meets
+        every applicable requirement of that grade and of the grades below it.
+        Every requirement still outstanding, at every grade up to Full, becomes a
+        roadmap entry naming the field, its source document, and the governing
+        standard.
+      </p>
+      <p>
+        These cut points are not arbitrary. They recover how a Division 26
+        construction specification (the CSI MasterFormat division that governs
+        electrical and lighting work) escalates the evidence it demands of a
+        manufacturer as the specification tightens. Two axes order the ladder.
+        <strong>Evidence depth</strong>: each grade asks for a deeper class of
+        characterization, which is why Full sits above the datasheet-grade
+        Standard band. <strong>Conditional applicability</strong>: a
+        specification asks for a metric only when the fixture's form calls for
+        it, the rule the next section makes concrete.
+      </p>
+      <p class="cf-note">
+        A conformance level is a data-completeness grade, never a safety
+        certification: the Core safety-listing gate checks that a listing claim
+        is present, not that a third party has verified it.
+      </p>
+    </section>
+
+    {/* ── Graded only on what applies ─────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">Graded only on what applies</h2>
+      <p>
+        A requirement only counts when it applies to the fixture's form. When it
+        does not, it is dropped from grading entirely, never counted as missing.
+        That is what keeps the grade fair: a fixture is measured only against what
+        a specifier would actually ask of that kind of fixture.
+      </p>
+      <ul class="cf-list">
+        <li>
+          An <strong>indoor</strong> fixture is never asked for a BUG rating or an
+          IP rating. Those are outdoor metrics; their absence never lowers its
+          level.
+        </li>
+        <li>
+          A <strong>color-mixing RGBW</strong> fixture is never asked for a single
+          CRI figure. It is specified by its color gamut, not one number measured
+          against a reference white.
+        </li>
+        <li>
+          A <strong>DALI, DMX, or wireless</strong> fixture is never asked for an
+          analog dimming range. Its dimming is commanded externally and is not
+          printed on the cutsheet.
+        </li>
+        <li>
+          An <strong>architectural uplight</strong> (in-ground or facade) is
+          graded on its beam, not on an area distribution it does not have.
+        </li>
+      </ul>
+      <p>
+        So an honest datasheet is never demoted for a value its fixture has no
+        reason to carry.
+      </p>
+    </section>
+
+    {/* ── The five reference records ──────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">The five reference records</h2>
+      <p>
+        The <a href="/downloads#examples" class="cf-link">five canonical
+        records</a> show grading on real cutsheets. Each one carries the grade it
+        earned and its roadmap to Full.
+      </p>
+      <div class="cf-table-wrap">
+        <table class="cf-table">
+          <colgroup>
+            <col class="cf-col-record" />
+            <col class="cf-col-grade" />
+            <col class="cf-col-tostandard" />
+            <col class="cf-col-tofull" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Record</th>
+              <th scope="col">Grade</th>
+              <th scope="col">To Standard</th>
+              <th scope="col">To Full</th>
+            </tr>
+          </thead>
+          <tbody>
+            {roadmap.map((r) => (
+              <tr>
+                <th scope="row">{r.record}</th>
+                <td data-label="Grade"><span class="cf-pill">{r.grade}</span></td>
+                <td data-label="To Standard">{r.toStandard}</td>
+                <td data-label="To Full">{r.toFull}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="cf-note">
+        Vode is one field short of Standard. The two Lumenfacade records reach
+        Standard with their DMX driver exempt from the analog-dimming rows, an
+        applicability rule in action.
+      </p>
+    </section>
+
+    {/* ── See your own roadmap ────────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">See your own roadmap</h2>
+      <Callout intent="accent" label="Run the reference validator">
+        <p>
+          To see the roadmap for your own products, run the free reference
+          validator: <code>ulc validate --verbose &lt;record&gt;</code>. Every
+          record gets the grades it has already satisfied and a per-field list of
+          exactly what it needs at each grade up to Full, each entry naming the
+          source document and the governing standard.
+        </p>
+        <p>
+          The validator is a free download on the
+          <a href="/downloads#cli" class="cf-link">downloads page</a>. To author a
+          record in the first place, see
+          <a href="/for-manufacturers#how-to-create" class="cf-link">how to create
+          a ULC file</a>.
+        </p>
+      </Callout>
+    </section>
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) { .page-h1 { font-size: 2.75rem; } }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+    max-width: 44rem;
+  }
+
+  .cf-section {
+    margin-top: 3rem;
+    scroll-margin-top: 5rem;
+  }
+  .cf-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0 0 0.875rem 0;
+  }
+  @media (min-width: 768px) { .cf-h2 { font-size: 1.75rem; } }
+
+  .cf-section p {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 1rem 0 0 0;
+    max-width: 44rem;
+  }
+  .cf-section p:first-of-type {
+    margin-top: 0;
+  }
+  .cf-section strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .cf-note {
+    color: var(--text-muted) !important;
+    font-size: 0.9375rem !important;
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+  }
+
+  .cf-levels {
+    margin: 1.25rem 0 0 0;
+    max-width: 44rem;
+  }
+  .cf-levels dt {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--accent-warm);
+    margin-top: 1.125rem;
+  }
+  .cf-levels dt:first-child {
+    margin-top: 0;
+  }
+  .cf-levels dd {
+    margin: 0.375rem 0 0 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .cf-list {
+    margin: 1.25rem 0 0 0;
+    padding-left: 1.25rem;
+    max-width: 44rem;
+  }
+  .cf-list li {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin-top: 0.625rem;
+  }
+  .cf-list li:first-child {
+    margin-top: 0;
+  }
+  .cf-list strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .cf-table-wrap {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    /* Container context so the table reacts to its OWN width, not the viewport.
+       The 3-pane spec layout leaves ~606px here on wide desktop AND a small
+       phone leaves ~340px; a viewport query can't tell those apart, a
+       container query can. */
+    container-type: inline-size;
+  }
+  .cf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    table-layout: fixed;
+  }
+  /* Deliberate column allocation for the ~606px main column the 3-pane spec
+     layout leaves at >=1280px (sidebar 16rem + main + rail 14rem, capped at
+     80rem). The record name and grade pill each get enough to sit on one line;
+     the two roadmap columns take the rest. Padding is trimmed so four columns
+     fit without the grade pill colliding with the next cell. overflow-wrap is
+     a safety net only: columns are sized so real content never breaks mid-word. */
+  .cf-col-record { width: 22%; }
+  .cf-col-grade { width: 15%; }
+  .cf-col-tostandard { width: 22%; }
+  .cf-col-tofull { width: 41%; }
+  .cf-table th,
+  .cf-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.75rem 0.625rem;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+    overflow-wrap: break-word;
+  }
+  .cf-table thead th {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.875rem;
+    background: var(--bg-elevated);
+  }
+  .cf-table tbody th {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cf-table tbody td {
+    color: var(--text-muted);
+  }
+  .cf-table tbody tr:last-child th,
+  .cf-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  /* Narrow container (phones): four columns never fit, so stack each record as a
+     labelled card (matches the .alt-table / .proof-table pattern on
+     /for-manufacturers). The data-label on each cell supplies the column name the
+     hidden thead drops. Triggered by container width, so the ~606px desktop main
+     column still gets the full table while a ~340px phone column gets cards. */
+  @container (max-width: 560px) {
+    .cf-table {
+      table-layout: auto;
+    }
+    .cf-table thead {
+      display: none;
+    }
+    .cf-table tbody tr {
+      display: block;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cf-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .cf-table tbody th {
+      display: block;
+      padding: 0 0 0.5rem 0;
+      border: none;
+      font-size: 1rem;
+    }
+    .cf-table tbody td {
+      display: block;
+      padding: 0.375rem 0 0 0;
+      border: none;
+    }
+    .cf-table tbody td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.6875rem;
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      color: var(--text-subtle);
+      margin-bottom: 0.125rem;
+    }
+  }
+  .cf-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .cf-link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cf-link:hover {
+    color: var(--accent-warm-deep);
+  }
+  .cf-section :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+</style>

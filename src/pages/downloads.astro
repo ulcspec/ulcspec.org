@@ -46,7 +46,9 @@ interface ExampleRecord {
   category: string;
   patternRole: string;
   /** Builder-computed conformance level carried in index.conformance_level. */
-  level: 'core' | 'standard' | 'full';
+  level: 'incomplete' | 'core' | 'standard' | 'full';
+  /** Short roadmap line: what each outstanding grade needs; omitted only for a full record. */
+  roadmap?: string;
   filename: string;
   url: string;
   downloadAs: string;
@@ -76,7 +78,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     product: 'Quintessence',
     category: 'recessed downlight',
     patternRole: 'Single-SKU cutsheet model.',
-    level: 'full',
+    level: 'standard',
+    roadmap:
+      'To reach Full: zonal lumens, measurement uncertainty and corrections, instrumentation depth, and TM-30 detail (accredited test report).',
     filename: 'erco-quintessence-30416-023.ulc',
     url: '/examples/pattern-a-erco-quintessence.ulc.json',
     downloadAs: 'erco-quintessence-30416-023.ulc',
@@ -88,7 +92,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'exterior pole',
     patternRole:
       'Configurator with applicability blocks; 54,000 SKUs compressed into 21 records.',
-    level: 'full',
+    level: 'standard',
+    roadmap:
+      'To reach Full: measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
     filename: 'selux-aya-pole-sr-ho-3000k.ulc',
     url: '/examples/pattern-b-selux-aya.ulc.json',
     downloadAs: 'selux-aya-pole-sr-ho-3000k.ulc',
@@ -100,10 +106,26 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'RGB façade',
     patternRole:
       'Per-IES model with provenance classes for measured, simulated, and extended-photometry records.',
-    level: 'core',
+    level: 'standard',
+    roadmap:
+      'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
     filename: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
-    url: '/examples/pattern-c-lumenpulse-lumenfacade.ulc.json',
+    url: '/examples/pattern-c-lumenpulse-lumenfacade-rgb.ulc.json',
     downloadAs: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
+  },
+  {
+    pattern: 'C',
+    manufacturer: 'Lumenpulse',
+    product: 'Lumenfacade',
+    category: 'RGBW façade',
+    patternRole:
+      'Per-IES color-mixing variant: CRI and TM-30 are waived, while the white point still carries a CCT.',
+    level: 'standard',
+    roadmap:
+      'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+    filename: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
+    url: '/examples/pattern-c-lumenpulse-lumenfacade-rgbw.ulc.json',
+    downloadAs: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
   },
   {
     pattern: 'D',
@@ -111,7 +133,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     product: 'Nexa',
     category: 'suspended linear pendant',
     patternRole: 'Per-foot linear-scaling model.',
-    level: 'full',
+    level: 'core',
+    roadmap:
+      'To reach Standard: a MacAdam SDCM step (from the datasheet, per ANSI C78.377). To reach Full: zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
     filename: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
     url: '/examples/pattern-d-vode-nexa.ulc.json',
     downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
@@ -145,7 +169,7 @@ const platformLabel: Record<Platform, string> = {
 };
 
 const crossLinks = [
-  { href: '/docs/templates', labelHtml: 'Starter <code>.ulc.json</code> templates by category' },
+  { href: '/docs/conformance', labelHtml: 'How conformance is graded' },
   { href: '/docs/pim', labelHtml: 'Add a ULC export to your PIM' },
   { href: '/docs/crosswalks/ies-lm-63', labelHtml: 'Extract ULC fields from <code>.ies</code> files' },
 ];
@@ -158,7 +182,7 @@ const releaseResult = await fetchReleases();
 
 const pageTitle = 'Downloads: designer prompts, examples, schema, CLI';
 const pageDescription =
-  'Ready-made LLM prompts for designers. Four canonical .ulc example records. The JSON Schema. The Go reference validator via GitHub Releases.';
+  'Ready-made LLM prompts for designers. Five canonical .ulc example records. The JSON Schema. The Go reference validator via GitHub Releases.';
 
 function formatPublishedDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -194,7 +218,7 @@ function formatAssetSize(bytes: number): string {
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
       >
-        Designer LLM prompt templates, the four canonical example records, the JSON Schema, and the Go reference validator.
+        Designer LLM prompt templates, the five canonical example records, the JSON Schema, and the Go reference validator.
       </p>
     </div>
   </section>
@@ -240,20 +264,20 @@ function formatAssetSize(bytes: number): string {
       <section id="examples" aria-labelledby="examples-heading">
         <h2 id="examples-heading">Canonical example records</h2>
         <p>
-          Four reference records, one per manufacturer authoring pattern, built from real manufacturer spec sheets. These are the files you drop into the prompts above.
+          Five reference records across the four manufacturer authoring patterns, built from real manufacturer spec sheets. These are the files you drop into the prompts above.
         </p>
         <p class="example-grid__note">
-          Each record's conformance level (core, standard, or full) is computed by the validator from the data the record carries, not self-declared.
+          Each record's conformance level is computed by the reference builder from the data the record carries, not self-declared. <a href="/docs/conformance" class="link-inline">How conformance is graded →</a>
         </p>
 
-        <ul class="example-grid" aria-label="Four canonical .ulc example records">
+        <ul class="example-grid" aria-label="Five canonical .ulc example records">
           {exampleRecords.map((r) => (
             <li class="example-card">
               <div class="example-card__meta">
                 <p class="example-card__pattern">Pattern {r.pattern}</p>
                 <span
                   class="example-card__level"
-                  title="Computed by the validator from the data this record carries, not self-declared."
+                  title="Computed by the reference builder from the data this record carries, not self-declared."
                 >
                   {r.level.charAt(0).toUpperCase() + r.level.slice(1)}
                 </span>
@@ -263,6 +287,9 @@ function formatAssetSize(bytes: number): string {
                 <span class="example-card__category"> · {r.category}</span>
               </h3>
               <p class="example-card__role">{r.patternRole}</p>
+              {r.roadmap && (
+                <p class="example-card__roadmap">{r.roadmap}</p>
+              )}
               <a
                 class="example-card__link link"
                 href={r.url}
@@ -288,14 +315,14 @@ function formatAssetSize(bytes: number): string {
           The ULC schema, written to JSON Schema Draft 2020-12, served at <code>/schema/ulc.json</code> with the <code>application/schema+json</code> content type.
         </p>
         <p>
-          Point any Draft 2020-12 library at this file to validate records, no extra configuration needed. Conformant records declare <code>ulc_version</code> 0.6.0, the current schema level.
+          Point any Draft 2020-12 library at this file to validate records, no extra configuration needed. Conformant records declare <code>ulc_version</code> 0.8.0, the current schema level.
         </p>
 
         <div class="schema-card">
           <div class="schema-card__head">
             <p class="schema-card__filename"><code>ulc.json</code></p>
             <p class="schema-card__meta">
-              Schema level 0.6.0 · Draft 2020-12
+              Schema level 0.8.0 · Draft 2020-12
             </p>
           </div>
           <a
@@ -597,7 +624,14 @@ function formatAssetSize(bytes: number): string {
     font-size: 0.875rem;
     line-height: 1.5;
     margin: 0.25rem 0 0.75rem 0;
-    flex: 1;
+  }
+  .example-card__roadmap {
+    color: var(--text-subtle);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    margin: 0 0 0.75rem 0;
+    padding-top: 0.625rem;
+    border-top: 1px dashed var(--border);
   }
   .example-card__link {
     margin-top: auto;
