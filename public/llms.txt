@@ -8,7 +8,7 @@
 - [For Designers](https://ulcspec.org/for-designers): designer-track storyboard, prompts catalog, 90-day rep-advocacy ask
 - [For Manufacturers](https://ulcspec.org/for-manufacturers): manufacturer-track storyboard, 1–3 month pilot publication ask
 - [Validator](https://ulcspec.org/validator): in-browser `.ulc` file conformance check
-- [Docs](https://ulcspec.org/docs): rendered ULC specification (schema, taxonomy, authoring patterns, templates, PIM guides, crosswalks)
+- [Docs](https://ulcspec.org/docs): rendered ULC specification (schema, taxonomy, authoring patterns, conformance, PIM guides, crosswalks)
 - [Governance](https://ulcspec.org/governance): stewardship, license, industry-dialogue posture
 - [Downloads](https://ulcspec.org/downloads): designer LLM prompts, canonical example records, JSON Schema, Go CLI
 

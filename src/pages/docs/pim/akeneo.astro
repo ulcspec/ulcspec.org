@@ -86,7 +86,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
     <h2>Gotchas</h2>
     <ol>
       <li><strong>Product-model vs variant split.</strong> Akeneo's 2-level model (parent product-model + variants) maps exactly onto ULC's <code>product_family</code> (shared) vs <code>configuration</code> (per-scenario) split.</li>
-      <li><strong>Attribute completeness.</strong> Tie the ULC emit to a <code>ulc_export</code> channel's completeness so partially-populated SKUs don't ship as broken ULC records.</li>
+      <li><strong>Attribute completeness.</strong> Tie the ULC emit to a <code>ulc_export</code> channel's completeness so partially-populated SKUs don't ship as Incomplete ULC records.</li>
       <li><strong>Metric unit drift.</strong> If variants store the same attribute in different units, normalize before computing the companion.</li>
       <li><strong>Reference entity depth (Enterprise).</strong> Attestations like UL-listed or DLC-qualified can be modeled as reference entities with structured attributes; walk these into <code>attestations[]</code>.</li>
       <li><strong>Published vs draft.</strong> Never emit ULC from a draft product. Wait for the workflow to publish.</li>

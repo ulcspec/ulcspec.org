@@ -14,7 +14,7 @@ import SectionCard from '../../components/SectionCard.astro';
 
 const pageTitle = 'The ULC specification';
 const pageDescription =
-  'Schema, taxonomy, authoring patterns, per-category templates, and PIM mapping guides. Open JSON Schema, Draft 2020-12.';
+  'Schema, taxonomy, authoring patterns, conformance, and PIM mapping guides. Open JSON Schema, Draft 2020-12.';
 
 interface NavCard {
   href: string;
@@ -47,11 +47,11 @@ const navCards: readonly NavCard[] = [
     eyebrow: 'Reference',
   },
   {
-    href: '/docs/templates',
-    title: 'Per-category templates',
+    href: '/docs/conformance',
+    title: 'Conformance',
     description:
-      'Downlight, linear-pendant, wall-pack, high-bay, bollard, wall-sconce. Each is a starter JSON skeleton with required and optional fields annotated.',
-    eyebrow: 'Templates',
+      'How the three grades (Core, Standard, Full) above an Incomplete floor are computed, why the cut points mirror a Division 26 specification, and why a fixture is graded only on what its form requires.',
+    eyebrow: 'Reference',
   },
   {
     href: '/docs/pim',
@@ -75,9 +75,8 @@ const navCards: readonly NavCard[] = [
     <header class="spec-landing__header">
       <h1 class="spec-landing__h1">The ULC specification.</h1>
       <p class="spec-landing__sub">
-        Schema, taxonomy, authoring patterns, per-category templates, and
-        PIM mapping guides, rendered straight from the canonical spec
-        repository.
+        Schema, taxonomy, authoring patterns, conformance, and PIM mapping
+        guides for the ULC standard.
       </p>
       <div class="spec-landing__body">
         <p>
