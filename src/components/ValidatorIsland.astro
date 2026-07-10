@@ -65,7 +65,7 @@
             id="paste-input"
             rows="10"
             spellcheck="false"
-            placeholder='{"ulc_version": "0.8.0", "record_id": "..."}'
+            placeholder='{"ulc_version": "1.0.0", "record_id": "..."}'
           ></textarea>
           <button type="button" id="paste-validate" class="paste-disclosure__cta">
             Validate
@@ -82,7 +82,7 @@
         </summary>
         <div class="sample-disclosure__body">
           <p class="sample-disclosure__intro">
-            Five canonical reference records. Pick one and the validator loads it as if you had dropped it yourself.
+            Eight canonical reference records. Pick one and the validator loads it as if you had dropped it yourself.
           </p>
           <ul class="sample-list">
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-a-erco-quintessence.ulc.json">ERCO Quintessence downlight (Pattern A)</button></li>
@@ -90,6 +90,9 @@
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade-rgb.ulc.json">Lumenpulse Lumenfacade RGB façade (Pattern C)</button></li>
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-c-lumenpulse-lumenfacade-rgbw.ulc.json">Lumenpulse Lumenfacade RGBW façade (Pattern C)</button></li>
             <li><button type="button" class="sample-list__btn" data-sample="/examples/pattern-d-vode-nexa.ulc.json">Vode Nexa linear suspended pendant (Pattern D)</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/exit-sign-cooper-lpx7sd.ulc.json">Cooper Sure-Lites LPX exit sign, self-powered (Exit-sign class)</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/exit-sign-cooper-es61src.ulc.json">Cooper Sure-Lites ES edge-lit exit sign, AC-only (Exit-sign class)</button></li>
+            <li><button type="button" class="sample-list__btn" data-sample="/examples/exit-sign-cooper-auxswhsd.ulc.json">Cooper AtLite AUX edge-lit exit sign, self-powered (Exit-sign class)</button></li>
           </ul>
         </div>
       </details>
@@ -927,9 +930,6 @@
 
   function renderRecordSummary(result: ValidationResult): string {
     const rows: string[] = [];
-    if (result.pattern) {
-      rows.push(`<dt>Pattern</dt><dd>${escapeHtml(result.pattern)}</dd>`);
-    }
     if (result.manufacturer) {
       rows.push(
         `<dt>Manufacturer</dt><dd>${escapeHtml(result.manufacturer.display || result.manufacturer.slug)}</dd>`,
@@ -947,13 +947,22 @@
         `<dt>Conformance level</dt><dd><span class="conformance-pill" title="Computed by the reference builder from the data this record carries, not self-declared.">${level}</span> <span class="conformance-note">computed</span></dd>`,
       );
     }
+    if (result.achievements) {
+      rows.push(
+        `<dt>Achievements</dt><dd>${result.achievements.documented} documented, ${result.achievements.claimed} claimed</dd>`,
+      );
+    }
+    if (result.restrictedSubstances.length > 0) {
+      rows.push(
+        `<dt>Restricted substances</dt><dd>${escapeHtml(result.restrictedSubstances.join(', '))}</dd>`,
+      );
+    }
     rows.push(`<dt>Sources</dt><dd>${result.sources.length} declared</dd>`);
     return `<dl>${rows.join('')}</dl>`;
   }
 
   function describeRecord(result: ValidationResult): string {
     const parts: string[] = [];
-    if (result.pattern) parts.push(`Pattern ${result.pattern}`);
     if (result.manufacturer) parts.push(result.manufacturer.display || result.manufacturer.slug);
     if (result.model) parts.push(result.model);
     return parts.join(', ') || 'record';

@@ -46,7 +46,7 @@ const faqItems = [
   {
     id: 'q-scp',
     question: 'How do schema changes happen?',
-    answerHtml: `<p>Schema changes happen through the Schema Change Proposal process. Anyone can file. The flow: file an SCP in the spec repository with the proposed change and rationale; the SCP is reviewed publicly; the maintainer responds with merge, request-for-revision, or rejection with rationale.</p><p>The five canonical reference records in <code>examples/</code> are the structural test fixtures every SCP must continue to validate against. Schema versioning is semver-style; pre-1.0 changes are additive per the ROADMAP.</p>`,
+    answerHtml: `<p>Schema changes happen through the Schema Change Proposal process. Anyone can file. The flow: file an SCP in the spec repository with the proposed change and rationale; the SCP is reviewed publicly; the maintainer responds with merge, request-for-revision, or rejection with rationale.</p><p>The eight canonical reference records in <code>examples/</code> (five across the four manufacturer authoring patterns, three in the exit-sign and emergency product class) are the structural test fixtures every SCP must continue to validate against. Schema versioning is semver-style: the schema surface is additive-only across minor releases, and a breaking change requires a new major version. The commitment is demonstrated in the fixtures themselves: five of the eight records are authored at an earlier <code>ulc_version</code> and validate and grade identically today.</p>`,
   },
   {
     id: 'q-funding',
@@ -55,11 +55,8 @@ const faqItems = [
   },
 ];
 
-// Cross-link footer destinations. The /spec and /spec#crosswalks entries
-// route to a surface not yet shipped (hero PR-2 routing stubs). To avoid
-// 404s on a credibility surface read by industry-body reviewers, the
-// crosswalk reference points at the upstream repo directly until /spec
-// lands. When /spec ships, swap the upstream link back to /spec#crosswalks.
+// Cross-link footer destinations: the shipped /docs/crosswalks and
+// /docs/authoring-patterns reference surfaces.
 const crossLinks = [
   { href: '/docs/crosswalks/gldf', labelHtml: 'ULC and GLDF, field by field' },
   { href: '/docs/crosswalks', labelHtml: 'All crosswalks: GLDF, ETIM, LM-63, EULUMDAT' },
@@ -138,7 +135,7 @@ const pageDescription = 'Open standard, MIT-licensed, neutrally stewarded.';
       <section id="license" aria-labelledby="license-heading">
         <h2 id="license-heading">Open by license, open to change.</h2>
         <p>
-          ULC is MIT-licensed: anyone can use it, fork it, or build commercial products on it, with no royalty and no committee. Schema changes go through an open Schema Change Proposal process: anyone can file one, review happens in public, and the five canonical reference records are the fixtures every change must still satisfy.
+          ULC is MIT-licensed: anyone can use it, fork it, or build commercial products on it, with no royalty and no committee. Schema changes go through an open Schema Change Proposal process: anyone can file one, review happens in public, and the eight canonical reference records are the fixtures every change must still satisfy.
         </p>
         <p>
           Because the license is permissive and the governance is public, the standard does not depend on one person. If the steward ever steps away, anyone can fork and continue.

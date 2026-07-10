@@ -3,3 +3,5 @@
 /docs/templates    /for-manufacturers 301
 /docs/templates/*  /for-manufacturers 301
 /examples/pattern-c-lumenpulse-lumenfacade.ulc.json  /examples/pattern-c-lumenpulse-lumenfacade-rgb.ulc.json  301
+/schema/ulc.schema.json       /schema/ulc.json       200
+/schema/taxonomy.schema.json  /schema/taxonomy.json  200

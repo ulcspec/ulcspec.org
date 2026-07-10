@@ -3,7 +3,7 @@
 //
 // Composition:
 //   1. Brief orientation header (H1 + sub-H1 + body)
-//   2. Section nav cards: the six content-area cards
+//   2. Section nav cards: the seven content-area cards
 //
 // Layout-wise this page uses the two-pane variant of <SpecDocsLayout>
 // (sidebar + main; right-rail suppressed by default).
@@ -14,7 +14,7 @@ import SectionCard from '../../components/SectionCard.astro';
 
 const pageTitle = 'The ULC specification';
 const pageDescription =
-  'Schema, taxonomy, authoring patterns, conformance, and PIM mapping guides. Open JSON Schema, Draft 2020-12.';
+  'Schema, taxonomy, authoring patterns, conformance and achievements, and PIM mapping guides. Open JSON Schema, Draft 2020-12.';
 
 interface NavCard {
   href: string;
@@ -29,7 +29,7 @@ const navCards: readonly NavCard[] = [
     href: '/docs/authoring-patterns',
     title: 'Authoring patterns',
     description:
-      'Four real-world manufacturer publishing shapes (A: per-SKU · B: per-photometric-scenario · C: per-IES with provenance · D: per-foot linear).',
+      'The four manufacturer publishing shapes (A: per-SKU · B: per-photometric-scenario · C: per-IES with provenance · D: per-foot linear), plus authoring exit-sign and emergency-class records and achievement attestations.',
     eyebrow: 'Reference',
   },
   {
@@ -43,14 +43,21 @@ const navCards: readonly NavCard[] = [
     href: '/docs/taxonomy',
     title: 'Taxonomy',
     description:
-      'Closed enums for luminaire categories, mounting types, optical accessories, attestations, dimming protocols, source-file types, provenance sources.',
+      'Closed enums for luminaire categories, mounting types, optical accessories, attestations, dimming protocols, source-file types, provenance sources, exit-sign and emergency vocabularies, and achievement states.',
     eyebrow: 'Reference',
   },
   {
     href: '/docs/conformance',
     title: 'Conformance',
     description:
-      'How the three grades (Core, Standard, Full) above an Incomplete floor are computed, why the cut points mirror a Division 26 specification, and why a fixture is graded only on what its form requires.',
+      'How the three grades (Core, Standard, Full) above an Incomplete floor are computed, why the cut points mirror a Division 26 specification, and why a fixture is graded only on what its form requires, exit signs and emergency luminaires included.',
+    eyebrow: 'Reference',
+  },
+  {
+    href: '/docs/achievements',
+    title: 'Achievements',
+    description:
+      "The second computed view: what the product is documented for, per theme (embodied carbon, circularity, material health, energy, dark sky, emergency), each none, claimed, or documented, computed from the record's attestations, with a restricted-substances flag beside it.",
     eyebrow: 'Reference',
   },
   {
@@ -64,7 +71,7 @@ const navCards: readonly NavCard[] = [
     href: '/docs/crosswalks',
     title: 'Crosswalks',
     description:
-      'Field-by-field mapping from ULC to GLDF, ETIM, IES LM-63, and EULUMDAT. All four planned at v1; status flagged on the index.',
+      'Field-by-field mapping from ULC to GLDF, ETIM, IES LM-63, and EULUMDAT. All four are planned; status is flagged on the index.',
     eyebrow: 'Crosswalks',
   },
 ];
@@ -75,8 +82,8 @@ const navCards: readonly NavCard[] = [
     <header class="spec-landing__header">
       <h1 class="spec-landing__h1">The ULC specification.</h1>
       <p class="spec-landing__sub">
-        Schema, taxonomy, authoring patterns, conformance, and PIM mapping
-        guides for the ULC standard.
+        Schema, taxonomy, authoring patterns, conformance and achievements, and
+        PIM mapping guides for the ULC standard.
       </p>
       <div class="spec-landing__body">
         <p>

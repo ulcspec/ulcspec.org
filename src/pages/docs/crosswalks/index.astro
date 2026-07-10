@@ -7,7 +7,8 @@
 //
 // At v1 all four crosswalks are status="planned"; the page renders the
 // list with status flags. Per-standard sub-pages land once the upstream
-// mapping documents land (mappings/<standard>-crosswalk.md).
+// mapping documents land (mappings/gldf-crosswalk.md, etim-crosswalk.md, and
+// photometric-source-parsing.md, which covers IES LM-63 and EULUMDAT).
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
@@ -55,7 +56,7 @@ const crosswalks: readonly Crosswalk[] = [
 
 <PageShell
   title="Crosswalks - ULC specification"
-  description="Field-by-field mapping from ULC to adjacent standards: GLDF, ETIM, IES LM-63, EULUMDAT. All four planned at v1."
+  description="Field-by-field mapping from ULC to adjacent standards: GLDF, ETIM, IES LM-63, EULUMDAT. All four are planned; status is flagged on the index."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Crosswalks.</h1>
@@ -81,10 +82,12 @@ const crosswalks: readonly Crosswalk[] = [
 
     <Callout intent="default" label="What landed = what shipped">
       <p>
-        Per-standard sub-pages render once the corresponding upstream
-        mapping document (<code>mappings/&lt;standard&gt;-crosswalk.md</code>)
-        lands in the spec repository. At v1 all four are at the planning
-        stage; the status flag advances as upstream work progresses.
+        Per-standard sub-pages render once the corresponding upstream mapping
+        document lands in the spec repository: <code>mappings/gldf-crosswalk.md</code>,
+        <code>mappings/etim-crosswalk.md</code>, and
+        <code>mappings/photometric-source-parsing.md</code>, which covers both IES
+        LM-63 and EULUMDAT. All four crosswalks are planned; the status flag
+        advances as upstream work progresses.
       </p>
     </Callout>
   </SpecDocsLayout>

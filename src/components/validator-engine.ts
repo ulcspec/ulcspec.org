@@ -6,7 +6,7 @@
 // full Ajv (JSON Schema Draft 2020-12) wire-up is gated on the `ajv` dep
 // addition (see validator-plan.md OQ-1) and lands in the implementation PR.
 //
-// All five canonical reference records in `public/examples/` PASS this
+// All eight canonical reference records in `public/examples/` PASS this
 // pre-validator. Random JSON FAILs with line-anchored "missing required"
 // errors. Malformed JSON FAILs with line+col reference.
 //
@@ -42,16 +42,21 @@ export interface ValidationError {
   actual: string;
 }
 
+export interface AchievementSummary {
+  /** Number of achievement themes at state `documented`. */
+  documented: number;
+  /** Number of achievement themes at state `claimed`. */
+  claimed: number;
+}
+
 export interface ValidationResult {
   valid: boolean;
   errors: ValidationError[];
-  /** Detected authoring pattern A/B/C/D if record passes; null otherwise. */
-  pattern: 'A' | 'B' | 'C' | 'D' | null;
   /** Manufacturer slug + display name if extractable. */
   manufacturer: { slug: string; display: string } | null;
   /** Catalog model string if extractable. */
   model: string | null;
-  /** Declared ULC version, e.g. "0.8.0". */
+  /** Declared ULC version, e.g. "1.0.0". */
   version: string | null;
   /**
    * Computed conformance level read from `index.conformance_level`: one of the
@@ -60,6 +65,18 @@ export interface ValidationResult {
    * never hand-declared. Null when absent.
    */
   conformanceLevel: string | null;
+  /**
+   * Product Achievements summary read from `index.achievements`: the count of
+   * themes at `documented` and at `claimed`. The builder computes these from the
+   * record's attestations; never hand-declared. Null when the block is absent or
+   * malformed, so the summary renders no achievements line.
+   */
+  achievements: AchievementSummary | null;
+  /**
+   * Restricted-substances programs declared anywhere in the record, read from
+   * `index.restricted_substances_declared`. Empty when none are declared.
+   */
+  restrictedSubstances: string[];
   /** Source-file declarations from the record's `source_files` block. */
   sources: SourceDeclaration[];
 }
@@ -217,11 +234,12 @@ export function validateStructure(
   return {
     valid: true,
     errors: [],
-    pattern: detectPattern(record),
     manufacturer: extractManufacturer(record),
     model: extractModel(record),
     version: typeof record.ulc_version === 'string' ? record.ulc_version : null,
     conformanceLevel: extractConformanceLevel(record),
+    achievements: extractAchievements(record),
+    restrictedSubstances: extractRestrictedSubstances(record),
     sources: extractSources(record),
   };
 }
@@ -230,11 +248,12 @@ function emptyFailResult(errors: ValidationError[]): ValidationResult {
   return {
     valid: false,
     errors,
-    pattern: null,
     manufacturer: null,
     model: null,
     version: null,
     conformanceLevel: null,
+    achievements: null,
+    restrictedSubstances: [],
     sources: [],
   };
 }
@@ -247,16 +266,6 @@ function asObject(value: unknown): Record<string, unknown> | null {
 function getString(obj: Record<string, unknown>, key: string): string | null {
   const v = obj[key];
   return typeof v === 'string' ? v : null;
-}
-
-function detectPattern(record: Record<string, unknown>): 'A' | 'B' | 'C' | 'D' | null {
-  const conf = asObject(record.configuration);
-  if (!conf) return null;
-  const pattern = conf.pattern;
-  if (pattern === 'A' || pattern === 'B' || pattern === 'C' || pattern === 'D') {
-    return pattern;
-  }
-  return null;
 }
 
 function extractManufacturer(
@@ -288,6 +297,44 @@ function extractConformanceLevel(record: Record<string, unknown>): string | null
   const index = asObject(record.index);
   if (!index) return null;
   return getString(index, 'conformance_level');
+}
+
+/**
+ * Read the Product Achievements summary from `index.achievements.themes`.
+ * Mirrors extractConformanceLevel's defensiveness: counts only the whitelisted
+ * state strings `documented` and `claimed`; any missing or malformed shape is
+ * treated as absent (returns null), so the summary renders no achievements line.
+ */
+function extractAchievements(record: Record<string, unknown>): AchievementSummary | null {
+  const index = asObject(record.index);
+  if (!index) return null;
+  const achievements = asObject(index.achievements);
+  if (!achievements) return null;
+  const themes = asObject(achievements.themes);
+  if (!themes) return null;
+  let documented = 0;
+  let claimed = 0;
+  for (const theme of Object.values(themes)) {
+    const t = asObject(theme);
+    if (!t) continue;
+    const state = getString(t, 'state');
+    if (state === 'documented') documented += 1;
+    else if (state === 'claimed') claimed += 1;
+  }
+  return { documented, claimed };
+}
+
+/**
+ * Read the declared restricted-substances programs from
+ * `index.restricted_substances_declared`, keeping only string tokens. Returns
+ * an empty array when the field is absent or malformed.
+ */
+function extractRestrictedSubstances(record: Record<string, unknown>): string[] {
+  const index = asObject(record.index);
+  if (!index) return [];
+  const list = index.restricted_substances_declared;
+  if (!Array.isArray(list)) return [];
+  return list.filter((s): s is string => typeof s === 'string');
 }
 
 /**

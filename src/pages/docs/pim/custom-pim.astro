@@ -39,13 +39,13 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li>Cutsheet PDFs stored separately, often versioned by filename suffix.</li>
     </ul>
     <p>
-      The conversion is deterministic: the open-source <code>ulc from-sheet</code> converter turns a workbook into validated records, no hand-authoring and no scripting. Fill the published <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> (a tab per kind of data, one row per product, keyed by <code>record_id</code>; tabular data kept in Word goes into the same workbook), point each row at its IES, LDT, and cutsheet files, and run <code>ulc from-sheet</code>. The converter detects each record's authoring pattern (single-SKU cutsheet, configurator with applicability, per-IES with provenance, or per-foot linear scaling), computes the dual-unit companions, SHA-256 hashes, default provenance, and the index, then validates each record against the schema. It reads either a folder of CSVs or a native <code>.xlsx</code>.
+      The conversion is deterministic: the open-source <code>ulc from-sheet</code> converter turns a workbook into validated records, no hand-authoring and no scripting. Fill the published <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> (a tab per kind of data, one row per record, keyed by <code>record_id</code>; tabular data kept in Word goes into the same workbook), point each row at its IES, LDT, and cutsheet files, and run <code>ulc from-sheet</code>. The converter detects each record's authoring pattern (single-SKU cutsheet, configurator with applicability, per-IES with provenance, or per-foot linear scaling), computes the dual-unit companions, SHA-256 hashes, default provenance, and the generated index (grading and stamping the conformance level and the Product Achievements view), then validates each record against the schema. It reads either a folder of CSVs or a native <code>.xlsx</code>.
     </p>
     <p>
       The same command converts hundreds or thousands of SKUs in one pass. Records that fail validation are reported with the validator's findings as the punch list, so only passing records publish. Offline and repeatable.
     </p>
     <p>
-      The <a href="/validator" class="link-inline">validator</a> catches schema errors before publication. The <a href="/docs/taxonomy" class="link-inline">taxonomy reference</a> is the value-set authority for enum fields like CCT, CRI bracket, optic, and IP rating.
+      The <a href="/validator" class="link-inline">validator</a> catches schema errors before publication. The <a href="/docs/taxonomy" class="link-inline">taxonomy reference</a> is the value-set authority for enum fields like the nominal CCT, CRI bracket, dimming protocol, and mounting type.
     </p>
 
     <h2>Core mapping patterns</h2>
@@ -78,6 +78,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       </tbody>
     </table>
     </div>
+    <p>If your catalog includes exit signs or emergency luminaires, map them to <code>exit_sign</code> / <code>emergency_luminaire</code>: each grades against its own class profile, and the records carry the <code>exit_sign</code> and <code>emergency</code> blocks their class calls for.</p>
 
     <h3>Dimensional fields</h3>
     <p>Convert single-unit columns to ULC dual-unit at emit time. Common columns:</p>
@@ -95,6 +96,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 
     <h3>Attestations</h3>
     <p>Common attestation programs the in-house schema should track: DLC QPL (DesignLights Consortium Qualified Products List, a lighting-specific energy attestation), ENERGY STAR Luminaires V2.0+, UL listings (UL 1598 and similar), and lumen-maintenance attestations (LM-80 / TM-21 derived L70 / L80 / L90 hours). The emitter maps each to a ULC <code>attestations[]</code> entry with <code>program</code>, <code>status</code>, and <code>value_type</code> populated per the schema.</p>
+    <p>The attestation mapping has a computed payoff. Each entry carries its program token and status, and, when you have the certificate file, a <code>source_document_ref</code> with the file's SHA-256. DLC and ENERGY STAR listings feed the <code>energy</code> achievement theme, Declare feeds <code>material_health</code>, UL 924 feeds <code>emergency</code>, and an attached, current certificate raises a theme from <code>claimed</code> to <code>documented</code>. RoHS, REACH, and Prop 65 entries surface in the <code>restricted_substances_declared</code> flag. The optional <code>issuing_authority</code> and <code>sustainability_metric</code> fields carry the issuer and the EPD-style metrics (embodied carbon in kg CO2e with its scope and functional unit).</p>
 
     <h2>Gotchas</h2>
     <ol>
@@ -105,7 +107,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>No change tracking.</strong> Without CDC, the emitter either runs full sweeps or polls <code>updated_at</code> columns.</li>
       <li><strong>Manual-edit drift in spreadsheets.</strong> Spreadsheet-based masters accumulate typos, inconsistent unit strings (<code>3000K</code> versus <code>3000 K</code>), and bracket-vs-value mismatches. Normalize before emit; flag suspicious rows for manual review.</li>
       <li><strong>One row, multiple records.</strong> A spreadsheet row that bundles several CCTs in one cell (<code>2700K/3000K/3500K</code>) expands to multiple ULC records, one per scenario. The ETL must split.</li>
-      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>source_files[]</code> block.</li>
+      <li><strong>Photometric file linkage.</strong> Spreadsheets typically reference IES/LDT files by relative path or filename. The emitter must resolve these to canonical URLs and SHA-256 hashes for the <code>source_files[]</code> block. A photometric source entry (<code>ies</code>, <code>ldt</code>, or <code>tm33</code>) can also carry <code>photometry_format</code>, declaring which format edition the file conforms to.</li>
     </ol>
 
     <p class="full-guide-link">

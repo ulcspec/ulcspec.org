@@ -1,19 +1,17 @@
 // Tier 1 designer LLM prompts. Single source of truth per SECTION_REGISTRY.md
 // cross-surface SSOT table. Consumed by:
-//   - src/components/Tier1QuickWin.astro (homepage hero, RENDER prompt only)
-//   - src/pages/for-designers.astro      (RENDER + COMPARE + EXTRACT)
-//   - src/pages/downloads.astro          (ALL 5; canonical catalog)
+//   - src/pages/for-designers.astro (RENDER + COMPARE + EXTRACT)
+//   - src/pages/downloads.astro     (all six; canonical catalog)
 //
-// The five prompts at /downloads#prompts are the canonical catalog; the
-// homepage hero + /for-designers + /spec render named subsets via the
-// individually-exported constants (each surface imports only what it shows).
-// Named exports stay stable as the catalog grows so downstream consumers
-// never need to track index positions.
+// The six prompts at /downloads#prompts are the canonical catalog; /for-designers
+// renders a named subset via the individually-exported constants (each surface
+// imports only what it shows). Named exports stay stable as the catalog grows so
+// downstream consumers never need to track index positions.
 //
 // Copy authority: docs/growth/copy/downloads.md ("Designer LLM prompts
-// section"). The RENDER prompt is identical across all four surfaces
-// (homepage hero, /for-designers, /docs, /downloads), verbatim parity is
-// load-bearing; verify with CI grep against built HTML on every PR.
+// section"). CI checks the RENDER prompt's label on the built /for-designers
+// page (ci.yml greps for "Render a .ulc file as a spec sheet"); there is no
+// cross-surface prompt-text parity grep.
 
 export interface Tier1Prompt {
   id: string;
@@ -51,10 +49,17 @@ export const TIER1_PROMPT_PULL_PROVENANCE: Tier1Prompt = {
   text: 'Read the attached `.ulc.json` file. For each measured attribute (CRI, CCT, wattage, photometric distribution, IP rating, optical accessories), identify which source file (PDF, IES, or LDT) the value traces back to via the per-field provenance + SHA-256 hash. Return the answer as a list mapping attribute to source file.',
 };
 
+export const TIER1_PROMPT_CHECK_ACHIEVEMENTS: Tier1Prompt = {
+  id: 'tier1-check-achievements',
+  label: 'Check what a product is documented for',
+  text: 'Read the attached `.ulc.json` file. From `index.achievements`, report each theme (embodied carbon, circularity, material health, energy, dark sky, emergency) with its state: none, claimed, or documented. For each documented theme, name the qualifying programs and note that an evidence document is attached. For each claimed theme, note that no current evidence document backs it. Also report `index.restricted_substances_declared` and `index.conformance_level`. Do not infer qualifications the record does not carry.',
+};
+
 export const TIER1_PROMPTS: readonly Tier1Prompt[] = [
   TIER1_PROMPT_RENDER,
   TIER1_PROMPT_COMPARE,
   TIER1_PROMPT_EXTRACT,
   TIER1_PROMPT_SANITY_CHECK_VE,
   TIER1_PROMPT_PULL_PROVENANCE,
+  TIER1_PROMPT_CHECK_ACHIEVEMENTS,
 ];

@@ -109,6 +109,49 @@ function isMarkdownPath(upstreamPath: string): boolean {
   return upstreamPath.endsWith('.md') || upstreamPath.endsWith('.mdx');
 }
 
+// Resolve a relative link path (with `.` / `..` segments) against the directory
+// of the synced file's own upstream repo path. Pure POSIX-style resolution;
+// no filesystem access.
+function resolveRelativePath(baseDir: string, rel: string): string {
+  const parts = baseDir.split('/').filter(Boolean);
+  for (const seg of rel.split('/')) {
+    if (seg === '' || seg === '.') continue;
+    if (seg === '..') parts.pop();
+    else parts.push(seg);
+  }
+  return parts.join('/');
+}
+
+// Rewrite relative `.md` links in synced markdown so they resolve to the
+// upstream file on GitHub at the SAME commit the content is pinned to, keeping
+// page and link targets byte-consistent as upstream main advances. Operates on
+// anchor href values only, never a raw body substitution: `.md` filenames that
+// appear inside code spans (e.g. `CONTRIBUTING.md`) are text, carry no href,
+// and are left untouched. Absolute URLs, protocol-relative, site-absolute (`/`),
+// pure anchors (`#`), and non-`.md` relative links all pass through unchanged.
+// Fragments are preserved.
+function rewriteRelativeMarkdownLinks(
+  html: string,
+  upstreamPath: string,
+  commit: string,
+): string {
+  const { upstreamOwner, upstreamRepo } = SPEC_SYNC;
+  const blobBase = `https://github.com/${upstreamOwner}/${upstreamRepo}/blob/${commit}`;
+  const baseDir = upstreamPath.includes('/')
+    ? upstreamPath.slice(0, upstreamPath.lastIndexOf('/'))
+    : '';
+  return html.replace(/href="([^"]*)"/g, (whole, href: string) => {
+    // Absolute URL, protocol-relative, site-absolute, or pure anchor: untouched.
+    if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|\/|#)/i.test(href)) return whole;
+    const hashIndex = href.indexOf('#');
+    const linkPath = hashIndex === -1 ? href : href.slice(0, hashIndex);
+    const fragment = hashIndex === -1 ? '' : href.slice(hashIndex);
+    if (!linkPath.endsWith('.md')) return whole;
+    const resolved = resolveRelativePath(baseDir, linkPath);
+    return `href="${blobBase}/${resolved}${fragment}"`;
+  });
+}
+
 export function specSyncLoader(): Loader {
   return {
     name: 'spec-sync-loader',
@@ -136,6 +179,11 @@ export function specSyncLoader(): Loader {
 
         if (isMarkdownPath(entry.upstreamPath)) {
           const rendered = await markdown.render(body);
+          const html = rewriteRelativeMarkdownLinks(
+            rendered.code,
+            entry.upstreamPath,
+            upstreamCommit,
+          );
           context.store.set({
             id: entry.id,
             data: {
@@ -146,7 +194,7 @@ export function specSyncLoader(): Loader {
             body,
             digest,
             rendered: {
-              html: rendered.code,
+              html,
               metadata: {
                 headings: rendered.metadata.headings,
                 frontmatter: rendered.metadata.frontmatter,

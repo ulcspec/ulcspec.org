@@ -7,6 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import Callout from '../../../components/Callout.astro';
 ---
 
 <PageShell
@@ -28,7 +29,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Variants and variant groups</strong> model SKU-level variation. Parent product-models hold shared attributes; variants carry per-SKU differences (CCT, distribution, finish).</li>
       <li><strong>Categories</strong> are a separate hierarchy from families, used for marketing navigation and channel filtering.</li>
       <li><strong>Channels</strong> define per-channel localization and completeness rules. A ULC emit channel can enforce that only records with complete photometric data ship.</li>
-      <li><strong>Asset Manager</strong> (Enterprise Edition) holds cutsheet PDFs, IES files, and LDT files as Asset Families. <strong>Reference Entities</strong> (also Enterprise-only) model structured entities like brand or designer. <strong>Community Edition has neither</strong>: file and image attributes on the product itself are the only built-in option, and the emitter streams those directly.</li>
+      <li><strong>Asset Manager</strong> (Enterprise Edition) holds cutsheet PDFs, IES files, and LDT files as Asset Families. <strong>Reference Entities</strong> (also Enterprise-only) model structured entities like brand or designer. <strong>Community Edition has neither</strong>: file and image attributes on the product itself are the only built-in option, and the emitter streams those directly. A photometric source entry (<code>ies</code>, <code>ldt</code>, or <code>tm33</code>) can also carry <code>photometry_format</code>, declaring which format edition the file conforms to.</li>
       <li><strong>API:</strong> REST with OAuth2 for both reads and writes.</li>
     </ul>
 
@@ -64,6 +65,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       </tbody>
     </table>
     </div>
+    <p>If your catalog includes exit signs or emergency luminaires, map them to <code>exit_sign</code> / <code>emergency_luminaire</code>: each grades against its own class profile, and the records carry the <code>exit_sign</code> and <code>emergency</code> blocks their class calls for.</p>
 
     <h3>Dimensional and photometric</h3>
     <p>Akeneo's <code>pim_catalog_metric</code> attribute type carries both value and unit (<code>{'{amount: 113, unit: "MILLIMETER"}'}</code>). The API also uses <code>pim_catalog_simpleselect</code> (enum), <code>pim_catalog_file</code>, and <code>pim_catalog_image</code> as exact type-code strings for filter queries. The emitter converts metric values to ULC dual-unit at emit time. Common mappings:</p>
@@ -83,10 +85,16 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
 
     <p>Unit codes (MILLIMETER, KILOGRAM, CELSIUS) are typical defaults but Akeneo measurement families are user-configurable. The emitter's mapping table must record the actual unit code in use per attribute, not assume defaults.</p>
 
+    <Callout intent="accent" label="Never author the index">
+      <p>
+        Your emitter writes the deep blocks only. The top-level <code>index</code> block, including the conformance level, the Product Achievements themes, and the restricted-substances flag, is generated: run <code>ulc build-index</code> on each emitted record, then <code>ulc validate</code> before publishing, and the builder grades and stamps both views. A hand-written index fails the parity check.
+      </p>
+    </Callout>
+
     <h2>Gotchas</h2>
     <ol>
       <li><strong>Product-model vs variant split.</strong> Akeneo's 2-level model (parent product-model + variants) maps exactly onto ULC's <code>product_family</code> (shared) vs <code>configuration</code> (per-scenario) split.</li>
-      <li><strong>Attribute completeness.</strong> Tie the ULC emit to a <code>ulc_export</code> channel's completeness so partially-populated SKUs don't ship as Incomplete ULC records.</li>
+      <li><strong>Attribute completeness.</strong> Tie the ULC emit to a <code>ulc_export</code> channel's completeness so partially-populated SKUs don't ship as Incomplete ULC records. The validator's non-gating enrichment roadmap (optional depth the grade never requires, each entry naming its source document and governing standard) doubles as a ready-made field-mapping backlog for your next export iteration.</li>
       <li><strong>Metric unit drift.</strong> If variants store the same attribute in different units, normalize before computing the companion.</li>
       <li><strong>Reference entity depth (Enterprise).</strong> Attestations like UL-listed or DLC-qualified can be modeled as reference entities with structured attributes; walk these into <code>attestations[]</code>.</li>
       <li><strong>Published vs draft.</strong> Never emit ULC from a draft product. Wait for the workflow to publish.</li>

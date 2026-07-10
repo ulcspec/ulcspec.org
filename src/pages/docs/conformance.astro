@@ -53,12 +53,30 @@ const roadmap: readonly RoadmapRow[] = [
     toStandard: 'a MacAdam SDCM step (from the datasheet, per ANSI C78.377).',
     toFull: 'zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
   },
+  {
+    record: 'Cooper Sure-Lites LPX (exit sign)',
+    grade: 'Core',
+    toStandard: 'legend height (datasheet, NFPA 101 / IBC) and input power (datasheet, UL 924).',
+    toFull: 'a test-report-backed sign-face luminance (UL 924).',
+  },
+  {
+    record: 'Cooper Sure-Lites ES (exit sign)',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'a test-report-backed sign-face luminance (UL 924).',
+  },
+  {
+    record: 'Cooper AtLite AUX (exit sign)',
+    grade: 'Standard',
+    toStandard: 'n/a',
+    toFull: 'a test-report-backed sign-face luminance (UL 924).',
+  },
 ];
 ---
 
 <PageShell
   title="Conformance - ULC specification"
-  description="How ULC computes a record's conformance level: three grades (Core, Standard, Full) above an Incomplete floor, why the cut points mirror a Division 26 construction specification, and why a fixture is graded only on what its form requires."
+  description="How ULC computes a record's conformance level: three grades (Core, Standard, Full) above an Incomplete floor, why the cut points mirror a Division 26 construction specification, and why a fixture is graded only on what its form requires, and how the eight reference records grade."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Conformance.</h1>
@@ -66,7 +84,9 @@ const roadmap: readonly RoadmapRow[] = [
       A ULC record's conformance level is computed, never declared. The reference
       builder grades each record from the data it actually carries and stamps the
       result; the validator recomputes it and checks it, so there is no way to
-      assert or inflate a level by hand.
+      assert or inflate a level by hand. The level is one of two computed views:
+      its sibling, Product Achievements, answers "what is the product documented
+      for?" and has <a href="/docs/achievements" class="cf-link">its own page</a>.
     </p>
 
     {/* ── Three grades, and a floor ─────────────────────────────────────── */}
@@ -83,7 +103,7 @@ const roadmap: readonly RoadmapRow[] = [
           The entry grade: the minimum a fixture must carry to be specified and
           ordered at all. Mandatory product data (identity, classification, the
           headline photometric and electrical values, one-line colorimetry), an
-          attached cutsheet, and a recognized safety listing. It sits below the LM-79 selection data and
+          attached cutsheet, and a recognized safety listing. It sits below the selection-grade data and
           the accredited test evidence the higher grades add.
         </dd>
         <dt>Standard</dt>
@@ -93,8 +113,8 @@ const roadmap: readonly RoadmapRow[] = [
           an LM-79 attestation, a lumen-maintenance framework, and the conditional
           rows the fixture's form calls for. This is the data a Division 26
           lighting specification selects products on, which is why it ranks above
-          Core. A Standard record is missing only the TM-30 color detail and the
-          accredited third-party test evidence that lift it to Full.
+          Core. A Standard record is missing only the
+          accredited third-party test evidence that lifts it to Full.
         </dd>
         <dt>Full</dt>
         <dd>
@@ -120,7 +140,10 @@ const roadmap: readonly RoadmapRow[] = [
         every applicable requirement of that grade and of the grades below it.
         Every requirement still outstanding, at every grade up to Full, becomes a
         roadmap entry naming the field, its source document, and the governing
-        standard.
+        standard. Beside those hard gaps, the validator also suggests a
+        non-gating enrichment roadmap: optional depth (power factor, flicker,
+        alpha-opic metrics, UGR, and similar) that deepens a datasheet but never
+        moves the grade.
       </p>
       <p>
         These cut points are not arbitrary. They recover how a Division 26
@@ -169,20 +192,41 @@ const roadmap: readonly RoadmapRow[] = [
           An <strong>architectural uplight</strong> (in-ground or facade) is
           graded on its beam, not on an area distribution it does not have.
         </li>
+        <li>
+          An <strong>exit sign</strong> is graded against the sign profile:
+          legend, illumination mode, battery, and UL 924 evidence, never the
+          LM-79 photometry its spec sheet does not carry. A <strong>dedicated
+          emergency luminaire</strong> keeps the normal profile minus luminaire
+          efficacy, plus the emergency gates.
+        </li>
       </ul>
+      <p>
+        The class profiles take this rule to its conclusion. The product class is
+        derived from the record's primary category: an exit sign grades against
+        the sign dataset (the architectural photometric rows are dropped entirely,
+        and Full is anchored on UL 924 test-report depth), and a dedicated
+        emergency luminaire grades against the normal profile minus luminaire
+        efficacy, plus the emergency gates. A UL 924 listing, read from the
+        attestation ledger and never a boolean field, satisfies the core
+        safety-listing requirement. A sign-only manufacturer reaches the grade its
+        spec sheets actually support instead of being stranded at Incomplete for
+        lacking an LM-79 report it never produces.
+      </p>
       <p>
         So an honest datasheet is never demoted for a value its fixture has no
         reason to carry.
       </p>
     </section>
 
-    {/* ── The five reference records ──────────────────────────────────── */}
+    {/* ── The eight reference records ─────────────────────────────────── */}
     <section class="cf-section">
-      <h2 class="cf-h2">The five reference records</h2>
+      <h2 class="cf-h2">The eight reference records</h2>
       <p>
-        The <a href="/downloads#examples" class="cf-link">five canonical
-        records</a> show grading on real cutsheets. Each one carries the grade it
-        earned and its roadmap to Full.
+        The <a href="/downloads#examples" class="cf-link">eight canonical
+        records</a> show grading on real cutsheets: five architectural records
+        across the four authoring patterns, and three exit signs in the emergency
+        product class. Each one carries the grade it earned and its roadmap to
+        Full.
       </p>
       <div class="cf-table-wrap">
         <table class="cf-table">
@@ -215,7 +259,11 @@ const roadmap: readonly RoadmapRow[] = [
       <p class="cf-note">
         Vode is one field short of Standard. The two Lumenfacade records reach
         Standard with their DMX driver exempt from the analog-dimming rows, an
-        applicability rule in action.
+        applicability rule in action. The LPX exit sign is held at Core by two
+        figures its spec sheet does not publish (letter height and self-powered
+        input wattage), and the two edge-lit signs sit one tier below Full for the
+        class-specific reason: Full asks for a test-report-backed face luminance,
+        the UL 924 lab depth a spec sheet does not carry.
       </p>
     </section>
 
@@ -225,10 +273,12 @@ const roadmap: readonly RoadmapRow[] = [
       <Callout intent="accent" label="Run the reference validator">
         <p>
           To see the roadmap for your own products, run the free reference
-          validator: <code>ulc validate --verbose &lt;record&gt;</code>. Every
-          record gets the grades it has already satisfied and a per-field list of
-          exactly what it needs at each grade up to Full, each entry naming the
-          source document and the governing standard.
+          validator: <code>ulc validate &lt;record&gt;</code>. Every record gets
+          the grades it has already satisfied, a per-field list of exactly what it
+          needs at each grade up to Full (each entry naming the source document and
+          the governing standard), and a one-line achievements summary. Add
+          <code>--verbose</code> for the non-gating enrichment roadmap and the
+          per-theme achievements detail.
         </p>
         <p>
           The validator is a free download on the

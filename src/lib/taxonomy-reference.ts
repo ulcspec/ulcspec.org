@@ -1,7 +1,7 @@
 // Build-time loader for the /docs/taxonomy enum reference.
 //
 // Reads the vendored taxonomy + schema JSON (public/schema/*.json) at build
-// time, groups the 82 closed-enum taxonomies into reader-facing sections, and
+// time, groups the 95 closed-enum taxonomies into reader-facing sections, and
 // computes, per enum, which ULC schema fields consume it (the "used by"
 // cross-reference). The page renders the returned model; no client data fetch.
 //
@@ -140,6 +140,11 @@ const GROUP_DEFS: ReadonlyArray<{ id: string; title: string; members: readonly s
     members: ['FlickerMetric', 'FlickerRiskLevel', 'FlickerDimmingType', 'FlickerPhotodetectorSpectralCorrection', 'FlickerSamplingClass', 'FlickerTestChamberType', 'FlickerWaveformFileFormat'],
   },
   {
+    id: 'exit-emergency',
+    title: 'Exit signs and emergency',
+    members: ['ExitSignIlluminationMode', 'ExitSignIlluminationTechnology', 'LegendColor', 'ExitSignFaceCount', 'ExitSignDirectionalIndicator', 'RatedViewingDistance', 'EmergencyRole', 'EmergencyPowerSource', 'BatteryChemistry', 'EmergencySelfTestCapability'],
+  },
+  {
     id: 'instrumentation',
     title: 'Test conditions and instrumentation',
     members: ['PhotometryBasis', 'PhotometryMethod', 'PhotometryFormat', 'MeasurementRegime', 'GoniometerType', 'LaboratoryAccreditationScheme', 'LaboratoryCertification', 'StabilizationMethod', 'NonstandardConditionFlag', 'FileGenerationType', 'LEDDeviceClass', 'OpticalRadiationBand'],
@@ -152,12 +157,12 @@ const GROUP_DEFS: ReadonlyArray<{ id: string; title: string; members: readonly s
   {
     id: 'provenance',
     title: 'Provenance and data integrity',
-    members: ['ProvenanceSource', 'ProvenanceMethod', 'SourceFileType', 'ComparisonOperator', 'ConformanceLevel'],
+    members: ['ProvenanceSource', 'ProvenanceMethod', 'SourceFileType', 'ComparisonOperator', 'ConformanceLevel', 'AchievementState'],
   },
   {
     id: 'sustainability',
     title: 'Sustainability',
-    members: ['SustainabilityDeclarationType', 'IngredientRedListStatus'],
+    members: ['SustainabilityDeclarationType', 'IngredientRedListStatus', 'EmbodiedCarbonScope', 'CircularityTier'],
   },
 ];
 

@@ -7,6 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import Callout from '../../../components/Callout.astro';
 ---
 
 <PageShell
@@ -83,12 +84,19 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       </tbody>
     </table>
     </div>
+    <p>A photometric source entry (<code>ies</code>, <code>ldt</code>, or <code>tm33</code>) can also carry <code>photometry_format</code>, declaring which format edition the file conforms to.</p>
+
+    <Callout intent="accent" label="Never author the index">
+      <p>
+        Your emitter writes the deep blocks only. The top-level <code>index</code> block, including the conformance level, the Product Achievements themes, and the restricted-substances flag, is generated: run <code>ulc build-index</code> on each emitted record, then <code>ulc validate</code> before publishing, and the builder grades and stamps both views. A hand-written index fails the parity check.
+      </p>
+    </Callout>
 
     <h2>Gotchas</h2>
     <ol>
       <li><strong>IDoc vs OData.</strong> Legacy ECC without S/4HANA exposes data via IDocs (MATMAS, CLFMAS, DOCMAS). Mapping is conceptually identical; the engineer handles XML instead of JSON.</li>
       <li><strong>Language keys.</strong> SAP descriptions are per-language (SPRAS). Choose a canonical language key (typically <code>EN</code>) and record it in the integration config.</li>
-      <li><strong>Change-master tracking.</strong> Skip materials with active engineering change records (AENR, referenced by change-master transaction CC02) from export until the change closes. Gate that draft state by holding the export, not by shipping a thin record: the validator computes the conformance level from whatever the record carries.</li>
+      <li><strong>Change-master tracking.</strong> Skip materials with active engineering change records (AENR, referenced by change-master transaction CC02) from export until the change closes. Gate that draft state by holding the export, not by shipping a thin record: the validator computes the conformance level, and the Product Achievements view beside it, from whatever the record carries. The validator's non-gating enrichment roadmap (optional depth the grade never requires, each entry naming its source document and governing standard) doubles as a ready-made field-mapping backlog for your next export iteration.</li>
       <li><strong>Classification sparseness.</strong> Not every luminaire will have every expected characteristic populated. Skip or fail the export when a required characteristic is missing.</li>
       <li><strong>Unit rounding errors.</strong> SAP often stores dimensions at coarse precision (integer mm). Preserve decimal precision when computing the Imperial companion.</li>
       <li><strong>IDoc serialization ordering.</strong> When emitting a material with classification, callers must send MATMAS first (material master) then CLFMAS (classification); ULC emit pipelines that batch must respect that order.</li>
