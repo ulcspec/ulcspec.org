@@ -112,12 +112,19 @@ function isMarkdownPath(upstreamPath: string): boolean {
 // Resolve a relative link path (with `.` / `..` segments) against the directory
 // of the synced file's own upstream repo path. Pure POSIX-style resolution;
 // no filesystem access.
-function resolveRelativePath(baseDir: string, rel: string): string {
+function resolveRelativePath(baseDir: string, rel: string): string | null {
   const parts = baseDir.split('/').filter(Boolean);
   for (const seg of rel.split('/')) {
     if (seg === '' || seg === '.') continue;
-    if (seg === '..') parts.pop();
-    else parts.push(seg);
+    if (seg === '..') {
+      // A link that traverses above the repo root cannot resolve to a real
+      // upstream path; return null so the caller leaves it visibly relative
+      // rather than silently rewriting it to an unrelated in-repo blob URL.
+      if (parts.length === 0) return null;
+      parts.pop();
+    } else {
+      parts.push(seg);
+    }
   }
   return parts.join('/');
 }
@@ -146,8 +153,9 @@ function rewriteRelativeMarkdownLinks(
     const hashIndex = href.indexOf('#');
     const linkPath = hashIndex === -1 ? href : href.slice(0, hashIndex);
     const fragment = hashIndex === -1 ? '' : href.slice(hashIndex);
-    if (!linkPath.endsWith('.md')) return whole;
+    if (!linkPath.endsWith('.md') && !linkPath.endsWith('.mdx')) return whole;
     const resolved = resolveRelativePath(baseDir, linkPath);
+    if (resolved === null) return whole;
     return `href="${blobBase}/${resolved}${fragment}"`;
   });
 }

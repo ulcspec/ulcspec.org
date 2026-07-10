@@ -304,6 +304,9 @@ function extractConformanceLevel(record: Record<string, unknown>): string | null
  * Mirrors extractConformanceLevel's defensiveness: counts only the whitelisted
  * state strings `documented` and `claimed`; any missing or malformed shape is
  * treated as absent (returns null), so the summary renders no achievements line.
+ * A present but all-none achievements block returns `{ documented: 0, claimed: 0 }`
+ * and renders "0 documented, 0 claimed", mirroring the reference CLI's default
+ * summary line (never suppressed for a record that carries the block).
  */
 function extractAchievements(record: Record<string, unknown>): AchievementSummary | null {
   const index = asObject(record.index);
