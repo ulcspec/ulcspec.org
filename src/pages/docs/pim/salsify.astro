@@ -7,6 +7,7 @@
 
 import PageShell from '../../../components/PageShell.astro';
 import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
+import Callout from '../../../components/Callout.astro';
 ---
 
 <PageShell
@@ -59,6 +60,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       </tbody>
     </table>
     </div>
+    <p>If your catalog includes exit signs or emergency luminaires, map them to <code>exit_sign</code> / <code>emergency_luminaire</code>: each grades against its own class profile, and the records carry the <code>exit_sign</code> and <code>emergency</code> blocks their class calls for.</p>
 
     <h3>Dimensional values</h3>
     <p>Salsify dimensional values use the <code>Number</code> property type paired with a unit-of-measure property (for example, <code>overall_diameter_mm</code> with an <code>expressed_in: mm</code> companion convention). The emitter converts to ULC dual-unit (mm and in) at emit time.</p>
@@ -75,8 +77,15 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       </tbody>
     </table>
     </div>
+    <p>A photometric source entry (<code>ies</code>, <code>ldt</code>, or <code>tm33</code>) can also carry <code>photometry_format</code>, declaring which format edition the file conforms to.</p>
 
     <p>The emitter streams each asset by its Salsify asset ID, computes SHA-256, and populates <code>source_files[].reference</code>. The cutsheet asset additionally populates <code>product_family.cutsheet</code> (a graded Core requirement) with the same hash; an emitter that writes only <code>source_files[]</code> still produces a valid record, but one that grades Incomplete rather than Core (it carries a roadmap naming the cutsheet).</p>
+
+    <Callout intent="accent" label="Never author the index">
+      <p>
+        Your emitter writes the deep blocks only. The top-level <code>index</code> block, including the conformance level, the Product Achievements themes, and the restricted-substances flag, is generated: run <code>ulc build-index</code> on each emitted record, then <code>ulc validate</code> before publishing, and the builder grades and stamps both views. A hand-written index fails the parity check.
+      </p>
+    </Callout>
 
     <h2>Gotchas</h2>
     <ol>
@@ -84,7 +93,7 @@ import SpecDocsLayout from '../../../components/SpecDocsLayout.astro';
       <li><strong>Localization.</strong> Salsify properties support per-locale values. ULC is locale-neutral at the schema level; the emitter chooses a canonical locale (typically en-US).</li>
       <li><strong>Property type mismatches.</strong> Salsify's "number" type is a double. ULC distinguishes integer in some fields. Coerce at emit time.</li>
       <li><strong>Asset digest caching.</strong> SHA-256 on every asset on every run is expensive. Cache by Salsify asset ID + version; invalidate on <code>updated_at</code> change.</li>
-      <li><strong>Missing values.</strong> If a property a record should carry is blank for a SKU, skip or fail the export rather than shipping a thin record. There is no level to set: the validator computes the conformance level from whatever the record carries, so gate the export on completeness in Salsify instead.</li>
+      <li><strong>Missing values.</strong> If a property a record should carry is blank for a SKU, skip or fail the export rather than shipping a thin record. There is no level to set: the validator computes the conformance level, and the Product Achievements view beside it, from whatever the record carries, so gate the export on completeness in Salsify instead. The validator's non-gating enrichment roadmap (optional depth the grade never requires, each entry naming its source document and governing standard) doubles as a ready-made field-mapping backlog for your next export iteration.</li>
     </ol>
 
     <p class="full-guide-link">

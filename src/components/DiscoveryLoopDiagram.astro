@@ -4,10 +4,10 @@
 // at the extraction and aggregator-interpretation hops. Inline HTML/CSS,
 // themeable, zero network bytes.
 //
-// Single-surface consumer as of 2026-05-16 (/for-manufacturers only). The
-// manufacturer-PDF protagonist and the "loss" framing are page-local.
-// Promote to src/components/figures/* with a generalized API only when a
-// second surface needs the same diagram or a sibling.
+// Consumed by two surfaces (/for-designers and /for-manufacturers). The
+// manufacturer-PDF protagonist and the "loss" framing are page-local; keep it
+// here until a third surface would need a generalized API in
+// src/components/figures/*.
 
 interface Stage {
   label: string;

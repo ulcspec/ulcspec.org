@@ -25,7 +25,7 @@ const tocItems = [
 
 const crossLinks = [
   { href: '/docs/pim', labelHtml: 'Add a <code>.ulc</code> export from your PIM' },
-  { href: '/docs/authoring-patterns', labelHtml: 'The four authoring patterns' },
+  { href: '/docs/authoring-patterns', labelHtml: 'Authoring patterns and product classes' },
   { href: '/docs/conformance', labelHtml: 'How conformance is graded' },
   { href: '/docs/crosswalks/gldf', labelHtml: 'How ULC and GLDF fit together' },
 ];
@@ -95,7 +95,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       <section id="how-to-create" aria-labelledby="how-to-create-heading">
         <h2 id="how-to-create-heading">How to publish</h2>
         <p>
-          A <code>.ulc</code> file is JSON, validated against an open schema, that references your existing PDF, IES, and LDT by SHA-256 hash instead of embedding them. Producing one is a two-step path: gather the documents you have, then run a converter. A record is graded on what it carries, never on a metric the fixture's form has no reason to include.
+          A <code>.ulc</code> file is JSON, validated against an open schema, that references your existing PDF, IES, and LDT by SHA-256 hash instead of embedding them. Producing one is a two-step path: gather the documents you have, then run a converter. A record is graded on what it carries, never on a metric the fixture's form has no reason to include. That extends to product classes: exit signs and emergency luminaires grade against their own profiles, so a sign is never asked for the LM-79 photometry its spec sheet does not carry, and a battery-driven emergency luminaire is never asked for luminaire efficacy.
         </p>
         <p>
           <strong>Gather the source documents.</strong> Collect the ones that apply to the product:
@@ -116,10 +116,10 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
           <strong>From your PIM.</strong> If your data lives in Salsify, Akeneo, SAP, or a custom PIM, the structure already exists. The mapping guides at <a href="/docs" class="link-inline">/docs</a> translate your fields onto ULC's, usually a one-time integration that then runs inside your existing publishing pipeline.
         </p>
         <p>
-          <strong>From a spreadsheet.</strong> If your data lives in spreadsheets rather than a PIM, the <code>ulc from-sheet</code> converter turns it into validated records. The converter is part of the ULC command-line tool: download it for your platform from <a href="/downloads#cli" class="link-inline">/downloads</a>, fill in the open-source <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> (one row per product, each pointing at its source files), then run <code>ulc from-sheet</code> from your terminal. It computes the schema structure, SHA-256 hashes, and dual units, then validates each record. Deterministic and offline.
+          <strong>From a spreadsheet.</strong> If your data lives in spreadsheets rather than a PIM, the <code>ulc from-sheet</code> converter turns it into validated records. The converter is part of the ULC command-line tool: download it for your platform from <a href="/downloads#cli" class="link-inline">/downloads</a>, fill in the open-source <a href="https://github.com/ulcspec/ULC/tree/main/templates/workbook" target="_blank" rel="noopener external" class="link-inline">workbook template</a> (one row per photometric scenario, which is one row per record, each pointing at its source files), then run <code>ulc from-sheet</code> from your terminal. It computes the schema structure, SHA-256 hashes, and dual units, builds the generated index (grading and stamping the conformance level and the Product Achievements view), then validates each record. Deterministic and offline.
         </p>
         <p>
-          The <a href="/validator" class="link-inline">validator</a> catches schema errors before you publish, and the reference CLI shows each record's conformance roadmap: run <code>ulc validate --verbose</code> for a per-field list of what each grade up to Full needs, each entry naming the source document and the governing standard. You do not need every document to begin: a record carrying only its identity grades Incomplete and comes back with the roadmap to Core. The schema, examples, and mapping guides all live at <a href="/docs" class="link-inline">/docs</a>; how conformance is graded is at <a href="/docs/conformance" class="link-inline">/docs/conformance</a>.
+          The <a href="/validator" class="link-inline">validator</a> catches schema errors before you publish, and the reference CLI shows each record's roadmap: <code>ulc validate</code> prints the grade, the per-field list of what each grade up to Full needs (each entry naming the source document and the governing standard), and a one-line achievements summary; <code>--verbose</code> adds the non-gating enrichment roadmap and the per-theme achievements detail. You do not need every document to begin: a record carrying only its identity grades Incomplete and comes back with the roadmap to Core. The schema, examples, and mapping guides all live at <a href="/docs" class="link-inline">/docs</a>; how the grades work is at <a href="/docs/conformance" class="link-inline">/docs/conformance</a>, and what the achievements report is at <a href="/docs/achievements" class="link-inline">/docs/achievements</a>.
         </p>
       </section>
 
@@ -137,6 +137,9 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
           <li>
             <strong>Early-mover position in the standard your peers will adopt.</strong> Open, MIT-licensed, neutrally stewarded, in dialogue with DIAL, the IES, and the LIA. The first to publish are the ones the industry remembers as having defined the layer.
           </li>
+          <li>
+            <strong>Your certifications become a machine-readable profile.</strong> The DLC, ENERGY STAR, Declare, DarkSky, and UL 924 qualifications you already hold are computed into a per-theme Product Achievements view and stamped into the record. Attach the certificate file and the theme reads <code>documented</code>, evidence included, instead of a claim a tool has to take on faith. Your RoHS, REACH, and Prop 65 declarations surface beside the themes as a machine-readable restricted-substances flag.
+          </li>
         </ul>
 
         <Callout intent="accent" label="You own your accuracy at the source">
@@ -150,7 +153,7 @@ const pageDescription = 'Specifier discovery is shifting from PDF to AI-mediated
       <section id="the-ask" aria-labelledby="the-ask-heading">
         <h2 id="the-ask-heading">Take action</h2>
         <p>
-          Pilot it. Publish one to three of your most-specified SKUs as <code>.ulc</code> files; one product line is enough to start. The example records show the shape, the validator catches the easy mistakes, and the conversations that follow shape what the standard becomes.
+          Pilot it. Publish one to three of your most-specified SKUs as <code>.ulc</code> files; one product line is enough to start. The example records show the shape, the validator catches the easy mistakes, and the conversations that follow shape what the standard becomes. The schema surface is additive-only across minor releases, and a breaking change requires a new major version, so a record you publish today stays valid.
         </p>
         <p>
           Start at <a href="/docs" class="link-inline">/docs</a>, browse the schema and examples on <a

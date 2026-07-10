@@ -28,7 +28,7 @@ const crossLinks = [
   { href: '/docs/schema', labelHtml: 'The full schema reference' },
   { href: '/docs/taxonomy', labelHtml: 'The closed taxonomy of allowed values' },
   { href: '/downloads#cli', labelHtml: 'The Go reference validator (CLI)' },
-  { href: '/downloads#examples', labelHtml: 'The five canonical example records' },
+  { href: '/downloads#examples', labelHtml: 'The eight canonical example records' },
 ];
 ---
 
@@ -69,18 +69,23 @@ const crossLinks = [
           </p>
         </li>
         <li>
-          <h3>Conformance level</h3>
+          <h3>Computed views: conformance level and achievements</h3>
           <p>
-            A record's conformance level is computed by the reference builder
-            from the data it carries and stamped into the record; this validator
-            surfaces it, and the Go CLI recomputes and verifies it. There are
-            three grades: Core is the minimum identifying, photometric, and safety
-            set; Standard is what a typical LM-79 report produces; and Full adds
-            the accredited test-report set. Below them is the floor, Incomplete: a
-            record that has not yet met Core, which always carries a roadmap.
-            Because the level is computed and verified rather than self-declared,
-            a record shows the level its data earns.
+            A record's index carries two computed views, stamped by the reference
+            builder and verified by the Go CLI: the conformance level (how complete
+            the datasheet is) and the Product Achievements themes (what the product
+            is documented for). This validator surfaces both; the Go CLI recomputes
+            and verifies both. There are three grades: Core is the minimum
+            identifying, photometric, and safety set; Standard adds the
+            selection-grade specification a designer compares products on; and Full
+            adds the accredited test-report set. Exit signs and emergency luminaires
+            grade against their own class profiles, so a sign is never asked for
+            photometry its spec sheet does not carry. Below the grades is the floor,
+            Incomplete: a record that has not yet met Core, which always carries a
+            roadmap. Because both views are computed and verified rather than
+            self-declared, a record shows what its data earns.
             <a href="/docs/conformance">How conformance is graded →</a>
+            <a href="/docs/achievements">What achievements mean →</a>
           </p>
         </li>
         <li>
@@ -156,9 +161,11 @@ const crossLinks = [
           <p>
             This in-browser validator runs a structural pre-check against the
             canonical JSON Schema. The Go CLI available from <a href="/downloads">/downloads</a>
-            is the canonical reference implementation and runs the complete
-            schema check today; both are tested in CI against the five
-            canonical reference records.
+            is the canonical reference implementation: it runs the complete schema
+            check, builder parity for both computed views (the conformance level
+            and the achievements), and source-file hash verification; both
+            validators are tested in CI against the eight canonical reference
+            records.
           </p>
           <Callout intent="default" label="What runs today">
             <p>
@@ -167,7 +174,7 @@ const crossLinks = [
               reads the source metadata, and verifies SHA-256 hashes (fully
               live via SubtleCrypto). Full schema validation against the
               canonical JSON Schema, including the closed-taxonomy enum
-              checks, is being wired in. The five canonical reference records
+              checks, is being wired in. The eight canonical reference records
               in
               <a href="/examples/pattern-a-erco-quintessence.ulc.json">
                 <code>/examples/</code>

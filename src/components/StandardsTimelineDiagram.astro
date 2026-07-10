@@ -4,9 +4,9 @@
 // 2028-2030 anticipated broad adoption (labeled "anticipated"). Inline
 // HTML/CSS, themeable, zero network bytes.
 //
-// Single-surface consumer as of 2026-05-16 (/for-manufacturers only). The
-// dates and milestone framing are page-local; promote to a generalized
-// timeline figure only when a second surface needs the same primitive.
+// Currently unmounted: no page imports this component (kept per decision D6).
+// The dates and milestone framing are page-local; if it is remounted, promote
+// to a generalized timeline figure only when a second surface needs it.
 
 interface Milestone {
   year: string;
@@ -17,7 +17,7 @@ interface Milestone {
 const milestones: readonly Milestone[] = [
   {
     year: '2026',
-    label: 'Introduced at the NLB AI Think Tank, New York. Five canonical reference records, validator, PIM mapping guides.',
+    label: 'Eight canonical reference records, validator, PIM mapping guides.',
     status: 'now',
   },
   {
@@ -43,7 +43,7 @@ const statusLabels: Record<Milestone['status'], string> = {
   <ol
     class="tl-list"
     role="list"
-    aria-label="ULC standards trajectory. 2026: introduced at the NLB AI Think Tank, New York, with reference records, validator, and PIM mapping guides available now. 2026 to 2027: planned pilot publications, crosswalks to GLDF and ETIM, and SCP-driven schema evolution. 2028 to 2030: anticipated broad adoption."
+    aria-label="ULC standards trajectory. 2026: eight reference records, a validator, and PIM mapping guides available now. 2026 to 2027: planned pilot publications, crosswalks to GLDF and ETIM, and SCP-driven schema evolution. 2028 to 2030: anticipated broad adoption."
   >
     {milestones.map((m, i) => (
       <li class={`tl-item tl-item--${m.status}`}>

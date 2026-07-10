@@ -94,6 +94,8 @@ const BLOCK_ORDER: readonly string[] = [
   'AlphaOpicMetrics',
   'FlickerMeasurements',
   'OutdoorClassification',
+  'ExitSign',
+  'Emergency',
   'OperatingPoint',
   'TestConditions',
   'Instrumentation',
@@ -108,6 +110,7 @@ const BLOCK_ORDER: readonly string[] = [
   'SourceFile',
   'Attestation',
   'Extensions',
+  'AchievementTheme',
   'Index',
 ];
 
@@ -205,7 +208,7 @@ function rootSection(): SchemaSection {
   return {
     id: 'schema-root',
     name: 'Record root',
-    description: 'The top-level shape of a ULC record. Most fields are structural blocks documented in their own sections below; the index block is computed by the builder, never authored.',
+    description: 'The top-level shape of a ULC record. Most fields are structural blocks documented in their own sections below; the index block, including the two computed views (the conformance level and the Product Achievements themes) and the restricted-substances flag, is computed by the builder, never authored.',
     kind: 'root',
     fields: rows,
   };
@@ -267,7 +270,7 @@ export function getSchemaMeta(): { version: string; fieldCount: number; sectionC
 // upstream reshape (at a spec-sync pin bump) ever makes `flatten` stop
 // recursing, or guts the schema, the page would silently render far fewer
 // fields. Fail the build instead. The floors sit well below the current counts
-// (~35 sections / ~398 fields) so legitimate schema growth never trips them.
+// (~38 sections / ~458 fields) so legitimate schema growth never trips them.
 (function assertSchemaIntegrity(): void {
   const { fieldCount, sectionCount } = getSchemaMeta();
   const SECTION_FLOOR = 25;

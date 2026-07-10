@@ -1,0 +1,434 @@
+---
+// /docs/achievements: the conceptual home for the Product Achievements view.
+//
+// Hand-authored narrative (not a generated reference table), the sibling of
+// /docs/conformance: conformance grades datasheet completeness, achievements
+// report what a product is documented for. Both are computed views stamped
+// into the generated index. Current-state only: this page describes what the
+// standard IS, with no version-diff or changelog framing.
+//
+// The program-to-theme map itself lives upstream in the compliance and
+// attestation glossary; this page explains the model, not the full mapping.
+
+import PageShell from '../../components/PageShell.astro';
+import SpecDocsLayout from '../../components/SpecDocsLayout.astro';
+import Callout from '../../components/Callout.astro';
+
+interface AchievementRow {
+  record: string;
+  achievementsHtml: string;
+}
+
+const records: readonly AchievementRow[] = [
+  {
+    record: 'Cooper AtLite AUX (exit sign)',
+    achievementsHtml:
+      'emergency <code>documented</code>: its UL 924 listing is backed by two attached UL Certificates of Compliance',
+  },
+  {
+    record: 'Cooper Sure-Lites ES (exit sign)',
+    achievementsHtml: 'emergency <code>claimed</code>',
+  },
+  {
+    record: 'Cooper Sure-Lites LPX (exit sign)',
+    achievementsHtml:
+      'emergency and energy <code>claimed</code> (UL 924; California Title 20)',
+  },
+  {
+    record: 'Selux Aya',
+    achievementsHtml:
+      'dark sky and material health <code>claimed</code> (DarkSky Approved; Declare and Red List Approved) · RoHS declared',
+  },
+  {
+    record: 'Vode Nexa',
+    achievementsHtml:
+      'material health <code>claimed</code> (Declare and Red List Approved)',
+  },
+  {
+    record: 'Lumenpulse Lumenfacade RGB and RGBW',
+    achievementsHtml: 'no themed programs · RoHS declared',
+  },
+  {
+    record: 'ERCO Quintessence',
+    achievementsHtml:
+      'no themed programs (its ledger carries safety listings and test methods only)',
+  },
+];
+---
+
+<PageShell
+  title="Achievements - ULC specification"
+  description="The second computed view of a ULC record: per-theme third-party qualifications (embodied carbon, circularity, material health, energy, dark sky, emergency), each none, claimed, or documented, computed from the record's attestations and stamped into the generated index."
+>
+  <SpecDocsLayout>
+    <h1 class="page-h1">Product Achievements.</h1>
+    <p class="page-intro">
+      Every ULC record carries two computed views, stamped side by side in its
+      generated index. The <a href="/docs/conformance" class="cf-link">conformance
+      level</a> answers "how complete is the datasheet?". Product Achievements
+      answers a different question: "what is the product documented for?". Per
+      theme, it reports the third-party program qualifications the record
+      demonstrates, computed from the attestations the record already carries and
+      stamped into <code>index.achievements</code>. Like the conformance level, it
+      is computed, never declared: there is no place to assert an achievement by
+      hand, and the two views never cross (a sparse datasheet can carry excellent
+      sustainability evidence, and a lab-characterized fixture can carry none).
+    </p>
+
+    {/* ── Six themes ────────────────────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">Six themes</h2>
+      <p>
+        An attestation contributes to a theme through its program token. Six
+        themes are computed:
+      </p>
+      <dl class="cf-levels">
+        <dt>Embodied carbon</dt>
+        <dd>
+          Environmental Product Declarations (ISO 14025) and TM-65.2
+          embodied-carbon assessments.
+        </dd>
+        <dt>Circularity</dt>
+        <dd>
+          TM-66 assured circular-economy assessments and Cradle to Cradle
+          certification.
+        </dd>
+        <dt>Material health</dt>
+        <dd>
+          Declare labels, Living Building Challenge Red List statuses, Health
+          Product Declarations, and Cradle to Cradle (which contributes to both
+          circularity and material health).
+        </dd>
+        <dt>Energy</dt>
+        <dd>
+          DLC listings, ENERGY STAR, California Title 20 and JA8, the EU ecodesign
+          and energy-label programs, and NRCan efficiency regulations.
+        </dd>
+        <dt>Dark sky</dt>
+        <dd>DarkSky Approved and DLC LUNA.</dd>
+        <dt>Emergency</dt>
+        <dd>
+          UL 924, UL 1994, and the ICEL emergency-lighting conformity scheme.
+        </dd>
+      </dl>
+      <p>
+        A record's sustainability declaration contributes too: a Declare or Red
+        List declaration feeds material health, and a manufacturer recycle program
+        feeds circularity, each capped at <code>claimed</code>, since a
+        declaration carries no evidence document.
+      </p>
+      <p>
+        The full program-to-theme map is published as a versioned appendix in the
+        <a
+          href="https://github.com/ulcspec/ULC/blob/main/docs/compliance-attestation.md#achievement-themes"
+          class="cf-link"
+          rel="noopener external"
+          >compliance and attestation glossary</a
+        >. Programs that certify projects or companies (LEED, WELL),
+        multi-attribute ecolabels (EPEAT, UL ECOLOGO), and the domestic-content
+        and controls programs held for future themes are deliberately unthemed.
+      </p>
+    </section>
+
+    {/* ── Three states, one evidence gate ───────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">Three states, one evidence gate</h2>
+      <dl class="cf-levels">
+        <dt><code>none</code></dt>
+        <dd>No qualifying attestation or declaration contributes to the theme.</dd>
+        <dt><code>claimed</code></dt>
+        <dd>
+          A qualifying attestation or declaration exists, but no attached, current
+          evidence document backs it.
+        </dd>
+        <dt><code>documented</code></dt>
+        <dd>
+          At least one qualifying attestation carries an attached evidence
+          document: a file reference with a filename and a SHA-256 content hash,
+          unexpired as of the record's own as-of date.
+        </dd>
+      </dl>
+      <p>
+        The discriminator is evidence, never a status label: attaching the
+        certificate file is what raises a theme from <code>claimed</code> to
+        <code>documented</code>. Expiry is judged against the record's own
+        <code>record_status_as_of</code> date, never the build clock, so the same
+        record computes the same achievements today and next year. An attestation
+        whose status is expired, withdrawn, or not applicable contributes nothing
+        at all.
+      </p>
+    </section>
+
+    {/* ── No overall score ──────────────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">No overall score</h2>
+      <p>
+        There is no weighted or overall achievement grade. The only rollup is
+        <code>documented_count</code>, a factual count of themes at
+        <code>documented</code>. Weighting embodied carbon against material health
+        has no accepted method, and inventing one would be ULC editorializing.
+      </p>
+      <p class="cf-note">
+        <code>documented</code> is a record fact, never a verification: it means an
+        evidence document is attached to the record, not that ULC verified the
+        underlying program. The verification standing of a claim lives in the
+        attestation's own status. This is the same trust boundary the conformance
+        level observes: ULC grades what a record carries; it does not certify
+        products.
+      </p>
+    </section>
+
+    {/* ── The legal floor: restricted substances ────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">The legal floor: restricted substances</h2>
+      <p>
+        Beside the themes, never inside them, the index carries
+        <code>restricted_substances_declared</code>: the RoHS, REACH, Prop 65, and
+        similar restricted-substances programs declared anywhere in the record.
+        Restricted-substances compliance is a legal floor, not a prestige
+        achievement, so it surfaces as a flag rather than a theme.
+      </p>
+    </section>
+
+    {/* ── On the reference records ──────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">On the reference records</h2>
+      <div class="cf-table-wrap">
+        <table class="cf-table cf-table--ach">
+          <colgroup>
+            <col class="ach-col-record" />
+            <col class="ach-col-ach" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Record</th>
+              <th scope="col">Achievements</th>
+            </tr>
+          </thead>
+          <tbody>
+            {records.map((r) => (
+              <tr>
+                <th scope="row">{r.record}</th>
+                <td data-label="Achievements" set:html={r.achievementsHtml}></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="cf-note">
+        Two of the Cooper signs are the axis in one comparison: same program,
+        different evidence. The AtLite AUX record has its certificates attached and
+        reads <code>documented</code>; the Sure-Lites ES record carries a UL 924
+        listing of its own with no attached document and reads <code>claimed</code>.
+      </p>
+    </section>
+
+    {/* ── See it on your own records ────────────────────────────────────── */}
+    <section class="cf-section">
+      <h2 class="cf-h2">See it on your own records</h2>
+      <Callout intent="accent" label="Run the reference validator">
+        <p>
+          <code>ulc validate &lt;record&gt;</code> prints a one-line summary by
+          default: <code>achievements: N documented, M claimed</code>. Add
+          <code>--verbose</code> (or <code>--json</code>) for the per-theme detail
+          and the roadmap: which themes are <code>claimed</code>, and which
+          evidence attachment would raise each to <code>documented</code>.
+        </p>
+        <p>
+          The validator is a free download on the
+          <a href="/downloads#cli" class="cf-link">downloads page</a>. How the
+          conformance level is computed is at
+          <a href="/docs/conformance" class="cf-link">/docs/conformance</a>.
+        </p>
+      </Callout>
+    </section>
+  </SpecDocsLayout>
+</PageShell>
+
+<style>
+  .page-h1 {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+  }
+  @media (min-width: 768px) { .page-h1 { font-size: 2.75rem; } }
+  .page-intro {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+    max-width: 44rem;
+  }
+  .page-intro :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+
+  .cf-section {
+    margin-top: 3rem;
+    scroll-margin-top: 5rem;
+  }
+  .cf-h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0 0 0.875rem 0;
+  }
+  @media (min-width: 768px) { .cf-h2 { font-size: 1.75rem; } }
+
+  .cf-section p {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text);
+    margin: 1rem 0 0 0;
+    max-width: 44rem;
+  }
+  .cf-section p:first-of-type {
+    margin-top: 0;
+  }
+  .cf-section strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .cf-note {
+    color: var(--text-muted) !important;
+    font-size: 0.9375rem !important;
+    border-left: 2px solid var(--border);
+    padding-left: 1rem;
+  }
+
+  .cf-levels {
+    margin: 1.25rem 0 0 0;
+    max-width: 44rem;
+  }
+  .cf-levels dt {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--accent-warm);
+    margin-top: 1.125rem;
+  }
+  .cf-levels dt:first-child {
+    margin-top: 0;
+  }
+  .cf-levels dt :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .cf-levels dd {
+    margin: 0.375rem 0 0 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .cf-table-wrap {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    /* Container context so the table reacts to its OWN width, not the viewport,
+       matching the /docs/conformance roadmap table. */
+    container-type: inline-size;
+  }
+  .cf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    table-layout: fixed;
+  }
+  .ach-col-record { width: 34%; }
+  .ach-col-ach { width: 66%; }
+  .cf-table th,
+  .cf-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.75rem 0.625rem;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+    overflow-wrap: break-word;
+  }
+  .cf-table thead th {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.875rem;
+    background: var(--bg-elevated);
+  }
+  .cf-table tbody th {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .cf-table tbody td {
+    color: var(--text-muted);
+  }
+  .cf-table tbody td :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+  .cf-table tbody tr:last-child th,
+  .cf-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  /* Narrow container (phones): stack each record as a labelled card, matching
+     the /docs/conformance table's responsive behavior. */
+  @container (max-width: 560px) {
+    .cf-table {
+      table-layout: auto;
+    }
+    .cf-table thead {
+      display: none;
+    }
+    .cf-table tbody tr {
+      display: block;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cf-table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .cf-table tbody th {
+      display: block;
+      padding: 0 0 0.5rem 0;
+      border: none;
+      font-size: 1rem;
+    }
+    .cf-table tbody td {
+      display: block;
+      padding: 0.375rem 0 0 0;
+      border: none;
+    }
+    .cf-table tbody td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.6875rem;
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.06em;
+      color: var(--text-subtle);
+      margin-bottom: 0.125rem;
+    }
+  }
+
+  .cf-link {
+    color: var(--accent-warm);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cf-link:hover {
+    color: var(--accent-warm-deep);
+  }
+  .cf-section :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    color: var(--text);
+  }
+</style>

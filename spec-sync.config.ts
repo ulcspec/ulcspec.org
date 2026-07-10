@@ -36,15 +36,14 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Pinned to the v0.8.1 release commit (tag v0.8.1), which ships the
-  // three-grades-above-an-incomplete-floor conformance model, the five
-  // example records, and the v0.8.1 schema and taxonomy. v0.8.1 corrects the
-  // source_files field description in the schema; the synced markdown is
-  // unchanged from v0.8.0. Advance via:
+  // Pinned to the v1.0.1 release commit (tag v1.0.1), which ships the two
+  // computed views (the conformance level and the Product Achievements
+  // themes), the exit-sign and emergency product class, the eight example
+  // records, and the v1.0.1 schema and taxonomy. Advance via:
   //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
   // and rebuild. The badge auto-detects a real SHA and renders it.
-  upstreamCommit: '4077e701eaf9e37fc8b8ac163e459b2e8c398628',
-  upstreamVersion: 'v0.8.1',
+  upstreamCommit: '86109bcbdaf41a1e4ae3d58421dc69e33a985982',
+  upstreamVersion: 'v1.0.1',
   upstreamEditBranch: 'main',
   files: [
     {

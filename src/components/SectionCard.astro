@@ -1,13 +1,10 @@
 ---
-// SectionCard: "How to use ULC today" / "Authoring patterns" /
-// "Schema reference" / etc. nav card on the /spec landing page.
-// One card per spec content area. The first card (Tier 1 + Tier 2
-// activation) gets the accent treatment so it reads as the primary
-// landing-page CTA; the remaining six are equal-weight content cards.
+// SectionCard: nav card for a /docs content area ("Authoring patterns",
+// "Schema reference", "Conformance", "Achievements", etc.). One card per
+// content area; the /docs landing renders seven equal-weight cards. The accent
+// variant exists in the API (variant: 'accent') but no card currently uses it.
 //
-// Single-surface (/spec landing) consumer. Visually parallel to but
-// architecturally distinct from the homepage <Tier1QuickWin> card and
-// the for-manufacturers proof-matrix rows.
+// Consumer: the /docs landing page (src/pages/docs/index.astro).
 
 interface Props {
   href: string;
