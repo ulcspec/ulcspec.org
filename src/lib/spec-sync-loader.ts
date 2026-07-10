@@ -129,13 +129,14 @@ function resolveRelativePath(baseDir: string, rel: string): string | null {
   return parts.join('/');
 }
 
-// Rewrite relative `.md` links in synced markdown so they resolve to the
+// Rewrite relative `.md`/`.mdx` links in synced markdown so they resolve to the
 // upstream file on GitHub at the SAME commit the content is pinned to, keeping
-// page and link targets byte-consistent as upstream main advances. Operates on
-// anchor href values only, never a raw body substitution: `.md` filenames that
-// appear inside code spans (e.g. `CONTRIBUTING.md`) are text, carry no href,
-// and are left untouched. Absolute URLs, protocol-relative, site-absolute (`/`),
-// pure anchors (`#`), and non-`.md` relative links all pass through unchanged.
+// page and link targets byte-consistent as upstream main advances. Operates only
+// on real anchor (`<a ...>`) open tags, never a raw body substitution: markdown
+// escapes `<` to `&lt;` inside code spans, so a `.md` filename or even a literal
+// `href="foo.md"` shown inside `<code>`/`<pre>` never matches an `<a>` tag here
+// and is left as text. Absolute URLs, protocol-relative, site-absolute (`/`),
+// pure anchors (`#`), and non-markdown relative links all pass through unchanged.
 // Fragments are preserved.
 function rewriteRelativeMarkdownLinks(
   html: string,
@@ -147,7 +148,7 @@ function rewriteRelativeMarkdownLinks(
   const baseDir = upstreamPath.includes('/')
     ? upstreamPath.slice(0, upstreamPath.lastIndexOf('/'))
     : '';
-  return html.replace(/href="([^"]*)"/g, (whole, href: string) => {
+  const rewriteHref = (whole: string, href: string): string => {
     // Absolute URL, protocol-relative, site-absolute, or pure anchor: untouched.
     if (/^(?:[a-z][a-z0-9+.-]*:|\/\/|\/|#)/i.test(href)) return whole;
     const hashIndex = href.indexOf('#');
@@ -157,7 +158,11 @@ function rewriteRelativeMarkdownLinks(
     const resolved = resolveRelativePath(baseDir, linkPath);
     if (resolved === null) return whole;
     return `href="${blobBase}/${resolved}${fragment}"`;
-  });
+  };
+  // Match each real anchor open tag, then rewrite the href within that tag only.
+  return html.replace(/<a\b[^>]*>/g, (tag) =>
+    tag.replace(/href="([^"]*)"/, rewriteHref),
+  );
 }
 
 export function specSyncLoader(): Loader {
