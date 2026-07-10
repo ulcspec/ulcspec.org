@@ -84,7 +84,8 @@ interface ExampleRecord {
 // restricted_substances_declared). They are static literals here, not read from
 // the file, so when re-syncing these examples re-read those values from each
 // file and update the card in lockstep. The build-time guard further down
-// asserts the parity in both directions and fails the build on any drift.
+// asserts that parity in both directions, and that the rendered achievementsLine
+// reflects the data, failing the build on any drift.
 const exampleRecords: readonly ExampleRecord[] = [
   {
     pattern: 'A',
@@ -273,6 +274,36 @@ for (const rec of exampleRecords) {
   if (normList(recordRestricted) !== normList(rec.restrictedSubstances)) {
     throw new Error(
       `downloads: example ${rec.filename} card restricted-substances [${[...rec.restrictedSubstances].join(', ')}] but ${rec.url} declares [${recordRestricted.join(', ')}]. Update the card (or re-sync the example) so they match.`,
+    );
+  }
+
+  // The rendered achievementsLine (the prose users actually see) must reflect the
+  // guarded structured data above, so a re-sync that updates the data map cannot
+  // leave the visible line stale: each non-none theme must appear by name at its
+  // state, and each declared restricted substance must appear. A card that
+  // carries data must carry a line to show it.
+  const cardHasData =
+    Object.keys(rec.achievements).length > 0 || rec.restrictedSubstances.length > 0;
+  if (rec.achievementsLine) {
+    const line = rec.achievementsLine.toLowerCase();
+    for (const [theme, state] of Object.entries(rec.achievements)) {
+      const themeText = theme.replace(/_/g, ' ');
+      if (!line.includes(themeText) || !line.includes(state)) {
+        throw new Error(
+          `downloads: example ${rec.filename} achievementsLine "${rec.achievementsLine}" does not reflect theme "${themeText}" at state "${state}". Update the rendered line so it matches the achievements data.`,
+        );
+      }
+    }
+    for (const token of rec.restrictedSubstances) {
+      if (!line.includes(token.replace(/_/g, ' '))) {
+        throw new Error(
+          `downloads: example ${rec.filename} achievementsLine "${rec.achievementsLine}" omits declared restricted substance "${token}". Update the rendered line.`,
+        );
+      }
+    }
+  } else if (cardHasData) {
+    throw new Error(
+      `downloads: example ${rec.filename} carries achievements/restricted data but no achievementsLine to render it. Add the line (or clear the data) so the card shows what the record declares.`,
     );
   }
 }
