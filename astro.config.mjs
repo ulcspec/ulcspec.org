@@ -22,9 +22,20 @@ const specSyncPinGuard = {
 };
 
 // https://astro.build/config
+const SITE = 'https://ulcspec.org';
+
 export default defineConfig({
-	site: 'https://ulcspec.org',
-	integrations: [mdx(), sitemap(), specSyncPinGuard],
+	site: SITE,
+	integrations: [
+		mdx(),
+		// The interactive overview deck lives at /overview/ as a static
+		// passthrough in public/, so @astrojs/sitemap (which only covers
+		// rendered routes) misses it. Add it explicitly so the page is
+		// discoverable. Derived from SITE so it stays in sync if the
+		// canonical origin ever changes.
+		sitemap({ customPages: [`${SITE}/overview/`] }),
+		specSyncPinGuard,
+	],
 	vite: {
 		plugins: [tailwindcss()],
 	},
