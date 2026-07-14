@@ -28,11 +28,12 @@ export default defineConfig({
 	site: SITE,
 	integrations: [
 		mdx(),
-		// The v1 deck lives at /v1-deck/ as a static passthrough in public/,
-		// so @astrojs/sitemap (which only covers rendered routes) misses it.
-		// Add it explicitly so the page is discoverable. Derived from SITE so
-		// it stays in sync if the canonical origin ever changes.
-		sitemap({ customPages: [`${SITE}/v1-deck/`] }),
+		// The interactive overview deck lives at /overview/ as a static
+		// passthrough in public/, so @astrojs/sitemap (which only covers
+		// rendered routes) misses it. Add it explicitly so the page is
+		// discoverable. Derived from SITE so it stays in sync if the
+		// canonical origin ever changes.
+		sitemap({ customPages: [`${SITE}/overview/`] }),
 		specSyncPinGuard,
 	],
 	vite: {
