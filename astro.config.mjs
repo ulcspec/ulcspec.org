@@ -24,7 +24,14 @@ const specSyncPinGuard = {
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://ulcspec.org',
-	integrations: [mdx(), sitemap(), specSyncPinGuard],
+	integrations: [
+		mdx(),
+		// The v1 deck lives at /v1-deck/ as a static passthrough in public/,
+		// so @astrojs/sitemap (which only covers rendered routes) misses it.
+		// Add it explicitly so the page is discoverable.
+		sitemap({ customPages: ['https://ulcspec.org/v1-deck/'] }),
+		specSyncPinGuard,
+	],
 	vite: {
 		plugins: [tailwindcss()],
 	},

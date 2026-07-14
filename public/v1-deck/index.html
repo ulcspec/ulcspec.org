@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Universal Luminaire Cutsheet — v1 Deck</title>
+<meta name="description" content="ULC v1 — one structured luminaire record, readable by software, checkable by people, traceable to source. Presented as an interactive deck.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&amp;family=Archivo:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #0A0908; overflow: hidden; }
+  a { color: #D89A4E; text-decoration: none; }
+  a:hover { color: #E0B071; }
+  @keyframes fxRise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fxFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fxDraw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes fxTrace30 { from { opacity: 0; letter-spacing: 0.55em; } to { opacity: 1; letter-spacing: 0.3em; } }
+  @keyframes fxTrace26 { from { opacity: 0; letter-spacing: 0.5em; } to { opacity: 1; letter-spacing: 0.26em; } }
+  @keyframes glowBreathe { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+  @keyframes dotDrift { from { background-position: 0px 0px; } to { background-position: 96px 64px; } }
+  @media (max-width: 960px) {
+    [data-grid] { grid-template-columns: 1fr !important; gap: 40px !important; }
+    [data-oneline] { white-space: normal !important; }
+    [data-pipeline] { grid-template-columns: 1fr !important; }
+    [data-arrow] { transform: rotate(90deg); padding: 0 !important; }
+    [data-cards] { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 640px) {
+    [data-cards] { grid-template-columns: 1fr !important; }
+    [data-statrow] { gap: 28px !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+<style>
+  .backlink:hover { color: #D89A4E !important; }
+  [data-nav]:hover { color: #D89A4E !important; border-color: rgba(216,154,78,0.5) !important; }
+  a[href*="github"]:hover { color: #E0B071 !important; }
+  :focus-visible { outline: 2px solid #D89A4E; outline-offset: 3px; }
+</style>
+</head>
+<body>
+<div data-deck-root style="position: fixed; inset: 0; background: #0A0908; font-family: Archivo, sans-serif;">
+
+  <!-- ═══════════ 1 · COVER ═══════════ -->
+  <div data-slide="1" data-screen-label="Cover" role="region" aria-roledescription="slide" aria-label="Cover" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #0F0D0B; opacity: 1; visibility: visible; z-index: 1;">
+    <div data-ambient style="position: absolute; top: -180px; left: 50%; margin-left: -700px; width: 1400px; height: 940px; background: radial-gradient(closest-side, rgba(235,170,90,0.17), rgba(235,170,90,0) 72%); pointer-events: none; animation: glowBreathe 8s ease-in-out infinite;"></div>
+    <div data-ambient style="position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle at 1px 1px, rgba(235,170,90,0.22) 1px, transparent 0); background-size: 16px 16px; mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 72%); -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 72%); animation: dotDrift 90s linear infinite;"></div>
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: clamp(48px, 6.5vh, 72px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 140px); gap: clamp(28px, 4vh, 44px);">
+      <div data-fx="trace30" style="position: relative; font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.3vw, 25px); letter-spacing: 0.3em; color: #D89A4E; text-align: center;">AI IS NOT THE BOTTLENECK · THE LIGHTING DATA LAYER IS</div>
+      <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(24px, 4vh, 44px);">
+        <img data-fx="fade" data-fxd="150" src="assets/ulc-logo.webp" alt="ULC" style="width: clamp(130px, 14.3vw, 275px); height: clamp(130px, 14.3vw, 275px); clip-path: circle(44% at 50% 50%); transform: scale(1.1); box-shadow: 0 0 120px rgba(235,170,90,0.35);">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: clamp(14px, 2.4vh, 26px);">
+          <h1 data-fx="rise" data-fxd="300" style="margin: 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(40px, 5.4vw, 104px); line-height: 1.05; letter-spacing: -0.015em; color: #F4EBDC; text-align: center;">Universal Luminaire Cutsheet</h1>
+          <p data-fx="rise" data-fxd="460" style="margin: 0; font-family: Newsreader, serif; font-style: italic; font-weight: 300; font-size: clamp(19px, 2.1vw, 40px); color: #C9B594; text-align: center;">One structured record — readable by software, checkable by people, traceable to source.</p>
+        </div>
+      </div>
+      <div style="position: relative; width: 100%; display: flex; flex-direction: column;">
+        <div data-fx="draw" data-fxd="620" style="height: 1px; background: #2E271E; transform-origin: left center;"></div>
+        <div data-statrow style="display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: clamp(28px, 5vw, 96px); padding-top: clamp(22px, 3.7vh, 40px);">
+          <div data-fx="rise" data-fxd="700" style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-family: Newsreader, serif; font-size: clamp(24px, 2.4vw, 46px); color: #F4EBDC;">1.0.0</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68;">VERSION RELEASE</span></div>
+          <div data-fx="rise" data-fxd="790" style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span data-count="95" style="font-family: Newsreader, serif; font-size: clamp(24px, 2.4vw, 46px); color: #F4EBDC;">95</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68;">TAXONOMIES</span></div>
+          <div data-fx="rise" data-fxd="880" style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span data-count="712" style="font-family: Newsreader, serif; font-size: clamp(24px, 2.4vw, 46px); color: #F4EBDC;">712</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68;">DEFINED VALUES</span></div>
+          <div data-fx="rise" data-fxd="970" style="display: flex; flex-direction: column; align-items: center; gap: 8px;"><span style="font-family: Newsreader, serif; font-size: clamp(24px, 2.4vw, 46px); color: #F4EBDC;">OPEN</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(11px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68;">MIT LICENSE</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 2 · THE PROBLEM ═══════════ -->
+  <div data-slide="2" data-screen-label="Problem" role="region" aria-roledescription="slide" aria-label="The Problem" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">WHY ULC EXISTS</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(28px, 5.5vh, 60px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC; max-width: 1400px;">Luminaire data is written for <em style="color: #E0B071;">people</em>, not machines.</h2>
+      <div data-grid style="display: grid; grid-template-columns: 1fr 700px; gap: clamp(36px, 5.7vw, 110px); align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: clamp(20px, 3.7vh, 40px);">
+          <p data-fx="rise" data-fxd="260" style="margin: 0; font-size: clamp(16px, 1.6vw, 31px); line-height: 1.55; color: #A79A85;">The truth about a product lives across PDF datasheets, IES and LDT photometric files, installation documents, test reports, and compliance records — <span style="color: #EDE3D2;">each formatted its own way, each written to be read one at a time.</span></p>
+          <p data-fx="rise" data-fxd="380" style="margin: 0; font-size: clamp(16px, 1.6vw, 31px); line-height: 1.55; color: #A79A85;">Every design tool and AI agent that needs those values must re-extract them from documents made for the eye. <span style="color: #EDE3D2;">What reaches the tools is an extraction layer's guess, not the manufacturer's source.</span></p>
+        </div>
+        <div data-fx="rise" data-fxd="480" style="background: #1A1613; border: 1px solid #352C21; border-radius: 8px; padding: clamp(18px, 2.4vh, 26px) clamp(22px, 2.3vw, 44px); box-sizing: border-box; display: flex; flex-direction: column;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68; margin-bottom: 8px;">TODAY, ONE PRODUCT =</div>
+          <div style="display: flex; flex-direction: column;">
+            <div data-fx="fade" data-fxd="600" style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.4vw, 27px); color: #EDE3D2;">datasheet.pdf</span><span style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">layout for the eye</span></div>
+            <div data-fx="fade" data-fxd="680" style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.4vw, 27px); color: #EDE3D2;">photometry.ies</span><span style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">1980s text format</span></div>
+            <div data-fx="fade" data-fxd="760" style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.4vw, 27px); color: #EDE3D2;">photometry.ldt</span><span style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">its own conventions</span></div>
+            <div data-fx="fade" data-fxd="840" style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.4vw, 27px); color: #EDE3D2;">install-guide.pdf</span><span style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">buried tables</span></div>
+            <div data-fx="fade" data-fxd="920" style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 10px 0;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.4vw, 27px); color: #EDE3D2;">test-reports + compliance</span><span style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">scattered claims</span></div>
+          </div>
+        </div>
+      </div>
+      <p data-fx="rise" data-fxd="1000" data-oneline style="margin: clamp(28px, 5.5vh, 60px) 0 0 0; font-family: Newsreader, serif; font-style: italic; font-weight: 300; font-size: clamp(15px, 1.52vw, 29.5px); color: #C9B594; white-space: nowrap;">That worked while designers read one datasheet at a time. It breaks when an AI must read a hundred to answer a single question.</p>
+    </section>
+  </div>
+
+  <!-- ═══════════ 3 · THE STANDARD ═══════════ -->
+  <div data-slide="3" data-screen-label="Standard" role="region" aria-roledescription="slide" aria-label="The Standard" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">PROJECT OVERVIEW</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(14px, 2.4vh, 26px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC;">One record, read <em style="color: #E0B071;">directly</em>.</h2>
+      <p data-fx="rise" data-fxd="230" style="margin: 0 0 clamp(30px, 5.9vh, 64px) 0; font-size: clamp(16px, 1.56vw, 30px); line-height: 1.5; color: #A79A85; max-width: 1500px;">ULC turns the documents manufacturers already publish into one structured <span style="font-family: 'IBM Plex Mono', monospace; color: #EDE3D2;">.ulc</span> record that design tools and AI read without an extraction step.</p>
+      <div data-pipeline style="display: grid; grid-template-columns: 1fr 70px 1.25fr 70px 1fr; align-items: stretch;">
+        <div data-fx="rise" data-fxd="360" style="border: 1px solid #352C21; border-radius: 8px; padding: clamp(20px, 3.3vh, 36px) clamp(20px, 2.1vw, 40px); display: flex; flex-direction: column; gap: clamp(14px, 2.2vh, 24px);">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68;">MANUFACTURER SOURCES</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 10px 20px;">PDF</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 10px 20px;">IES</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 10px 20px;">LDT</span>
+          </div>
+          <div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Documents and measured data, published as they always have been.</div>
+        </div>
+        <div data-arrow data-fx="fade" data-fxd="520" style="display: flex; align-items: center; justify-content: center; font-family: Newsreader, serif; font-size: clamp(30px, 2.8vw, 54px); color: #D89A4E;">→</div>
+        <div data-fx="rise" data-fxd="600" style="background: #1A1613; border: 1px solid rgba(216,154,78,0.55); border-radius: 8px; padding: clamp(20px, 3.3vh, 36px) clamp(20px, 2.1vw, 40px); box-shadow: 0 0 90px rgba(235,170,90,0.10); display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #D89A4E; margin-bottom: 16px;">STRUCTURED .ULC RECORD</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid #2C251C;">Identity + configuration</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid #2C251C;">Electrical + photometry</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid #2C251C;">Compliance + provenance</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0;">Generated search index</div>
+        </div>
+        <div data-arrow data-fx="fade" data-fxd="760" style="display: flex; align-items: center; justify-content: center; font-family: Newsreader, serif; font-size: clamp(30px, 2.8vw, 54px); color: #D89A4E;">→</div>
+        <div data-fx="rise" data-fxd="840" style="border: 1px solid #352C21; border-radius: 8px; padding: clamp(20px, 3.3vh, 36px) clamp(20px, 2.1vw, 40px); display: flex; flex-direction: column; gap: 6px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68; margin-bottom: 16px;">READ DIRECTLY BY</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid #2C251C;">Design tools</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid #2C251C;">AI systems</div>
+          <div style="font-size: clamp(15px, 1.45vw, 28px); color: #EDE3D2; padding: clamp(8px, 1.3vh, 14px) 0;">Data pipelines</div>
+          <div style="margin-top: 10px; align-self: flex-start; font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.06em; color: #D89A4E; border: 1px solid rgba(216,154,78,0.45); border-radius: 999px; padding: 8px 18px;">NO PDF EXTRACTION STEP</div>
+        </div>
+      </div>
+      <p data-fx="rise" data-fxd="980" style="margin: clamp(28px, 5.5vh, 60px) 0 0 0; font-family: Newsreader, serif; font-style: italic; font-weight: 300; font-size: clamp(15px, 1.52vw, 29.5px); color: #C9B594; max-width: 1600px;">The datasheet stays beautiful for human reading. The record stays exact for machine reading.</p>
+    </section>
+  </div>
+
+  <!-- ═══════════ 4 · DATA MODEL ═══════════ -->
+  <div data-slide="4" data-screen-label="Data Model" role="region" aria-roledescription="slide" aria-label="Data Model" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">THE DATA MODEL</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(22px, 3.7vh, 40px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC; max-width: 1500px;">One record per <em style="color: #E0B071;">attested photometric scenario</em>.</h2>
+      <div data-grid style="display: grid; grid-template-columns: 620px 1fr; gap: clamp(36px, 5.2vw, 100px); align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.4vh, 26px);">
+          <p data-fx="rise" data-fxd="240" style="margin: 0; font-size: clamp(16px, 1.5vw, 29px); line-height: 1.5; color: #A79A85;">Not one orderable SKU, and not automatically one IES file — <span style="color: #EDE3D2;">one measured or declared scenario</span>, connected to the configurations it covers and the evidence behind every value.</p>
+          <div data-fx="rise" data-fxd="360" style="border: 1px solid #352C21; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.6vw, 30px); display: flex; gap: clamp(16px, 1.4vw, 26px); align-items: baseline;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(16px, 1.56vw, 30px); color: #D89A4E;">A</span>
+            <div><div style="font-size: clamp(16px, 1.5vw, 29px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">Applicability</div><div style="font-size: clamp(14px, 1.35vw, 26px); line-height: 1.45; color: #A79A85;">Connects one scenario to the orderable configurations it represents.</div></div>
+          </div>
+          <div data-fx="rise" data-fxd="470" style="border: 1px solid #352C21; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.6vw, 30px); display: flex; gap: clamp(16px, 1.4vw, 26px); align-items: baseline;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(16px, 1.56vw, 30px); color: #D89A4E;">P</span>
+            <div><div style="font-size: clamp(16px, 1.5vw, 29px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">Provenance</div><div style="font-size: clamp(14px, 1.35vw, 26px); line-height: 1.45; color: #A79A85;">Connects each value to its source file, evidence type, and derivation method.</div></div>
+          </div>
+          <p data-fx="rise" data-fxd="580" style="margin: 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(20px, 2vw, 38px); line-height: 1.25; color: #F4EBDC;">One scenario can cover <em style="color: #E0B071;">thousands of SKUs</em>.</p>
+        </div>
+        <div data-cards style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 1.7vh, 18px) clamp(14px, 1.25vw, 24px);">
+          <div data-fx="rise" data-fxd="300" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">01</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Product identity</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">manufacturer, family, catalog model</div></div>
+          <div data-fx="rise" data-fxd="370" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">02</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Configuration + applicability</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">tested scenario, covered SKU axes</div></div>
+          <div data-fx="rise" data-fxd="440" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">03</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Physical + installation</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">dimensions, mounting, materials</div></div>
+          <div data-fx="rise" data-fxd="510" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">04</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Electrical + controls</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">power, voltage, driver, dimming</div></div>
+          <div data-fx="rise" data-fxd="580" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">05</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Photometry + colorimetry</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">flux, efficacy, CCT, CRI, TM-30</div></div>
+          <div data-fx="rise" data-fxd="650" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">06</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Compliance + attestations</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">safety, energy, sustainability</div></div>
+          <div data-fx="rise" data-fxd="720" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">07</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Sources + provenance</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">filename, URL, SHA-256, value class</div></div>
+          <div data-fx="rise" data-fxd="790" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.2vh, 24px) clamp(18px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 8px;">08</div><div style="font-size: clamp(15px, 1.45vw, 28px); font-weight: 600; color: #EDE3D2; margin-bottom: 4px;">Generated index</div><div style="font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">search surface, grade, achievements</div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 5 · COMPUTED VIEWS ═══════════ -->
+  <div data-slide="5" data-screen-label="Computed Views" role="region" aria-roledescription="slide" aria-label="Computed Views" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">COMPUTED INTELLIGENCE</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(14px, 2.2vh, 24px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC;">One master record, two <em style="color: #E0B071;">computed</em> views.</h2>
+      <p data-fx="rise" data-fxd="230" style="margin: 0 0 clamp(26px, 5.2vh, 56px) 0; font-size: clamp(16px, 1.5vw, 29px); line-height: 1.5; color: #A79A85; max-width: 1560px;">Both views are generated by the reference builder and checked for parity. <span style="color: #EDE3D2;">Neither can be typed in by the author.</span></p>
+      <div data-grid style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5.2vw, 100px); align-items: start;">
+        <div>
+          <div data-fx="fade" data-fxd="340" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68; margin-bottom: 10px;">DATA COMPLETENESS</div>
+          <div data-fx="fade" data-fxd="380" style="font-size: clamp(15px, 1.4vw, 27px); color: #A79A85; margin-bottom: clamp(20px, 3.1vh, 34px);">How complete and rigorous is the data package?</div>
+          <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.4vh, 26px);">
+            <div data-fx="rise" data-fxd="440"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); letter-spacing: 0.12em; color: #F4EBDC;">FULL</span><span style="font-size: clamp(13px, 1.3vw, 25px); color: #A79A85;">accredited test-report depth</span></div><div data-fx="draw" data-fxd="560" style="height: 14px; border-radius: 999px; background: rgba(216,154,78,0.95); width: 100%; transform-origin: left center;"></div></div>
+            <div data-fx="rise" data-fxd="540"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); letter-spacing: 0.12em; color: #F4EBDC;">STANDARD</span><span style="font-size: clamp(13px, 1.3vw, 25px); color: #A79A85;">selection-grade performance data</span></div><div data-fx="draw" data-fxd="660" style="height: 14px; border-radius: 999px; background: rgba(216,154,78,0.60); width: 76%; transform-origin: left center;"></div></div>
+            <div data-fx="rise" data-fxd="640"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); letter-spacing: 0.12em; color: #F4EBDC;">CORE</span><span style="font-size: clamp(13px, 1.3vw, 25px); color: #A79A85;">identity, headline data, safety listing</span></div><div data-fx="draw" data-fxd="760" style="height: 14px; border-radius: 999px; background: rgba(216,154,78,0.32); width: 52%; transform-origin: left center;"></div></div>
+            <div data-fx="rise" data-fxd="740"><div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 10px;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); letter-spacing: 0.12em; color: #8B7D68;">INCOMPLETE</span><span style="font-size: clamp(13px, 1.3vw, 25px); color: #8B7D68;">a named roadmap to the Core floor</span></div><div data-fx="draw" data-fxd="860" style="height: 14px; border-radius: 999px; background: rgba(216,154,78,0.14); width: 28%; transform-origin: left center;"></div></div>
+          </div>
+          <p data-fx="fade" data-fxd="980" style="margin: clamp(22px, 3.7vh, 40px) 0 0 0; font-size: clamp(13px, 1.35vw, 26px); line-height: 1.5; color: #8B7D68; max-width: 810px;">Every grade names its gaps — the validator prints the exact roadmap from Incomplete to Full.</p>
+          <p data-fx="fade" data-fxd="1060" style="margin: clamp(14px, 2.2vh, 24px) 0 0 0; font-size: clamp(13px, 1.35vw, 26px); line-height: 1.5; color: #8B7D68; max-width: 810px;">ULC records the evidence; it does not certify the product.</p>
+        </div>
+        <div>
+          <div data-fx="fade" data-fxd="340" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68; margin-bottom: 10px;">PRODUCT ACHIEVEMENTS</div>
+          <div data-fx="fade" data-fxd="380" style="font-size: clamp(15px, 1.4vw, 27px); color: #A79A85; margin-bottom: clamp(20px, 3.1vh, 34px);">What is the product documented for? <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #6B6052;">— ILLUSTRATIVE</span></div>
+          <div data-cards style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.9vh, 20px) clamp(14px, 1.25vw, 24px);">
+            <div data-fx="rise" data-fxd="460" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #EDE3D2;">EMBODIED CARBON</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; border: 1px solid rgba(216,154,78,0.5); border-radius: 999px; padding: 5px 16px;">CLAIMED</span></div>
+            <div data-fx="rise" data-fxd="530" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #EDE3D2;">MATERIAL HEALTH</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #12100D; background: #D89A4E; border: 1px solid #D89A4E; border-radius: 999px; padding: 5px 16px;">DOCUMENTED</span></div>
+            <div data-fx="rise" data-fxd="600" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #EDE3D2;">ENERGY</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #12100D; background: #D89A4E; border: 1px solid #D89A4E; border-radius: 999px; padding: 5px 16px;">DOCUMENTED</span></div>
+            <div data-fx="rise" data-fxd="670" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #EDE3D2;">DARK SKY</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; border: 1px solid rgba(216,154,78,0.5); border-radius: 999px; padding: 5px 16px;">CLAIMED</span></div>
+            <div data-fx="rise" data-fxd="740" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #8B7D68;">CIRCULARITY</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #6B6052; border: 1px solid #2C251C; border-radius: 999px; padding: 5px 16px;">NONE</span></div>
+            <div data-fx="rise" data-fxd="810" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(16px, 2.4vh, 26px) clamp(16px, 1.45vw, 28px); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.08em; color: #8B7D68;">EMERGENCY</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #6B6052; border: 1px solid #2C251C; border-radius: 999px; padding: 5px 16px;">NONE</span></div>
+          </div>
+          <p data-fx="fade" data-fxd="980" style="margin: clamp(22px, 3.7vh, 40px) 0 0 0; font-size: clamp(13px, 1.35vw, 26px); line-height: 1.5; color: #8B7D68;"><span style="color: #D89A4E;">Documented</span> means a qualifying attestation has current evidence attached and hash-anchored.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 6 · VALIDATION ═══════════ -->
+  <div data-slide="6" data-screen-label="Validation" role="region" aria-roledescription="slide" aria-label="Validation" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">VALIDATION + PROVENANCE</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(22px, 3.7vh, 40px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC; max-width: 1300px;">Traceable by design, <em style="color: #E0B071;">validated</em> by tooling.</h2>
+      <div data-grid style="display: grid; grid-template-columns: 1fr 780px; gap: clamp(36px, 4.7vw, 90px); align-items: stretch;">
+        <div style="display: flex; flex-direction: column; gap: clamp(20px, 3vh, 32px);">
+          <div data-fx="rise" data-fxd="260" style="display: flex; gap: clamp(16px, 1.45vw, 28px);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">01</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 8px;">Schema validation</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">JSON Schema checks required fields, types, and closed vocabularies.</div></div></div>
+          <div data-fx="rise" data-fxd="380" style="display: flex; gap: clamp(16px, 1.45vw, 28px);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">02</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 8px;">Builder parity</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">The stored index must equal the deterministic projection of the deep record.</div></div></div>
+          <div data-fx="rise" data-fxd="500" style="display: flex; gap: clamp(16px, 1.45vw, 28px);"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">03</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 8px;">SHA-256 verification</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Referenced PDF, IES, and LDT files are checked byte-for-byte against their hashes — a tamper-evident seal anyone can verify.</div></div></div>
+          <p data-fx="fade" data-fxd="640" style="margin: auto 0 0 0; font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.1em; line-height: 1.7; color: #8B7D68;"><span style="color: #D89A4E;">FREE VALIDATOR DOWNLOAD FOR MANUFACTURERS</span> · OFFLINE · DETERMINISTIC · MACOS / WINDOWS / LINUX</p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: clamp(16px, 2.2vh, 24px);">
+          <div data-fx="rise" data-fxd="340" style="background: #1A1613; border: 1px solid #352C21; border-radius: 8px; padding: clamp(20px, 3.3vh, 36px) clamp(20px, 2.1vw, 40px);">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-bottom: clamp(14px, 2.2vh, 24px); border-bottom: 1px solid #2C251C;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2;">example-luminaire.ulc</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.14em; color: #8FCA9C; background: rgba(110,190,130,0.12); border: 1px solid rgba(110,190,130,0.35); padding: 6px 18px; border-radius: 999px;">PASS</span>
+            </div>
+            <div data-fx="fade" data-fxd="500" style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: clamp(12px, 1.9vh, 20px) 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.12em; color: #8B7D68;">CONFORMANCE</span><span style="font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2;">Standard</span></div>
+            <div data-fx="fade" data-fxd="580" style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: clamp(12px, 1.9vh, 20px) 0; border-bottom: 1px solid #2C251C;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.12em; color: #8B7D68;">SOURCE FILES</span><span style="font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2;">3 of 3 hash match</span></div>
+            <div data-fx="fade" data-fxd="660" style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: clamp(12px, 1.9vh, 20px) 0 4px 0;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.12em; color: #8B7D68;">FINDINGS</span><span style="font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2;">0 errors · 0 warnings · 8 info</span></div>
+          </div>
+          <div data-cards style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 1.9vh, 20px);">
+            <div data-fx="rise" data-fxd="740" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(14px, 2vh, 22px) clamp(16px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68; margin-bottom: 4px;">TOTAL FLUX</div><div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #F4EBDC;">4,200 lm</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E;">MEASURED</span></div></div>
+            <div data-fx="rise" data-fxd="810" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(14px, 2vh, 22px) clamp(16px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68; margin-bottom: 4px;">CCT</div><div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #F4EBDC;">3500 K</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">RATED</span></div></div>
+            <div data-fx="rise" data-fxd="880" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(14px, 2vh, 22px) clamp(16px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68; margin-bottom: 4px;">INPUT POWER</div><div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #F4EBDC;">38 W</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E;">MEASURED</span></div></div>
+            <div data-fx="rise" data-fxd="950" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(14px, 2vh, 22px) clamp(16px, 1.45vw, 28px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68; margin-bottom: 4px;">IP RATING</div><div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #F4EBDC;">IP44</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #8B7D68;">RATED</span></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 7 · AUTHORING ═══════════ -->
+  <div data-slide="7" data-screen-label="Authoring" role="region" aria-roledescription="slide" aria-label="Authoring" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">AUTHORING + PUBLICATION</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(14px, 2.2vh, 24px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC;">Two <em style="color: #E0B071;">free</em> authoring paths.</h2>
+      <p data-fx="rise" data-fxd="230" style="margin: 0 0 clamp(24px, 4.8vh, 52px) 0; font-size: clamp(16px, 1.5vw, 29px); line-height: 1.5; color: #A79A85; max-width: 1500px;">Manufacturers emit ULC from the systems they already use. Both routes end in the same open schema, generated index, and validator.</p>
+      <div data-grid style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 2.3vw, 44px); align-items: stretch;">
+        <div data-fx="rise" data-fxd="360" style="border: 1px solid #352C21; background: #1A1613; border-radius: 8px; padding: clamp(22px, 3.7vh, 40px) clamp(22px, 2.3vw, 44px); display: flex; flex-direction: column; gap: clamp(16px, 2.4vh, 26px);">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #D89A4E;">PATH 1 — PIM</span><span style="font-size: clamp(14px, 1.35vw, 26px); color: #8B7D68;">catalog-scale export</span></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 8px 18px;">SALSIFY</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 8px 18px;">AKENEO</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 8px 18px;">SAP</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 8px 18px;">IN-HOUSE</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 20px; font-size: clamp(15px, 1.4vw, 27px); color: #A79A85;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #D89A4E;">↓</span><span>published field-by-field mapping guide</span></div>
+          <div style="display: flex; align-items: center; gap: 20px; font-size: clamp(15px, 1.4vw, 27px); color: #EDE3D2;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #D89A4E;">↓</span><span>emit + validate <span style="font-family: 'IBM Plex Mono', monospace;">.ulc</span> inside the existing publishing pipeline</span></div>
+        </div>
+        <div data-fx="rise" data-fxd="480" style="border: 1px solid #352C21; background: #1A1613; border-radius: 8px; padding: clamp(22px, 3.7vh, 40px) clamp(22px, 2.3vw, 44px); display: flex; flex-direction: column; gap: clamp(16px, 2.4vh, 26px);">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #D89A4E;">PATH 2 — SPREADSHEET</span><span style="font-size: clamp(14px, 1.35vw, 26px); color: #8B7D68;">deterministic offline converter</span></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 6px; padding: 8px 18px;">WORKBOOK TEMPLATE</span>
+            <span style="font-family: Newsreader, serif; font-size: clamp(20px, 1.9vw, 36px); color: #D89A4E;">→</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #12100D; background: #D89A4E; border-radius: 6px; padding: 8px 18px;">ulc from-sheet</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 20px; font-size: clamp(15px, 1.4vw, 27px); color: #A79A85;"><span style="font-family: Newsreader, serif; font-size: clamp(22px, 2.1vw, 40px); color: #D89A4E;">↓</span><span>computes structure, hashes, and dual units — then validates</span></div>
+          <div style="display: flex; flex-wrap: wrap; gap: 14px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.1em; color: #D89A4E; border: 1px solid rgba(216,154,78,0.45); border-radius: 999px; padding: 8px 20px;">NO LLM</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.1em; color: #D89A4E; border: 1px solid rgba(216,154,78,0.45); border-radius: 999px; padding: 8px 20px;">NO CLOUD</span>
+          </div>
+        </div>
+      </div>
+      <div data-fx="rise" data-fxd="640" style="margin-top: clamp(22px, 4.1vh, 44px); border: 1px solid #2C251C; border-radius: 8px; padding: clamp(18px, 2.8vh, 30px) clamp(22px, 2.3vw, 44px); display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #EDE3D2;">PDF · IES · LDT · <span style="color: #D89A4E;">.ULC</span></span>
+        <span style="font-size: clamp(15px, 1.4vw, 27px); color: #A79A85;">published side by side — the same inputs produce <span style="color: #EDE3D2;">byte-identical records</span></span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.1em; color: #8B7D68;">FREE + OPEN</span>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 8 · INDUSTRY ═══════════ -->
+  <div data-slide="8" data-screen-label="Industry" role="region" aria-roledescription="slide" aria-label="Industry" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #12100D; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">INDUSTRY INFRASTRUCTURE</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(14px, 2.2vh, 24px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC;">A shared data layer for the <em style="color: #E0B071;">lighting industry</em>.</h2>
+      <p data-fx="rise" data-fxd="230" style="margin: 0 0 clamp(24px, 4.8vh, 52px) 0; font-size: clamp(16px, 1.5vw, 29px); line-height: 1.5; color: #A79A85; max-width: 1560px;">ULC does not replace the PDF, IES, LDT, PIM, rep, distributor, or software platform. <span style="color: #EDE3D2;">It gives them a common source of structured luminaire data.</span></p>
+      <div data-cards style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: clamp(16px, 1.45vw, 28px); align-items: stretch;">
+        <div data-fx="rise" data-fxd="360" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(20px, 3vh, 32px) clamp(20px, 1.8vw, 34px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 14px;">1</div><div style="font-size: clamp(17px, 1.56vw, 30px); font-weight: 600; color: #EDE3D2; margin-bottom: 10px;">Designers</div><div style="font-size: clamp(13px, 1.3vw, 25px); line-height: 1.45; color: #A79A85;">Search products, generate schedules, compare alternates, review submittals — from traceable data.</div></div>
+        <div data-fx="rise" data-fxd="440" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(20px, 3vh, 32px) clamp(20px, 1.8vw, 34px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 14px;">2</div><div style="font-size: clamp(17px, 1.56vw, 30px); font-weight: 600; color: #EDE3D2; margin-bottom: 10px;">Manufacturers</div><div style="font-size: clamp(13px, 1.3vw, 25px); line-height: 1.45; color: #A79A85;">Own the authoritative record, surface in AI discovery, see a precise data-quality roadmap.</div></div>
+        <div data-fx="rise" data-fxd="520" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(20px, 3vh, 32px) clamp(20px, 1.8vw, 34px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 14px;">3</div><div style="font-size: clamp(17px, 1.56vw, 30px); font-weight: 600; color: #EDE3D2; margin-bottom: 10px;">Reps + distributors</div><div style="font-size: clamp(13px, 1.3vw, 25px); line-height: 1.45; color: #A79A85;">Build cleaner comparisons and submittals without retyping the same product facts.</div></div>
+        <div data-fx="rise" data-fxd="600" style="border: 1px solid #2C251C; background: #161310; border-radius: 8px; padding: clamp(20px, 3vh, 32px) clamp(20px, 1.8vw, 34px);"><div style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #D89A4E; margin-bottom: 14px;">4</div><div style="font-size: clamp(17px, 1.56vw, 30px); font-weight: 600; color: #EDE3D2; margin-bottom: 10px;">Software + AI</div><div style="font-size: clamp(13px, 1.3vw, 25px); line-height: 1.45; color: #A79A85;">Implement against an open schema, flat generated index, examples, and reference validator.</div></div>
+      </div>
+      <div style="margin-top: clamp(28px, 5.2vh, 56px);">
+        <div data-fx="fade" data-fxd="700" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.16em; color: #8B7D68; margin-bottom: 20px;">WHAT BECOMES POSSIBLE WITH AI TOOLS</div>
+        <div style="display: flex; flex-wrap: wrap; gap: clamp(10px, 0.85vw, 16px);">
+          <span data-fx="rise" data-fxd="760" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 999px; padding: clamp(8px, 1.1vh, 12px) clamp(16px, 1.35vw, 26px);">PRODUCT SEARCH</span>
+          <span data-fx="rise" data-fxd="820" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 999px; padding: clamp(8px, 1.1vh, 12px) clamp(16px, 1.35vw, 26px);">LUMINAIRE SCHEDULES</span>
+          <span data-fx="rise" data-fxd="880" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 999px; padding: clamp(8px, 1.1vh, 12px) clamp(16px, 1.35vw, 26px);">SUBMITTAL REVIEW</span>
+          <span data-fx="rise" data-fxd="940" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 999px; padding: clamp(8px, 1.1vh, 12px) clamp(16px, 1.35vw, 26px);">VE COMPARISON</span>
+          <span data-fx="rise" data-fxd="1000" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); color: #EDE3D2; border: 1px solid #3E342A; border-radius: 999px; padding: clamp(8px, 1.1vh, 12px) clamp(16px, 1.35vw, 26px);">DATA-QUALITY REVIEW</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ 9 · OPEN / CLOSING ═══════════ -->
+  <div data-slide="9" data-screen-label="Open Standard" role="region" aria-roledescription="slide" aria-label="Open Standard" aria-hidden="true" style="position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; background: #0F0D0B; opacity: 0; visibility: hidden; transform: translateY(26px); z-index: 0; pointer-events: none;">
+    <div data-ambient style="position: absolute; top: 100px; right: -160px; width: 1100px; height: 1100px; background: radial-gradient(closest-side, rgba(235,170,90,0.16), rgba(235,170,90,0) 72%); pointer-events: none; animation: glowBreathe 9s ease-in-out infinite;"></div>
+    <div data-ambient style="position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(circle at 1px 1px, rgba(235,170,90,0.16) 1px, transparent 0); background-size: 16px 16px; mask-image: radial-gradient(ellipse at 75% 40%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 65%); -webkit-mask-image: radial-gradient(ellipse at 75% 40%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 65%); animation: dotDrift 90s linear infinite;"></div>
+    <section style="min-height: 100%; box-sizing: border-box; position: relative; max-width: 1920px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; padding: clamp(48px, 7vh, 84px) clamp(24px, 5.2vw, 100px) clamp(104px, 13vh, 150px);">
+      <div data-fx="trace26" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(12px, 1.25vw, 24px); letter-spacing: 0.26em; color: #D89A4E; margin-bottom: clamp(14px, 2vh, 22px);">STEWARDSHIP</div>
+      <h2 data-fx="rise" data-fxd="110" style="margin: 0 0 clamp(28px, 5.9vh, 64px) 0; font-family: Newsreader, serif; font-weight: 300; font-size: clamp(32px, 4vw, 78px); line-height: 1.08; letter-spacing: -0.01em; color: #F4EBDC;">Maintained in the <em style="color: #E0B071;">open</em>.</h2>
+      <div data-grid style="display: grid; grid-template-columns: 1fr 620px; gap: clamp(36px, 5.7vw, 110px); align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: clamp(22px, 3.5vh, 38px);">
+          <div data-fx="rise" data-fxd="260" style="display: flex; gap: clamp(16px, 1.45vw, 28px); align-items: baseline;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">—</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">MIT-licensed</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Open specification and reference tooling — no royalty, no committee, nothing paywalled.</div></div></div>
+          <div data-fx="rise" data-fxd="370" style="display: flex; gap: clamp(16px, 1.45vw, 28px); align-items: baseline;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">—</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">Public governance</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Schema Change Proposals, issues, and pull requests — review happens in the open.</div></div></div>
+          <div data-fx="rise" data-fxd="480" style="display: flex; gap: clamp(16px, 1.45vw, 28px); align-items: baseline;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">—</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">Real product grounding</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Eight canonical records across four authoring patterns and emergency classes, built from real spec sheets.</div></div></div>
+          <div data-fx="rise" data-fxd="590" style="display: flex; gap: clamp(16px, 1.45vw, 28px); align-items: baseline;"><span style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">—</span><div><div style="font-size: clamp(17px, 1.6vw, 31px); font-weight: 600; color: #EDE3D2; margin-bottom: 6px;">Version stability</div><div style="font-size: clamp(15px, 1.4vw, 27px); line-height: 1.45; color: #A79A85;">Minor releases only add; breaking changes require v2.0.</div></div></div>
+        </div>
+        <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: clamp(20px, 3vh, 32px);">
+          <img data-fx="fade" data-fxd="300" src="assets/ulc-logo.webp" alt="ULC" style="width: clamp(150px, 17.2vw, 330px); height: clamp(150px, 17.2vw, 330px); clip-path: circle(44% at 50% 50%); transform: scale(1.1); box-shadow: 0 0 140px rgba(235,170,90,0.35);">
+          <div data-fx="rise" data-fxd="440" style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <span style="font-family: Newsreader, serif; font-size: clamp(26px, 2.5vw, 48px); color: #F4EBDC;">ULCspec.org</span>
+            <a href="https://github.com/ulcspec/ULC" style="font-family: 'IBM Plex Mono', monospace; font-size: clamp(14px, 1.35vw, 26px); color: #D89A4E;">github.com/ulcspec/ULC</a>
+          </div>
+          <p data-fx="rise" data-fxd="560" style="margin: 0; font-family: Newsreader, serif; font-style: italic; font-weight: 300; font-size: clamp(18px, 1.8vw, 34px); line-height: 1.35; color: #C9B594; text-align: center; max-width: 800px;">One structured record — readable by software, checkable by people, traceable to source.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ═══════════ CHROME ═══════════ -->
+  <a href="https://ulcspec.org/" class="backlink" style="position: fixed; top: clamp(14px, 2.4vh, 26px); left: clamp(16px, 1.6vw, 30px); z-index: 60; font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.14em; color: #6B6052; padding: 8px 10px; transition: color 150ms ease;">← ULCSPEC.ORG</a>
+
+  <div style="position: fixed; left: 50%; transform: translateX(-50%); bottom: clamp(14px, 2.8vh, 30px); z-index: 60; display: flex; align-items: center; gap: clamp(14px, 1.2vw, 22px);">
+    <button data-nav="prev" aria-label="Previous slide" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: rgba(10,9,8,0.55); border: 1px solid #2E271E; border-radius: 999px; color: #8B7D68; font-family: 'IBM Plex Mono', monospace; font-size: 18px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease, opacity 300ms ease; backdrop-filter: blur(6px); padding: 0;">←</button>
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 14px; letter-spacing: 0.18em; color: #8B7D68; user-select: none;"><span data-counter>01</span><span style="color: #4A4237;"> / 09</span></span>
+    <button data-nav="next" aria-label="Next slide" style="width: 46px; height: 46px; display: flex; align-items: center; justify-content: center; background: rgba(10,9,8,0.55); border: 1px solid #2E271E; border-radius: 999px; color: #8B7D68; font-family: 'IBM Plex Mono', monospace; font-size: 18px; cursor: pointer; transition: color 150ms ease, border-color 150ms ease, opacity 300ms ease; backdrop-filter: blur(6px); padding: 0;">→</button>
+  </div>
+
+</div>
+<script>
+(function () {
+  var root = document.querySelector("[data-deck-root]");
+  if (!root) return;
+  var slides = [].slice.call(root.querySelectorAll("[data-slide]"));
+  var n = slides.length, cur = 0, suppressHash = false;
+  var played = {};
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Config
+  var CHOREOGRAPHY = "first-visit"; // "first-visit" | "always" | "off"
+  var AMBIENT = true;
+  var MS = 550;
+  var EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+  var MAP = { rise: ["fxRise", 750], fade: ["fxFade", 650], draw: ["fxDraw", 850], trace30: ["fxTrace30", 950], trace26: ["fxTrace26", 950] };
+
+  function runCounters(slide, animate) {
+    [].forEach.call(slide.querySelectorAll("[data-count]"), function (el) {
+      var target = parseInt(el.getAttribute("data-count"), 10);
+      if (!animate || reduced) { el.textContent = target.toLocaleString("en-US"); return; }
+      el.textContent = "0";
+      setTimeout(function () {
+        var t0 = performance.now(), dur = 1100;
+        function tick(now) {
+          var p = Math.min(1, (now - t0) / dur);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString("en-US");
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }, 700);
+    });
+  }
+
+  function choreograph(i) {
+    var slide = slides[i];
+    var play = !reduced && CHOREOGRAPHY !== "off" && (CHOREOGRAPHY === "always" || !played[i]);
+    [].forEach.call(slide.querySelectorAll("[data-fx]"), function (el) {
+      if (!play) { el.style.animation = "none"; return; }
+      var def = MAP[el.getAttribute("data-fx")];
+      if (!def) return;
+      var d = parseInt(el.getAttribute("data-fxd") || "0", 10);
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = def[0] + " " + def[1] + "ms " + EASE + " " + d + "ms both";
+    });
+    runCounters(slide, play);
+    played[i] = true;
+  }
+
+  function updateChrome() {
+    var c = root.querySelector("[data-counter]");
+    if (c) c.textContent = String(cur + 1).padStart(2, "0");
+    root.querySelector("[data-nav=\"prev\"]").style.opacity = cur === 0 ? "0.35" : "1";
+    root.querySelector("[data-nav=\"next\"]").style.opacity = cur === n - 1 ? "0.35" : "1";
+  }
+
+  function go(i) {
+    if (i < 0 || i >= n || i === cur) return;
+    var fwd = i > cur;
+    var oldS = slides[cur], newS = slides[i];
+    oldS.style.transition = "opacity " + MS + "ms ease, transform " + MS + "ms " + EASE;
+    oldS.style.opacity = "0";
+    oldS.style.transform = "translateY(" + (fwd ? -18 : 18) + "px)";
+    oldS.style.zIndex = "0";
+    oldS.style.pointerEvents = "none";
+    oldS.setAttribute("aria-hidden", "true");
+    setTimeout(function () { if (slides[cur] !== oldS) oldS.style.visibility = "hidden"; }, MS + 40);
+    choreograph(i);
+    newS.style.transition = "none";
+    newS.style.opacity = "0";
+    newS.style.transform = "translateY(" + (fwd ? 26 : -26) + "px)";
+    newS.style.visibility = "visible";
+    newS.scrollTop = 0;
+    void newS.offsetWidth;
+    newS.style.transition = "opacity " + MS + "ms ease, transform " + MS + "ms " + EASE;
+    newS.style.opacity = "1";
+    newS.style.transform = "translateY(0)";
+    newS.style.zIndex = "1";
+    newS.style.pointerEvents = "auto";
+    newS.removeAttribute("aria-hidden");
+    cur = i;
+    var target = "#" + (i + 1);
+    if (location.hash !== target) {
+      suppressHash = true;
+      location.hash = target;
+    }
+    updateChrome();
+  }
+
+  // Init from hash
+  var h = parseInt((location.hash || "").slice(1), 10);
+  var start = (h >= 1 && h <= n) ? h - 1 : 0;
+  cur = start;
+  slides.forEach(function (s, i) {
+    var on = i === start;
+    s.style.opacity = on ? "1" : "0";
+    s.style.visibility = on ? "visible" : "hidden";
+    s.style.transform = on ? "translateY(0)" : "translateY(26px)";
+    s.style.zIndex = on ? "1" : "0";
+    s.style.pointerEvents = on ? "auto" : "none";
+    if (on) s.removeAttribute("aria-hidden"); else s.setAttribute("aria-hidden", "true");
+  });
+  updateChrome();
+  choreograph(start);
+  if (!AMBIENT || reduced) {
+    [].forEach.call(document.querySelectorAll("[data-ambient]"), function (el) { el.style.animationPlayState = "paused"; });
+  }
+
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go(cur + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
+    else if (e.key === "Home") { e.preventDefault(); go(0); }
+    else if (e.key === "End") { e.preventDefault(); go(n - 1); }
+  });
+  root.addEventListener("click", function (e) {
+    if (e.target.closest("a, button")) return;
+    var sel = window.getSelection();
+    if (sel && sel.toString().length > 0) return;
+    go(cur + 1);
+  });
+  root.querySelector("[data-nav=\"prev\"]").addEventListener("click", function () { go(cur - 1); });
+  root.querySelector("[data-nav=\"next\"]").addEventListener("click", function () { go(cur + 1); });
+  var tx = 0, ty = 0;
+  root.addEventListener("touchstart", function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+  root.addEventListener("touchend", function (e) {
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > 1.6 * Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  window.addEventListener("hashchange", function () {
+    if (suppressHash) { suppressHash = false; return; }
+    var hh = parseInt((location.hash || "").slice(1), 10);
+    if (hh >= 1 && hh <= n && hh - 1 !== cur) go(hh - 1);
+  });
+})();
+</script>
+</body>
+</html>
