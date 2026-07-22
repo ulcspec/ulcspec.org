@@ -52,7 +52,7 @@ export const TIER1_PROMPT_PULL_PROVENANCE: Tier1Prompt = {
 export const TIER1_PROMPT_CHECK_ACHIEVEMENTS: Tier1Prompt = {
   id: 'tier1-check-achievements',
   label: 'Check what a product is documented for',
-  text: 'Read the attached `.ulc.json` file. From `index.achievements`, report each theme (embodied carbon, circularity, material health, energy, dark sky, emergency) with its state: none, claimed, or documented. For each documented theme, name the qualifying programs and note that an evidence document is attached. For each claimed theme, note that no current evidence document backs it. Also report `index.restricted_substances_declared` and `index.conformance_level`. Do not infer qualifications the record does not carry.',
+  text: 'Read the attached `.ulc.json` file. From `index.achievements`, report each theme (embodied carbon, circularity, material health, energy, dark sky, emergency, domestic content) with its state: none, claimed, or documented. For each documented theme, name the qualifying programs and note that an evidence document is attached. For each claimed theme, note that no current evidence document backs it. Also report `index.restricted_substances_declared` and `index.conformance_level`. Do not infer qualifications the record does not carry.',
 };
 
 export const TIER1_PROMPTS: readonly Tier1Prompt[] = [

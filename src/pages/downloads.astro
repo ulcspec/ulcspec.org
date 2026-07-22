@@ -112,9 +112,10 @@ const exampleRecords: readonly ExampleRecord[] = [
     level: 'standard',
     roadmap:
       'To reach Full: measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
-    achievements: { dark_sky: 'claimed', material_health: 'claimed' },
+    achievements: { dark_sky: 'claimed', material_health: 'claimed', domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
-    achievementsLine: 'Achievements: dark sky and material health claimed · RoHS declared.',
+    achievementsLine:
+      'Achievements: dark sky, material health, and domestic content claimed · RoHS declared.',
     filename: 'selux-aya-pole-sr-ho-3000k.ulc',
     url: '/examples/pattern-b-selux-aya.ulc.json',
     downloadAs: 'selux-aya-pole-sr-ho-3000k.ulc',
@@ -129,9 +130,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     level: 'standard',
     roadmap:
       'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
-    achievements: {},
+    achievements: { domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
-    achievementsLine: 'RoHS declared.',
+    achievementsLine: 'Achievements: domestic content claimed · RoHS declared.',
     filename: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
     url: '/examples/pattern-c-lumenpulse-lumenfacade-rgb.ulc.json',
     downloadAs: 'lumenpulse-lumenfacade-loi-12-rgb-30x60-ts0.ulc',
@@ -146,9 +147,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     level: 'standard',
     roadmap:
       'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
-    achievements: {},
+    achievements: { domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
-    achievementsLine: 'RoHS declared.',
+    achievementsLine: 'Achievements: domestic content claimed · RoHS declared.',
     filename: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
     url: '/examples/pattern-c-lumenpulse-lumenfacade-rgbw.ulc.json',
     downloadAs: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
@@ -162,9 +163,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     level: 'core',
     roadmap:
       'To reach Standard: a MacAdam SDCM step (from the datasheet, per ANSI C78.377). To reach Full: zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
-    achievements: { material_health: 'claimed' },
+    achievements: { material_health: 'claimed', domestic_content: 'claimed' },
     restrictedSubstances: [],
-    achievementsLine: 'Achievements: material health claimed.',
+    achievementsLine: 'Achievements: material health and domestic content claimed.',
     filename: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
     url: '/examples/pattern-d-vode-nexa.ulc.json',
     downloadAs: 'vode-nexa-suspended-807-so-3500k-90cri-hl-black-48in.ulc',
@@ -474,7 +475,7 @@ function formatAssetSize(bytes: number): string {
           <div class="schema-card__head">
             <p class="schema-card__filename"><code>ulc.json</code></p>
             <p class="schema-card__meta">
-              Draft 2020-12 · current at ULC 1.0.1
+              Draft 2020-12 · current at ULC 1.1.0
             </p>
           </div>
           <a

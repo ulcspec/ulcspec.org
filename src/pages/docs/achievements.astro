@@ -37,16 +37,17 @@ const records: readonly AchievementRow[] = [
   {
     record: 'Selux Aya',
     achievementsHtml:
-      'dark sky and material health <code>claimed</code> (DarkSky Approved; Declare and Red List Approved) · RoHS declared',
+      'dark sky, material health, and domestic content <code>claimed</code> (DarkSky Approved; Declare and Red List Approved; Buy American Act) · RoHS declared',
   },
   {
     record: 'Vode Nexa',
     achievementsHtml:
-      'material health <code>claimed</code> (Declare and Red List Approved)',
+      'material health and domestic content <code>claimed</code> (Declare and Red List Approved; Buy American Act (BAA) and Build America, Buy America (BABA))',
   },
   {
     record: 'Lumenpulse Lumenfacade RGB and RGBW',
-    achievementsHtml: 'no themed programs · RoHS declared',
+    achievementsHtml:
+      'domestic content <code>claimed</code> (Buy American Act) · RoHS declared',
   },
   {
     record: 'ERCO Quintessence',
@@ -58,7 +59,7 @@ const records: readonly AchievementRow[] = [
 
 <PageShell
   title="Achievements - ULC specification"
-  description="The second computed view of a ULC record: per-theme third-party qualifications (embodied carbon, circularity, material health, energy, dark sky, emergency), each none, claimed, or documented, computed from the record's attestations and stamped into the generated index."
+  description="The second computed view of a ULC record: per-theme third-party qualifications (embodied carbon, circularity, material health, energy, dark sky, emergency, domestic content), each none, claimed, or documented, computed from the record's attestations and stamped into the generated index."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Product Achievements.</h1>
@@ -75,11 +76,11 @@ const records: readonly AchievementRow[] = [
       sustainability evidence, and a lab-characterized fixture can carry none).
     </p>
 
-    {/* ── Six themes ────────────────────────────────────────────────────── */}
+    {/* ── Seven themes ──────────────────────────────────────────────────── */}
     <section class="cf-section">
-      <h2 class="cf-h2">Six themes</h2>
+      <h2 class="cf-h2">Seven themes</h2>
       <p>
-        An attestation contributes to a theme through its program token. Six
+        An attestation contributes to a theme through its program token. Seven
         themes are computed:
       </p>
       <dl class="cf-levels">
@@ -110,6 +111,11 @@ const records: readonly AchievementRow[] = [
         <dd>
           UL 924, UL 1994, and the ICEL emergency-lighting conformity scheme.
         </dd>
+        <dt>Domestic content</dt>
+        <dd>
+          The US federal-procurement programs: the Buy American Act (BAA), Build
+          America, Buy America (BABA), and American Iron and Steel (AIS).
+        </dd>
       </dl>
       <p>
         A record's sustainability declaration contributes too: a Declare or Red
@@ -125,8 +131,17 @@ const records: readonly AchievementRow[] = [
           rel="noopener external"
           >compliance and attestation glossary</a
         >. Programs that certify projects or companies (LEED, WELL),
-        multi-attribute ecolabels (EPEAT, UL ECOLOGO), and the domestic-content
-        and controls programs held for future themes are deliberately unthemed.
+        multi-attribute ecolabels (EPEAT, UL ECOLOGO), and the controls programs
+        held for a future theme are deliberately unthemed. Two origin tokens are
+        permanently unthemed by design: Trade Agreements Act eligibility can be
+        satisfied by non-US manufacture, and country of origin is a neutral
+        provenance fact, not an achievement.
+      </p>
+      <p class="cf-note">
+        Domestic-content eligibility on a given project is confirmed per project
+        by the manufacturer, not by this badge. ULC reports what the record
+        carries; it does not certify that a product qualifies for a specific
+        contract.
       </p>
     </section>
 
@@ -232,7 +247,11 @@ const records: readonly AchievementRow[] = [
           default: <code>achievements: N documented, M claimed</code>. Add
           <code>--verbose</code> (or <code>--json</code>) for the per-theme detail
           and the roadmap: which themes are <code>claimed</code>, and which
-          evidence attachment would raise each to <code>documented</code>.
+          evidence attachment would raise each to <code>documented</code>. An
+          opt-in <code>--expiry</code> flag adds a report-only advisory on top:
+          which dated claims have lapsed, and which themes a re-stamp would drop
+          from <code>documented</code> to <code>claimed</code>. It never fails
+          validation.
         </p>
         <p>
           The validator is a free download on the
