@@ -36,14 +36,14 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Pinned to the v1.0.1 release commit (tag v1.0.1), which ships the two
-  // computed views (the conformance level and the Product Achievements
+  // Pinned to the v1.1.0 release commit (tag v1.1.0), which ships the two
+  // computed views (the conformance level and the seven Product Achievements
   // themes), the exit-sign and emergency product class, the eight example
-  // records, and the v1.0.1 schema and taxonomy. Advance via:
+  // records, and the v1.1.0 schema and taxonomy. Advance via:
   //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
   // and rebuild. The badge auto-detects a real SHA and renders it.
-  upstreamCommit: '86109bcbdaf41a1e4ae3d58421dc69e33a985982',
-  upstreamVersion: 'v1.0.1',
+  upstreamCommit: '870bd0ebc48b87d19507c90f7144b353a227c72a',
+  upstreamVersion: 'v1.1.0',
   upstreamEditBranch: 'main',
   files: [
     {
