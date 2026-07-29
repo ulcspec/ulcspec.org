@@ -4,7 +4,7 @@ ulcspec.org is fundamentally a **static site**. There is no backend service, no 
 
 ## Framework & style
 
-- **Framework:** Astro 6 in **static output mode** (the default; `astro.config.mjs` does not opt into SSR or hybrid output).
+- **Framework:** Astro 7 in **static output mode** (the default; `astro.config.mjs` does not opt into SSR or hybrid output).
 - **API style:** not applicable. All surfaces are static HTML at v1. The interactive validator is a client-side Astro island that runs in the user's browser; it does not call a server.
 
 ## Routes

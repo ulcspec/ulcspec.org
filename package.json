@@ -8,7 +8,7 @@
   "packageManager": "pnpm@10.30.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/check-astro-peers.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "typecheck": "astro check",
@@ -38,7 +38,8 @@
     "overrides": {
       "yaml@>=2.0.0 <2.8.3": ">=2.8.3",
       "tmp@<0.2.6": ">=0.2.6",
-      "uuid@<11.1.1": "^11.1.1"
+      "uuid@<11.1.1": "^11.1.1",
+      "svgo@>=4.0.0 <4.0.2": ">=4.0.2"
     }
   }
 }

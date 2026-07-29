@@ -1,6 +1,6 @@
 # Product Requirements: ulcspec.org
 
-> Astro 6: JSON Schema validator + spec content renderer for ULC
+> Astro 7: JSON Schema validator + spec content renderer for ULC
 
 ---
 

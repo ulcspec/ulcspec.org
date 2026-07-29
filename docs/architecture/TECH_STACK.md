@@ -10,8 +10,8 @@
 
 ## Frameworks
 
-- **Astro 6.3.3** (static output mode, content collections, MDX via `@astrojs/mdx@5`)
-- **Tailwind CSS v4** (4.3.0), wired via the `@tailwindcss/vite` plugin in `astro.config.mjs`
+- **Astro 7** (static output mode, content collections, MDX via `@astrojs/mdx@7`)
+- **Tailwind CSS v4** (4.3.3), wired via the `@tailwindcss/vite` plugin in `astro.config.mjs`
 
 ## Validation
 

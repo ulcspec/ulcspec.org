@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check Astro integration peers
-        run: pnpm check:astro-peers
-
       - name: Type check
         run: pnpm typecheck
 
