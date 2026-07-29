@@ -9,6 +9,15 @@ updates:
     labels:
       - "dependencies"
     groups:
+      # Keep astro and its official integrations moving together, majors
+      # included. They release in lockstep and share peer ranges, so bumping
+      # astro alone (a lone major PR) is what leaves an integration stranded on
+      # the previous major. Listed first so the astro family lands here, not in
+      # minor-and-patch below (a dependency joins the first group it matches).
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
       minor-and-patch:
         patterns:
           - "*"
