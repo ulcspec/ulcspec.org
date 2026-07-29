@@ -9,17 +9,22 @@
 // a post-install assertion instead, so it runs regardless of lockfile state.
 //
 // It reads node_modules/<pkg>/package.json directly rather than `require`-ing
-// it, because some packages' `exports` maps do not expose ./package.json.
+// it, because some packages' `exports` maps do not expose ./package.json. The
+// declared peer is matched with semver, so a compound range such as
+// "^7.0.0 || ^8.0.0" accepts either major rather than only the first one named.
 
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
 const root = process.cwd();
+const require = createRequire(join(root, 'noop.cjs'));
+const semver = require('semver');
 const readPkg = (name) =>
   JSON.parse(readFileSync(join(root, 'node_modules', name, 'package.json'), 'utf8'));
 
 const rootPkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-const astroMajor = readPkg('astro').version.split('.')[0];
+const astroVersion = readPkg('astro').version;
 
 const names = Object.keys({ ...rootPkg.dependencies, ...rootPkg.devDependencies }).filter((n) =>
   n.startsWith('@astrojs/'),
@@ -38,18 +43,17 @@ for (const name of names) {
     console.log(`--   ${name}@${pkg.version}: declares no astro peer (skipped)`);
     continue;
   }
-  const peerMajor = (peer.match(/(\d+)/) || [])[1];
-  const ok = peerMajor === astroMajor;
+  const ok = semver.satisfies(astroVersion, peer, { includePrerelease: true });
   console.log(
-    `${ok ? 'OK  ' : 'FAIL'} ${name}@${pkg.version} peer astro "${peer}" (major ${peerMajor}) vs installed astro major ${astroMajor}`,
+    `${ok ? 'OK  ' : 'FAIL'} ${name}@${pkg.version} peer astro "${peer}" vs installed astro ${astroVersion}`,
   );
   if (!ok) failed = true;
 }
 
 if (failed) {
   console.error(
-    `\nAstro integration peer mismatch: bump the integration to its astro-${astroMajor} release before merging.`,
+    `\nAstro integration peer mismatch: an integration's astro peer range does not accept installed astro ${astroVersion}. Bump the integration before merging.`,
   );
   process.exit(1);
 }
-console.log(`\nAll @astrojs integrations with an astro peer match installed astro major ${astroMajor}.`);
+console.log(`\nAll @astrojs integrations with an astro peer accept installed astro ${astroVersion}.`);
