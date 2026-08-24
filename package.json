@@ -20,14 +20,14 @@
     "check:astro-peers": "node scripts/check-astro-peers.mjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.3",
+    "@astrojs/mdx": "^7.0.7",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.1.0",
+    "astro": "^7.2.4",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.9",
-    "@astrojs/markdown-remark": "^7.2.2",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/markdown-remark": "^7.2.4",
     "@astrojs/sitemap": "^3.7.3",
     "@lhci/cli": "0.15.1",
     "semver": "^7.8.5",
