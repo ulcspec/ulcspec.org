@@ -14,7 +14,7 @@
     },
 
     "record_id": {
-      "description": "Stable identifier for this record. Convention: `<manufacturer-slug>-<catalog-slug>-<scenario-slug>` with lowercase ASCII and hyphens. By repository convention matches the filename stem, regardless of whether the file is `.ulc` (canonical records) or `.ulc.json` (authoring templates). Must be unique within a manufacturer's namespace.",
+      "description": "Stable identifier for this record. Convention: `<manufacturer-slug>-<catalog-slug>-<scenario-slug>` with lowercase ASCII and hyphens. By repository convention it matches the filename stem of the finished `.ulc` record. Must be unique within a manufacturer's namespace.",
       "type": "string",
       "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
       "minLength": 3,
@@ -29,6 +29,17 @@
 
     "record_status_as_of": {
       "description": "Calendar date on which the record_status was last verified. ISO 8601 date (YYYY-MM-DD).",
+      "type": "string",
+      "format": "date"
+    },
+
+    "superseded_by": {
+      "description": "Pointer to the successor product for a record whose product has been replaced by a newer SKU. Complements record_status: the `superseded` status token says the product was replaced, and this field names its replacement. The supersession fact is monotonic: set once when the supersession occurs and never retargeted, so it can appear but cannot go stale. A later record revision may add identifiers for the same successor (for example a record_id once the successor record is published). The pointer speaks for every configuration the record covers: the record, which can be narrower than the family, is its scope.",
+      "$ref": "#/$defs/SupersessionReference"
+    },
+
+    "discontinued_at": {
+      "description": "Effective calendar date on which the product's commercial availability ends or ended. ISO 8601 date (YYYY-MM-DD). Distinct from record_status_as_of, which records when the status was last verified, not when it took effect; the family-level counterpart introduced_at lives in product_family, while this date sits at the record envelope beside the record_status token it qualifies, because availability can end per configuration, not only per family. Recorded once, when the end of availability is fixed; unlike a lead time or a price, it does not drift with the market. Precedent: GDSN carries a discontinuation date inside the master trade-item record. When present, the date speaks for every configuration the record covers: the record, which can be narrower than the family, is its scope.",
       "type": "string",
       "format": "date"
     },
@@ -73,6 +84,11 @@
     "alpha_opic_metrics": {
       "description": "Alpha-opic and melanopic metrics per CIE S 026 and IES RP-46-23. Includes per-channel alpha-opic efficacies and the melanopic daylight efficacy ratio used for circadian metric calculation.",
       "$ref": "#/$defs/AlphaOpicMetrics"
+    },
+
+    "color_tuning": {
+      "description": "Published states and emitter channels beside the tested baseline. States reference the baseline by role and never repeat it.",
+      "$ref": "#/$defs/ColorTuning"
     },
 
     "flicker_measurements": {
@@ -165,6 +181,17 @@
       "items": { "$ref": "#/$defs/Attestation" }
     },
 
+    "media": {
+      "description": "Pointer-only manifest of the visual assets that document this product: product photographs, application photographs, and dimensional drawings. Entries reference each asset by filename, IANA media type, and SHA-256 content hash; no image data is ever embedded. Deliberately separate from source_files: a media asset documents the product's appearance and geometry for presentation, while source_files names the documents a record derives data from, so a media entry can never become a provenance source for a measured value.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/MediaAsset" }
+    },
+
+    "ordering": {
+      "description": "How the product is ordered, for products sold by length or assembled from sections: the grammar of ordering, never the numbers of a transaction. Carries the unit the product is sold as, the increments orders and field cuts obey, and the maximum continuous run, as the manufacturer's own ordering documentation publishes them. Lead times, stock levels, and prices are deliberately out of scope: those are transactional facts that belong to the sales channel, and a hash-anchored record would only ever preserve them stale. Values that hold across everything the record covers sit directly on the block; values that vary by configuration sit in declared_by_configuration rows scoped by order codes.",
+      "$ref": "#/$defs/Ordering"
+    },
+
     "extensions": {
       "description": "Top-level escape hatch for values that do not fit the core schema. `manufacturer_specific` holds vendor-specific fields; `experimental` holds values under active review for future promotion into the main schema. Consumers should treat extensions as informational only.",
       "$ref": "#/$defs/Extensions"
@@ -180,6 +207,27 @@
     "configuration",
     "source_files"
   ],
+
+  "if": {
+    "properties": {
+      "configuration": {
+        "properties": {
+          "tested_axes": {
+            "properties": {
+              "color_tunability": {
+                "const": "static_white"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "color_tuning": false
+    }
+  },
 
   "$defs": {
 
@@ -218,6 +266,14 @@
         },
         "environment_rating": { "$ref": "taxonomy.schema.json#/$defs/EnvironmentRating" },
         "nominal_cct_k": { "$ref": "taxonomy.schema.json#/$defs/NominalCCT" },
+        "cct_range_low_k": {
+          "description": "Generated low-end CCT of the published white range. Present with cct_range_high_k only when both ends resolve, including the referenced baseline.",
+          "type": "number"
+        },
+        "cct_range_high_k": {
+          "description": "Generated high-end CCT of the published white range. Resolve each state from its nominal bin first, otherwise its measured_cct_k value.",
+          "type": "number"
+        },
         "nominal_total_lumens": { "type": "number", "minimum": 0 },
         "nominal_input_power_w": { "type": "number", "minimum": 0 },
         "nominal_cri_ra": { "type": "number", "minimum": 0, "maximum": 100 },
@@ -249,7 +305,7 @@
           "items": { "type": "string" }
         },
         "source_file_types_present": {
-          "description": "Deduplicated sorted list of `source_files[].file_type` values. Lets AI agents and retrieval systems quickly determine which source formats (PDF, IES, LDT, TM-33, ULD, GLDF) exist for this record without walking the full `source_files` array.",
+          "description": "Deduplicated sorted list of `source_files[].file_type` values. Lets AI agents and retrieval systems quickly determine which source formats (PDF, IES, LDT, TM-33, TM-27 spectral files, ULD, GLDF, and manufacturer data exports) exist for this record without walking the full `source_files` array.",
           "type": "array",
           "items": { "$ref": "taxonomy.schema.json#/$defs/SourceFileType" }
         },
@@ -448,6 +504,46 @@
       "required": ["filename", "sha256"]
     },
 
+    "SupersessionReference": {
+      "title": "Supersession reference",
+      "description": "Names the successor product of a superseded record. At least one of record_id (when the successor has a published ULC record), catalog_number (the successor's order code, for SKU-precise supersession), or catalog_model (the successor's family model) is required; carrying several is valid and preferred as the successor's identity firms up. record_sha256 optionally pins the exact successor record revision by content hash and is only meaningful alongside record_id.",
+      "type": "object",
+      "properties": {
+        "record_id": {
+          "description": "The successor record's record_id, using the same slug convention as the top-level record_id. Typically, though not necessarily, within the same manufacturer's namespace: a successor published under a parent or sibling brand is valid.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "record_sha256": {
+          "description": "SHA-256 content hash of the successor record file bytes as published, pinning the exact successor revision this pointer was authored against. Requires record_id. A republished successor (including an index re-stamp) changes this hash, so a mismatch means the successor moved to a newer revision, not that content was tampered with. This is a record-to-record pin, not a source-file reference: it is not part of the source-file hash verification walk.",
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "catalog_number": {
+          "description": "The successor's specific manufacturer-assigned catalog number or order code, in the same vocabulary as configuration.catalog_number. The slot for SKU-precise supersession, matching the record_status `superseded` token's own definition (replaced by a newer SKU).",
+          "type": "string",
+          "minLength": 1
+        },
+        "catalog_model": {
+          "description": "The successor's catalog model (family-level identity), in the same vocabulary as product_family.catalog_model. The slot for family-level supersession, or for a successor whose exact order code is not yet assigned or published.",
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "anyOf": [
+        { "required": ["record_id"] },
+        { "required": ["catalog_number"] },
+        { "required": ["catalog_model"] }
+      ],
+      "dependentRequired": {
+        "record_sha256": ["record_id"]
+      }
+    },
+
     "SourceFile": {
       "title": "Source file entry",
       "description": "One source file that contributes data to this ULC record.",
@@ -466,6 +562,190 @@
             "enum": ["ies", "ldt", "tm33"]
           }
         }
+      }
+    },
+
+    "MediaAsset": {
+      "title": "Media asset",
+      "description": "One visual asset in the record's media manifest, referenced by content hash and never embedded. `role` states what the picture is for; `media_type` states what the bytes are; the two vocabularies are deliberately orthogonal. The role vocabulary maps one-to-one to GLDF's image types, so a crosswalk between the two formats is mechanical.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "What the asset is for: the product itself, the product in an installed context, a dimensioned technical drawing, or another visual described by the caption.",
+          "$ref": "taxonomy.schema.json#/$defs/MediaRole"
+        },
+        "reference": {
+          "description": "The asset file, by filename, optional URL, and mandatory SHA-256 content hash, like every other file reference in the record.",
+          "$ref": "#/$defs/FileReference"
+        },
+        "media_type": {
+          "description": "IANA media type of the referenced bytes.",
+          "$ref": "taxonomy.schema.json#/$defs/MediaType"
+        },
+        "primary": {
+          "description": "Marks the preferred asset for its role when a record carries several. At most one entry per role should set it true; consumers encountering more than one fall back to document order.",
+          "type": "boolean"
+        },
+        "alt_text": {
+          "description": "Alternative text describing the asset for accessibility and non-visual consumers.",
+          "type": "string",
+          "minLength": 1
+        },
+        "caption": {
+          "description": "Human-readable caption. For an asset with role `other`, the caption is what tells a consumer what the asset is.",
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "description": "BCP 47 language tag for a language-specific asset, such as a localized dimensional drawing. Two language versions of one drawing are two entries.",
+          "type": "string",
+          "minLength": 1
+        },
+        "width_px": {
+          "description": "Pixel width of a raster asset.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "height_px": {
+          "description": "Pixel height of a raster asset.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "size_bytes": {
+          "description": "Size of the referenced file in bytes.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "rights": {
+          "description": "Free-text usage-rights statement for the asset, as the manufacturer publishes it.",
+          "type": "string",
+          "minLength": 1
+        },
+        "credit": {
+          "description": "Free-text attribution or credit line to display with the asset.",
+          "type": "string",
+          "minLength": 1
+        },
+        "extracted_from_ref": {
+          "description": "Filename of the source_files entry this asset was extracted from, for an asset that originated inside a listed source document rather than as a standalone file.",
+          "type": "string",
+          "minLength": 1
+        },
+        "configuration_refs": {
+          "description": "Order codes, in the vocabulary of configuration.catalog_number, of the specific covered configurations this asset depicts. Absent when the asset applies to everything the record's applicability block covers.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "required": ["role", "reference", "media_type"]
+    },
+
+    "Ordering": {
+      "title": "Ordering grammar",
+      "description": "The grammar of how a linear or continuous-run product is ordered. These are invariant product facts printed on the family's ordering documentation: they change only when the product changes, so they belong in the durable record. Transactional facts never appear here. Each of the three length members lives in exactly one place: directly on this block when one value holds for everything the record covers, or in declared_by_configuration rows when the manufacturer publishes it per configuration (a maximum run that varies by output tier, a cut module that varies by color class). Carrying the same member in both places is an authoring error.",
+      "type": "object",
+      "properties": {
+        "order_unit": {
+          "description": "The unit in which the product is sold, from the OrderUnit vocabulary. `cut_to_length_run` covers products ordered at a specified length; `fixed_length_section` covers discrete sections joined into runs on site.",
+          "$ref": "taxonomy.schema.json#/$defs/OrderUnit"
+        },
+        "order_increment": {
+          "description": "The granularity at which lengths may be ordered, when the manufacturer publishes one. Distinct from cut_increment: a product may be orderable to the inch while field cuts obey a coarser electrical module. Invariant across everything this record covers; per-configuration values live in declared_by_configuration rows instead.",
+          "$ref": "#/$defs/DualUnitLength"
+        },
+        "cut_increment": {
+          "description": "The repeating module at which the product may be cut, as published: the spacing of marked cut points on a continuous product. Its presence states the product may be cut at this module; the record does not state who performs the cut, and its absence states nothing about cuttability. Invariant across everything this record covers; per-configuration values live in declared_by_configuration rows instead.",
+          "$ref": "#/$defs/DualUnitLength"
+        },
+        "max_continuous_run": {
+          "description": "The maximum electrically continuous run the manufacturer publishes for the product. Distinct from any maximum orderable quantity: an order may comprise several runs, each within this limit. The value carries no statement of feed position or feed count, so consumers must not derive feed counts from it. Invariant across everything this record covers; per-configuration values live in declared_by_configuration rows instead.",
+          "$ref": "#/$defs/DualUnitLength"
+        },
+        "declared_by_configuration": {
+          "description": "Ordering-grammar values the manufacturer publishes per configuration. Each row names the configurations it covers by order codes and carries the values that vary there. Rows carry only the varying members; rows carrying the same member must name disjoint configurations; a configuration matched by no row has no published value for that member, which means not published, never unconstrained. Unlike the photometric declared_by arrays, these rows carry published ordering facts, not values derived from a tested baseline.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrderingRule" }
+        }
+      }
+    },
+
+    "OrderingRule": {
+      "title": "Per-configuration ordering rule",
+      "description": "Ordering-grammar values for the specific configurations the row names. A row must carry at least one value beside the configurations it names.",
+      "type": "object",
+      "properties": {
+        "configuration_refs": {
+          "description": "Order codes naming the configurations this row's values apply to: either a full catalog number, in the vocabulary of configuration.catalog_number, or a single option value as the applicability block's fixed_axes and covered_axes publish them, matched against that axis alone. An option value that appears in more than one of the record's published axes is ambiguous; use full catalog numbers there instead. Codes are never matched as substrings of a catalog number or of an option value.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "order_increment": {
+          "description": "Order granularity for the named configurations.",
+          "$ref": "#/$defs/DualUnitLength"
+        },
+        "cut_increment": {
+          "description": "Cut module for the named configurations.",
+          "$ref": "#/$defs/DualUnitLength"
+        },
+        "max_continuous_run": {
+          "description": "Maximum electrically continuous run for the named configurations.",
+          "$ref": "#/$defs/DualUnitLength"
+        }
+      },
+      "required": ["configuration_refs"],
+      "anyOf": [
+        { "required": ["order_increment"] },
+        { "required": ["cut_increment"] },
+        { "required": ["max_continuous_run"] }
+      ]
+    },
+
+    "CustomizationOpening": {
+      "title": "Customization opening",
+      "description": "One axis the manufacturer states it will entertain requests on, beyond the published order-code menu. At most one entry per axis token, except `other`, which may repeat when each entry carries a distinct axis_label.",
+      "type": "object",
+      "properties": {
+        "axis": {
+          "description": "The axis stated open, from the CustomizationAxis vocabulary. The token names the axis, never any value on it.",
+          "$ref": "taxonomy.schema.json#/$defs/CustomizationAxis"
+        },
+        "axis_label": {
+          "description": "The manufacturer's own name for this axis. Required when axis is `other`; optional detail elsewhere, where it may carry the manufacturer's narrower name for the opening without changing which token facets. A name only: never a value list, and never a relabeling of a listed axis to evade its token.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "statement": {
+          "description": "The manufacturer's own on-request wording (for example 'other color temperatures on request'). An attribution snippet, never a value list: authors MUST NOT enumerate available custom values, prices, lead times, or minimum quantities here. When the printed line itself enumerates values, the no-enumeration rule wins: cite the document via published_in_ref and omit or elide the enumerating clause.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "published_in_ref": {
+          "description": "Filename of the document where this openness is published, with or without a transcribed statement, in the vocabulary of the record's source_files entries and product_family.cutsheet (the typical carrier). Present for openness printed on the sheet. A filename only; the validator does not resolve it, resolution against any one record's file manifest is a courtesy rather than a contract, and nothing checks that the named document carries the statement. Name only documents the manufacturer publishes or has cleared for reference: a non-public document's name can disclose more than the manufacturer intends.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "contact_reference": {
+          "description": "Where a request on this axis is directed, as the manufacturer publishes or states it: a role or department routing the manufacturer already makes public, never a named individual's personal contact details. Carries the same meaning as attestation verification type requires_manufacturer_confirmation: the manufacturer confirms each request per project, and consumers must not propagate openness as an accepted request. A routing string, never a value list.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": ["axis"],
+      "anyOf": [
+        { "required": ["published_in_ref"] },
+        { "required": ["contact_reference"] }
+      ],
+      "if": {
+        "properties": { "axis": { "const": "other" } },
+        "required": ["axis"]
+      },
+      "then": {
+        "required": ["axis_label"]
       }
     },
 
@@ -503,8 +783,13 @@
         },
         "indoor_outdoor": { "$ref": "taxonomy.schema.json#/$defs/IndoorOutdoor" },
         "technical_region": {
-          "description": "Market-region configuration of the fixture. Captures the voltage and frequency variant of the SKU family. Many product families ship parallel North American, European, and Japanese variants sharing optics and light engines but with different drivers and certifications; this field makes the market variant explicit for consumer filter UIs.",
+          "description": "Market-region configuration of the fixture. Captures the voltage and frequency variant of the SKU family. Many product families ship parallel North American, European, and Japanese variants sharing optics and light engines but with different drivers and certifications; this field makes the market variant explicit for consumer filter UIs. Sales markets are declared separately in `markets`.",
           "$ref": "taxonomy.schema.json#/$defs/TechnicalRegion"
+        },
+        "markets": {
+          "description": "Markets into which the product family is sold for evidence applicability. This authored sales-market declaration is distinct from `technical_region`, which describes an electrical configuration.",
+          "type": "array",
+          "items": { "$ref": "taxonomy.schema.json#/$defs/Market" }
         },
         "mounting_types": {
           "type": "array",
@@ -555,7 +840,7 @@
               "$ref": "#/$defs/DualUnitLength"
             },
             "overall_height": {
-              "description": "Overall height for pole-top, bollard, pendant, or wall-mount fixtures. For recessed fixtures, use recess_depth instead.",
+              "description": "Overall height for pole-top, bollard, pendant, or wall-mount fixtures. For recessed fixtures, use recess_depth instead. For a pendant this is the luminaire body; suspension length is an order-code axis and belongs in `applicability`, not here.",
               "$ref": "#/$defs/DualUnitLength"
             },
             "luminaire_mass": {
@@ -606,12 +891,31 @@
           }
         },
         "shared_warranty": {
+          "description": "Family-level warranty summary as published on the cutsheet.",
           "type": "object",
           "properties": {
             "term_years": { "type": "integer", "minimum": 0 },
+            "term_basis": {
+              "description": "The commencement event the warranty term (term_years) runs from. Published terms of identical length differ materially in coverage depending on the basis, so it is carried explicitly rather than inferred. It qualifies term_years, the family's headline term; warranties with additional legs (for example a separate battery or finish term) describe those legs in scope. Absent when the cutsheet does not state a basis.",
+              "$ref": "taxonomy.schema.json#/$defs/WarrantyTermBasis"
+            },
             "scope": { "type": "string" },
-            "conditions_reference": { "type": "string" }
+            "conditions_reference": {
+              "description": "Free-text pointer to the warranty conditions (a document title, code, or URL as printed on the cutsheet). DEPRECATED: prefer conditions_document, which carries a filename and content hash, plus the revision date when the document states one, so the conditions travel with the term verifiably. Retained through the 1.x line under the additive-only compatibility commitment; removal is scheduled for v2.0.0.",
+              "type": "string",
+              "deprecated": true
+            },
+            "conditions_document": {
+              "description": "Reference to the manufacturer's published warranty-conditions document, by filename and content hash, carrying the revision label and date when the document states them. The document holds the exclusions, conditional extensions, and per-accessory variations that qualify term_years, so the conditions travel with the headline number instead of being lost. Preferred over the deprecated free-text conditions_reference. The same document may also appear in source_files; the two references are authored independently.",
+              "$ref": "#/$defs/FileReference"
+            }
           }
+        },
+        "customization_openness": {
+          "description": "Axes of this family the manufacturer states are open to requests beyond the published order-code menu, as printed on the cutsheet ('other color temperatures on request', a published modifications list) or as the manufacturer states directly. Declares OPENNESS ONLY: it never enumerates what the custom choices are, never implies price, lead time, minimum quantity, or that any specific request will be accepted, and never widens any record's applicability. A configuration obtained through such a request is outside the record's covered configuration range and inherits none of the record's measured values, derivations, or attestations, and consumers must never compose or extend an order code for one. An axis absent from this list is UNSTATED: never a stated refusal, and never an implied openness; only axes listed here may be presented as open. Family-scoped: authored identically in every record of the family. Tracked, not graded.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/CustomizationOpening" }
         },
         "shared_attestations": {
           "description": "Attestations that apply to every SKU in the family without qualification. SKU-specific or option-conditional attestations live in the top-level `attestations[]` array instead.",
@@ -801,7 +1105,15 @@
         "input_voltage_v": { "$ref": "#/$defs/ProvenancedNumber" },
         "input_voltage_class": { "type": "string", "examples": ["120v", "277v", "347v", "universal_120_277"] },
         "power_factor": { "$ref": "#/$defs/ProvenancedNumber" },
+        "power_factor_bound_operator": {
+          "description": "When present, states that power_factor is a declared bound rather than a specific measured value. Pairs with power_factor; for example gt with 0.9 records a published power factor above 0.9. Absence means the number is a point estimate.",
+          "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator"
+        },
         "thd_percent": { "$ref": "#/$defs/ProvenancedNumber" },
+        "thd_percent_bound_operator": {
+          "description": "When present, states that thd_percent is a declared bound rather than a specific measured value. Pairs with thd_percent; for example lt with 20 records a published THD below 20 percent. Absence means the number is a point estimate.",
+          "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator"
+        },
         "driver_protocol": { "$ref": "taxonomy.schema.json#/$defs/DimmingProtocol" },
         "dimming_method": {
           "description": "Underlying electrical dimming method (CCR, PWM, or hybrid). Independent of `driver_protocol`, which is the signaling layer. Authors populate this when the cutsheet publishes the method; absent if the method is not declared.",
@@ -830,6 +1142,10 @@
           "description": "Optional LED-module-only input power (typically smaller than luminaire input due to driver losses). Useful when the cutsheet distinguishes module from luminaire.",
           "$ref": "#/$defs/ProvenancedNumber"
         }
+      },
+      "dependentRequired": {
+        "power_factor_bound_operator": ["power_factor"],
+        "thd_percent_bound_operator": ["thd_percent"]
       }
     },
 
@@ -865,7 +1181,16 @@
           "$ref": "#/$defs/ProvenancedNumber"
         },
         "ugr_4h_8h_bound_operator": {
-          "description": "When present, indicates the UGR value is a declared bound rather than a specific measured value. Pairs with `ugr_4h_8h`. Use `lte` for manufacturer claims of the form 'UGR as low as X' where X is the best achievable value across the fixture's supported optics or dimming configurations. Absence means the UGR value is a specific point estimate at the tested scenario.",
+          "description": "When present, indicates the UGR value is a declared bound rather than a specific measured value. Pairs with `ugr_4h_8h`. Use `lte` for manufacturer claims of the form 'UGR as low as X' where X is the best achievable value across the fixture's supported optics or dimming configurations. Only the upper-bound tokens `lte` and `lt` are meaningful for glare; the lower-bound tokens are not. Absence means the UGR value is a specific point estimate at the tested scenario.",
+          "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator",
+          "enum": ["eq", "lte", "lt"]
+        },
+        "max_surface_luminance_cd_per_m2": {
+          "description": "Maximum luminance of a luminous surface, in cd/m2. A standards-native SI single-unit quantity with no Imperial companion, as for exit-sign face luminance. Used when the manufacturer declares a surface-luminance limit rather than a point measurement.",
+          "$ref": "#/$defs/ProvenancedNumber"
+        },
+        "max_surface_luminance_bound_operator": {
+          "description": "When present, pairs with max_surface_luminance_cd_per_m2 to express a declared bound, such as lt with 1600 for a surface luminance below 1600 cd/m2. Absence means the number is a point estimate.",
           "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator"
         },
         "zonal_lumens": {
@@ -918,7 +1243,314 @@
             "required": ["length"]
           }
         }
+      },
+      "dependentRequired": {
+        "max_surface_luminance_bound_operator": ["max_surface_luminance_cd_per_m2"]
       }
+    },
+
+    "ColorTuning": {
+      "title": "Published color tuning",
+      "description": "The top-level measurement blocks remain the tested baseline. Only other luminaire states appear in states. End roles occur at most once, counting the referenced baseline.",
+      "type": "object",
+      "properties": {
+        "baseline_role": {
+          "$ref": "taxonomy.schema.json#/$defs/ColorStateRole"
+        },
+        "baseline_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "baseline_dim_level_percent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        },
+        "states": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ColorState"
+          },
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "role": {
+                    "const": "range_low_end"
+                  }
+                },
+                "required": [
+                  "role"
+                ]
+              },
+              "minContains": 0,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "properties": {
+                  "role": {
+                    "const": "range_high_end"
+                  }
+                },
+                "required": [
+                  "role"
+                ]
+              },
+              "minContains": 0,
+              "maxContains": 1
+            }
+          ]
+        },
+        "channels": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/EmissionChannel"
+          }
+        }
+      },
+      "required": [
+        "baseline_role"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "states"
+          ]
+        },
+        {
+          "required": [
+            "channels"
+          ]
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "baseline_role": {
+                "const": "dim_level"
+              }
+            },
+            "required": [
+              "baseline_role"
+            ]
+          },
+          "then": {
+            "required": [
+              "baseline_dim_level_percent"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "baseline_role": {
+                "const": "setting"
+              }
+            },
+            "required": [
+              "baseline_role"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "baseline_dim_level_percent"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "baseline_role": {
+                "const": "range_low_end"
+              }
+            },
+            "required": [
+              "baseline_role"
+            ]
+          },
+          "then": {
+            "properties": {
+              "states": {
+                "not": {
+                  "contains": {
+                    "properties": {
+                      "role": {
+                        "const": "range_low_end"
+                      }
+                    },
+                    "required": [
+                      "role"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "baseline_role": {
+                "const": "range_high_end"
+              }
+            },
+            "required": [
+              "baseline_role"
+            ]
+          },
+          "then": {
+            "properties": {
+              "states": {
+                "not": {
+                  "contains": {
+                    "properties": {
+                      "role": {
+                        "const": "range_high_end"
+                      }
+                    },
+                    "required": [
+                      "role"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+
+    "ColorState": {
+      "title": "Published luminaire color state",
+      "type": "object",
+      "properties": {
+        "state_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "role": {
+          "$ref": "taxonomy.schema.json#/$defs/ColorStateRole"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dim_level_percent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        },
+        "colorimetry": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/Colorimetry"
+            },
+            {
+              "anyOf": [
+                {
+                  "required": [
+                    "nominal_cct_k"
+                  ]
+                },
+                {
+                  "required": [
+                    "measured_cct_k"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "alpha_opic_metrics": {
+          "$ref": "#/$defs/AlphaOpicMetrics"
+        },
+        "lumens": {
+          "$ref": "#/$defs/ProvenancedNumber"
+        },
+        "efficacy_lm_per_w": {
+          "$ref": "#/$defs/ProvenancedNumber"
+        }
+      },
+      "required": [
+        "state_id",
+        "role",
+        "colorimetry"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "dim_level"
+              }
+            },
+            "required": [
+              "role"
+            ]
+          },
+          "then": {
+            "required": [
+              "dim_level_percent"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "setting"
+              }
+            },
+            "required": [
+              "role"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "dim_level_percent"
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    "EmissionChannel": {
+      "title": "Emission channel",
+      "type": "object",
+      "properties": {
+        "channel_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "taxonomy.schema.json#/$defs/EmissionChannelKind"
+        },
+        "peak_wavelength_nm": {
+          "$ref": "#/$defs/ProvenancedNumber"
+        },
+        "lumens": {
+          "$ref": "#/$defs/ProvenancedNumber"
+        },
+        "colorimetry": {
+          "$ref": "#/$defs/Colorimetry"
+        }
+      },
+      "required": [
+        "channel_id",
+        "kind"
+      ]
     },
 
     "Colorimetry": {
@@ -934,6 +1566,10 @@
         "sdcm_step": { "$ref": "#/$defs/ProvenancedNumber" },
         "cri_ra": { "$ref": "#/$defs/ProvenancedNumber" },
         "cri_r9": { "$ref": "#/$defs/ProvenancedNumber" },
+        "spectral_power_distribution": {
+          "description": "Uniformly sampled spectral power distribution behind the stated color values. Stated color values remain authoritative for this record; the spectrum carries the measurement from which they derive.",
+          "$ref": "#/$defs/SpectralPowerDistribution"
+        },
         "cri_per_sample": {
           "description": "Optional per-sample CIE 13 CRI values (R1 through R15).",
           "type": "array",
@@ -961,7 +1597,7 @@
               "pattern": "^[PVF][1-3]$"
             },
             "rf_h_per_bin": {
-              "description": "Local chroma shift / hue shift / local fidelity per hue bin (16 bins).",
+              "description": "TM-30 local color fidelity Rf,h per hue bin: one entry per bin, numbered 1 to 16.",
               "type": "array",
               "items": {
                 "type": "object",
@@ -974,6 +1610,23 @@
           }
         }
       }
+    },
+
+    "SpectralPowerDistribution": {
+      "title": "Spectral power distribution",
+      "description": "Uniformly sampled spectrum at the stated wavelength step. The final wavelength is wavelength_start_nm plus wavelength_step_nm times (the number of values minus one). For a digitized chart, the author resamples the curve to this step and uses source_kind digitized_chart, so consumers can distinguish values read from a drawing from a laboratory table. A package-level curve is not luminaire evidence unless measured_through_optics is true. Stated color values remain authoritative for the record; this spectrum is the measurement from which they derive. A measured spectrum carries provenance with attestation_ref, as every measured value in the record does.",
+      "type": "object",
+      "properties": {
+        "wavelength_start_nm": { "description": "Wavelength of the first value in nanometers.", "type": "number" },
+        "wavelength_step_nm": { "description": "Positive wavelength interval between consecutive values in nanometers.", "type": "number", "exclusiveMinimum": 0 },
+        "values": { "description": "Spectral values ordered by ascending wavelength, one per stated step.", "type": "array", "items": { "type": "number" }, "minItems": 2 },
+        "unit": { "description": "Spectral power per wavelength interval, or a relative spectrum.", "$ref": "taxonomy.schema.json#/$defs/SpectralPowerUnit" },
+        "value_type": { "$ref": "taxonomy.schema.json#/$defs/RegulatoryValueType" },
+        "provenance": { "$ref": "#/$defs/Provenance" },
+        "source_kind": { "$ref": "taxonomy.schema.json#/$defs/SpdSourceKind" },
+        "measured_through_optics": { "description": "True when measured through the luminaire optics, for example in a luminaire-level sphere or goniometer measurement; false for an LED-package curve.", "type": "boolean" }
+      },
+      "required": ["wavelength_start_nm", "wavelength_step_nm", "values", "unit", "value_type", "source_kind"]
     },
 
     "AlphaOpicMetrics": {
@@ -1022,7 +1675,8 @@
               "value": { "$ref": "#/$defs/ProvenancedNumber" },
               "bound_operator": {
                 "description": "Used when the manufacturer declares an upper bound (`<=`) rather than a specific measured value.",
-                "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator"
+                "$ref": "taxonomy.schema.json#/$defs/ComparisonOperator",
+                "enum": ["eq", "lte", "lt"]
               }
             },
             "required": ["metric"]
@@ -1246,7 +1900,7 @@
           }
         },
         "manufacturer_rated_claim": {
-          "description": "Bare manufacturer claim like `L70 > 50,000h` or `L80 > 60,000h` with no cited method. Present when declaration_framework is `manufacturer_rated_claim`.",
+          "description": "A manufacturer claim like `L70 > 50,000h` or `L80 > 60,000h`, with or without a cited method. The optional basis records whether the cutsheet calls the figure TM-21 reported (`tm_21_reported`), TM-21 calculated (`tm_21_calculated`), or states it with no method (`manufacturer_stated`). Present when declaration_framework is `manufacturer_rated_claim`.",
           "type": "object",
           "properties": {
             "claim_type": {
@@ -1254,13 +1908,32 @@
               "$ref": "taxonomy.schema.json#/$defs/FluxMaintenanceThreshold"
             },
             "claimed_hours": { "$ref": "#/$defs/ProvenancedNumber" },
+            "basis": { "$ref": "taxonomy.schema.json#/$defs/LumenMaintenanceClaimBasis" },
             "failure_percent": {
               "description": "Claimed cumulative failure rate at the claimed hours (for example `0.1%` failure at 50,000 hours).",
               "$ref": "#/$defs/ProvenancedNumber"
             }
           }
+        },
+        "additional_rated_claims": {
+          "description": "Additional lumen-maintenance thresholds published beside the headline manufacturer_rated_claim. Each added claim carries its reported, calculated, or manufacturer-stated basis; the headline object retains its existing shape for readers that use it.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/LumenMaintenanceClaim" }
         }
       }
+    },
+
+    "LumenMaintenanceClaim": {
+      "title": "Additional lumen-maintenance claim",
+      "description": "One additional manufacturer-rated lumen-maintenance threshold with the basis of its hours figure.",
+      "type": "object",
+      "properties": {
+        "claim_type": { "$ref": "taxonomy.schema.json#/$defs/FluxMaintenanceThreshold" },
+        "claimed_hours": { "$ref": "#/$defs/ProvenancedNumber" },
+        "basis": { "$ref": "taxonomy.schema.json#/$defs/LumenMaintenanceClaimBasis" },
+        "failure_percent": { "$ref": "#/$defs/ProvenancedNumber" }
+      },
+      "required": ["claim_type", "claimed_hours", "basis"]
     },
 
     "ChromaticityShiftProjection": {
@@ -1416,6 +2089,10 @@
           "description": "Named operator of the program, for programs run by more than one operator (for example the several EPD program operators). Optional descriptive data; it never affects the computed achievement state.",
           "type": "string"
         },
+        "domestic_content": {
+          "description": "Optional cost-share evidence behind a domestic-content attestation, such as baa, baba, or american_iron_and_steel. The payload inherits the attestation's status, evidence, applicability, and expiry. It does not itself determine whether the program's threshold is met.",
+          "$ref": "#/$defs/DomesticContentPayload"
+        },
         "sustainability_metric": {
           "title": "Sustainability metric payload",
           "description": "Optional quantitative payload for a sustainability attestation, hanging off the attestation so the numbers inherit its status, evidence, and expiry. `ceam_score` is the TM66 CEAM design score (0 to 4). `embodied_carbon_kgco2e` is a declared embodied-carbon figure; when it is present, `embodied_carbon_scope` and `embodied_carbon_functional_unit` are required so the number is never ambiguous about its life-cycle boundary or its declared unit. `c2c_overall_level` carries a Cradle to Cradle overall rating. `method_variant` records a regional or method sub-variant (for example a TM65 national annex such as TM65NA).",
@@ -1433,6 +2110,21 @@
         }
       },
       "required": ["program", "value_type"]
+    },
+
+    "DomesticContentPayload": {
+      "title": "Domestic content cost-share payload",
+      "description": "Cost shares and the threshold used for a domestic-content claim. US and foreign cost shares should sum to 100 percent within the source's rounding precision; the schema constrains each share individually but does not check their sum. The threshold is the bar against which the attestation was judged, and threshold_effective_date names when that bar took effect. Meaningful for baa, baba, and american_iron_and_steel attestations; program applicability is not restricted by this schema.",
+      "type": "object",
+      "properties": {
+        "us_cost_share_percent": { "description": "US share of the declared cost basis, from 0 to 100 percent.", "type": "number", "minimum": 0, "maximum": 100 },
+        "foreign_cost_share_percent": { "description": "Foreign share of the declared cost basis, from 0 to 100 percent. With the US share, should sum to 100 percent within source rounding.", "type": "number", "minimum": 0, "maximum": 100 },
+        "threshold_percent": { "description": "Domestic-content percentage threshold used to judge the attestation.", "type": "number", "minimum": 0, "maximum": 100 },
+        "threshold_effective_date": { "description": "Date on which the stated threshold took effect, when known. ISO 8601 date (YYYY-MM-DD).", "type": "string", "format": "date" },
+        "basis": { "description": "Cost basis used to calculate the shares.", "$ref": "taxonomy.schema.json#/$defs/DomesticContentBasis" },
+        "provenance": { "$ref": "#/$defs/Provenance" }
+      },
+      "required": ["us_cost_share_percent", "threshold_percent", "basis"]
     },
 
     "Extensions": {

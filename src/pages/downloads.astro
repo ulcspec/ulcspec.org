@@ -95,7 +95,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     patternRole: 'Single-SKU cutsheet model.',
     level: 'standard',
     roadmap:
-      'To reach Full: zonal lumens, measurement uncertainty and corrections, instrumentation depth, and TM-30 detail (accredited test report).',
+      "To reach Full: measurement uncertainty and corrections, instrumentation depth, TM-30 detail, and a measured spectrum as data (accredited test report).",
     achievements: {},
     restrictedSubstances: [],
     filename: 'erco-quintessence-30416-023.ulc',
@@ -109,9 +109,9 @@ const exampleRecords: readonly ExampleRecord[] = [
     category: 'exterior pole',
     patternRole:
       'Configurator with applicability blocks; 54,000 SKUs compressed into 21 records.',
-    level: 'standard',
+    level: 'core',
     roadmap:
-      'To reach Full: measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+      "To reach Standard: a lumen-maintenance claim that states its hours (from the datasheet, per TM-21); its cutsheet states no hours. To reach Full: measurement uncertainty and corrections, a method-backed lumen-maintenance projection, TM-30 detail, and a measured spectrum as data (accredited test report).",
     achievements: { dark_sky: 'claimed', material_health: 'claimed', domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
     achievementsLine:
@@ -129,7 +129,7 @@ const exampleRecords: readonly ExampleRecord[] = [
       'Per-IES model with provenance classes for measured, simulated, and extended-photometry records.',
     level: 'standard',
     roadmap:
-      'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+      "To reach Full: measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).",
     achievements: { domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
     achievementsLine: 'Achievements: domestic content claimed · RoHS declared.',
@@ -146,13 +146,27 @@ const exampleRecords: readonly ExampleRecord[] = [
       'Per-IES color-mixing variant: CRI and TM-30 are waived, while the white point still carries a CCT.',
     level: 'standard',
     roadmap:
-      'To reach Full: zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+      "To reach Full: measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).",
     achievements: { domestic_content: 'claimed' },
     restrictedSubstances: ['rohs'],
     achievementsLine: 'Achievements: domestic content claimed · RoHS declared.',
     filename: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
     url: '/examples/pattern-c-lumenpulse-lumenfacade-rgbw.ulc.json',
     downloadAs: 'lumenpulse-lumenfacade-loi-12-rgbw30k-10x60-ts2-5.ulc',
+  },
+  {
+    pattern: 'C',
+    manufacturer: 'Lumenpulse',
+    product: 'Lumencore Linear Graze',
+    category: 'tunable-white linear',
+    patternRole: "Per-IES model for a tunable-white grazer: the 4000 K tested baseline, and its 1800 K and 6500 K endpoints, which each carry their own color rendering and measured spectrum.",
+    level: 'incomplete',
+    roadmap: "To reach Core: the ordinary Core fields this focused color-state example does not author (distribution, efficacy, voltage, region, use, environment, mounting, secondary function, and a safety listing). The grader prints the roadmap to Full.",
+    achievements: {},
+    restrictedSubstances: [],
+    filename: "lumenpulse-lumencore-linear-graze-lcva-120-277-48-13w-4000k-10x10-dmx-rdm-na-nh.ulc",
+    url: '/examples/pattern-c-lumenpulse-lumencore-lcva.ulc.json',
+    downloadAs: "lumenpulse-lumencore-linear-graze-lcva-120-277-48-13w-4000k-10x10-dmx-rdm-na-nh.ulc",
   },
   {
     pattern: 'D',
@@ -162,7 +176,7 @@ const exampleRecords: readonly ExampleRecord[] = [
     patternRole: 'Per-foot linear-scaling model.',
     level: 'core',
     roadmap:
-      'To reach Standard: a MacAdam SDCM step (from the datasheet, per ANSI C78.377). To reach Full: zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+      "To reach Standard: a MacAdam SDCM step (from the datasheet, per ANSI C78.377). To reach Full: measurement uncertainty and corrections, a method-backed lumen-maintenance projection, TM-30 detail, and a measured spectrum as data (accredited test report).",
     achievements: { material_health: 'claimed', domestic_content: 'claimed' },
     restrictedSubstances: [],
     achievementsLine: 'Achievements: material health and domestic content claimed.',
@@ -332,7 +346,7 @@ const releaseResult = await fetchReleases();
 
 const pageTitle = 'Downloads: designer prompts, examples, schema, CLI';
 const pageDescription =
-  'Ready-made LLM prompts for designers. Eight canonical .ulc example records. The JSON Schema. The Go reference validator via GitHub Releases.';
+  'Ready-made LLM prompts for designers. Nine canonical .ulc example records. The JSON Schema. The Go reference validator via GitHub Releases.';
 
 function formatPublishedDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -368,7 +382,7 @@ function formatAssetSize(bytes: number): string {
       <p
         class="mt-6 md:mt-8 max-w-3xl text-base md:text-lg lg:text-xl text-[var(--text-muted)] leading-relaxed"
       >
-        Designer LLM prompt templates, the eight canonical example records, the JSON Schema, and the Go reference validator.
+        Designer LLM prompt templates, the nine canonical example records, the JSON Schema, and the Go reference validator.
       </p>
     </div>
   </section>
@@ -414,13 +428,13 @@ function formatAssetSize(bytes: number): string {
       <section id="examples" aria-labelledby="examples-heading">
         <h2 id="examples-heading">Canonical example records</h2>
         <p>
-          Eight reference records built from real manufacturer spec sheets: five across the four manufacturer authoring patterns, and three exit signs exercising the emergency product class. These are the files you drop into the prompts above.
+          Nine reference records built from real manufacturer spec sheets: six across the four manufacturer authoring patterns, and three exit signs exercising the emergency product class. These are the files you drop into the prompts above.
         </p>
         <p class="example-grid__note">
           Each record's conformance level and Product Achievements view are computed by the reference builder from the data the record carries, not self-declared. <a href="/docs/conformance" class="link-inline">How conformance is graded →</a> <a href="/docs/achievements" class="link-inline">What achievements mean →</a>
         </p>
 
-        <ul class="example-grid" aria-label="Eight canonical .ulc example records">
+        <ul class="example-grid" aria-label="Nine canonical .ulc example records">
           {exampleRecords.map((r) => (
             <li class="example-card">
               <div class="example-card__meta">
@@ -475,7 +489,7 @@ function formatAssetSize(bytes: number): string {
           <div class="schema-card__head">
             <p class="schema-card__filename"><code>ulc.json</code></p>
             <p class="schema-card__meta">
-              Draft 2020-12 · current at ULC 1.1.0
+              Draft 2020-12 · current at ULC 1.19.0
             </p>
           </div>
           <a

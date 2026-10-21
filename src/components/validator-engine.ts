@@ -6,7 +6,7 @@
 // full Ajv (JSON Schema Draft 2020-12) wire-up is gated on the `ajv` dep
 // addition (see validator-plan.md OQ-1) and lands in the implementation PR.
 //
-// All eight canonical reference records in `public/examples/` PASS this
+// All nine canonical reference records in `public/examples/` PASS this
 // pre-validator. Random JSON FAILs with line-anchored "missing required"
 // errors. Malformed JSON FAILs with line+col reference.
 //
