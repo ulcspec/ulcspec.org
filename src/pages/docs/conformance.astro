@@ -106,29 +106,15 @@ const roadmap: readonly RoadmapRow[] = [
       <dl class="cf-levels">
         <dt>Core</dt>
         <dd>
-          The entry grade: the minimum a fixture must carry to be specified and
-          ordered at all. Mandatory product data (identity, classification, the
-          headline photometric and electrical values, one-line colorimetry), an
-          attached cutsheet, and a recognized safety listing. It sits below the selection-grade data and
-          the accredited test evidence the higher grades add.
+          The datasheet, the photometric file and the safety listing: the minimum a fixture must carry to be specified and ordered at all. Identity, classification, the headline photometric and electrical values, one-line colorimetry, and an attached cutsheet, with a recognized listing for its market.
         </dd>
         <dt>Standard</dt>
         <dd>
-          Core plus the full LM-79 selection-grade specification: maximum
-          intensity, symmetry and coordinate system, materials, test conditions,
-          an LM-79 attestation, a lumen-maintenance framework, and the conditional
-          rows the fixture's form calls for. This is the data a Division 26
-          lighting specification selects products on, which is why it ranks above
-          Core. A Standard record is missing only the
-          accredited third-party test evidence that lifts it to Full.
+          Core plus the deeper claims of the datasheet and the photometric file, the IP rating and the lumen-maintenance claim: maximum intensity, symmetry and coordinate system, zonal lumens, materials, test conditions and measurement regime, an IP rating where the fixture is wet or outdoor-exposed, a lumen-maintenance claim that states its hours or a maintenance table, and the conditional rows the fixture's form calls for. This is the data a Division 26 lighting specification selects products on, which is why it ranks above Core. A Standard record is missing only the evidence that lifts it to Full.
         </dd>
         <dt>Full</dt>
         <dd>
-          Everything: Standard plus the independently-certified characterization
-          an accredited test report supplies. Zonal lumens, an operating point,
-          measurement uncertainty, applied corrections, instrumentation depth, a
-          method-backed lumen-maintenance projection, and, for white-light
-          fixtures, TM-30 color detail.
+          Everything: Standard plus accredited test reports and measured data. The LM-79 attestation with its report referenced in the record, an operating point, measurement uncertainty, applied corrections, instrumentation depth, a method-backed lumen-maintenance projection, and, for white-light fixtures, TM-30 color detail and the measured spectrum as data. A tunable-white or dim-to-warm fixture also states CRI and melanopic DER at both ends of its white range.
         </dd>
       </dl>
       <p>
@@ -180,9 +166,7 @@ const roadmap: readonly RoadmapRow[] = [
       </p>
       <ul class="cf-list">
         <li>
-          An <strong>indoor</strong> fixture is never asked for a BUG rating or an
-          IP rating. Those are outdoor metrics; their absence never lowers its
-          level.
+          An <strong>indoor</strong> fixture rated dry or damp is never asked for a BUG rating or an IP rating. Those are outdoor and wet-location metrics; their absence never lowers its level.
         </li>
         <li>
           A <strong>color-mixing RGBW</strong> fixture is never asked for a single
@@ -214,9 +198,7 @@ const roadmap: readonly RoadmapRow[] = [
         emergency luminaire grades against the normal profile minus luminaire
         efficacy, plus the emergency gates. A UL 924 listing, read from the
         attestation ledger and never a boolean field, satisfies the core
-        safety-listing requirement. A sign-only manufacturer reaches the grade its
-        spec sheets actually support instead of being stranded at Incomplete for
-        lacking an LM-79 report it never produces.
+        safety-listing requirement. A sign-only manufacturer reaches the grade its spec sheets actually support instead of being stranded at Incomplete for lacking the photometric file it never produces.
       </p>
       <p>
         So an honest datasheet is never demoted for a value its fixture has no
