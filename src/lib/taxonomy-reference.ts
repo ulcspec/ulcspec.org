@@ -1,7 +1,7 @@
 // Build-time loader for the /docs/taxonomy enum reference.
 //
 // Reads the vendored taxonomy + schema JSON (public/schema/*.json) at build
-// time, groups the 95 closed-enum taxonomies into reader-facing sections, and
+// time, groups the closed-enum taxonomies into reader-facing sections, and
 // computes, per enum, which ULC schema fields consume it (the "used by"
 // cross-reference). The page renders the returned model; no client data fetch.
 //

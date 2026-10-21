@@ -1,6 +1,6 @@
 // Pinned-commit manifest for the ULC spec content sync.
 // Loader: src/lib/spec-sync.ts (PR-1, see docs/tasks/sections/spec-plan.md).
-// To advance the pin: bump UPSTREAM_COMMIT and rebuild.
+// To advance the pin: bump upstreamCommit and upstreamVersion in SPEC_SYNC and rebuild.
 // To add a file: append to `files` AND add a route under src/pages/spec/.
 
 export interface SpecSyncManifestEntry {
@@ -19,10 +19,10 @@ export interface SpecSyncConfig {
   upstreamRepo: string;
   /**
    * Pinned commit SHA. Full 40-char preferred; short SHA accepted.
-   * The version badge shows the first 7 characters when it's a real SHA.
+   * Its first 7 characters are exported as SPEC_SYNC_SHORT_SHA when it is a real SHA.
    */
   upstreamCommit: string;
-  /** Short label used in the version badge ("ULC v0.5.1"). */
+  /** Short release label of the pinned commit ("v1.19.0"). */
   upstreamVersion: string;
   /** Branch used for "Edit this page on GitHub" links. */
   upstreamEditBranch: string;
@@ -36,14 +36,9 @@ export interface SpecSyncConfig {
 export const SPEC_SYNC = {
   upstreamOwner: 'ulcspec',
   upstreamRepo: 'ULC',
-  // Pinned to the v1.1.0 release commit (tag v1.1.0), which ships the two
-  // computed views (the conformance level and the seven Product Achievements
-  // themes), the exit-sign and emergency product class, the eight example
-  // records, and the v1.1.0 schema and taxonomy. Advance via:
-  //   gh api repos/ulcspec/ULC/commits/main --jq '.sha'
-  // and rebuild. The badge auto-detects a real SHA and renders it.
-  upstreamCommit: '870bd0ebc48b87d19507c90f7144b353a227c72a',
-  upstreamVersion: 'v1.1.0',
+  // Pinned to the v1.19.0 release commit (tag v1.19.0), which ships the revised grading ladder (the LM-79 attestation at Full; zonal lumens and the lumen-maintenance hours rule at Standard), the color-tuning block, the nine example records, and the v1.19.0 schema and taxonomy. Advance via: gh api repos/ulcspec/ULC/commits/main --jq '.sha' and rebuild.
+  upstreamCommit: '2d7cf5f99c4f3a38e62c6a9118f787136935ca3f',
+  upstreamVersion: 'v1.19.0',
   upstreamEditBranch: 'main',
   files: [
     {
@@ -97,7 +92,7 @@ export const SPEC_SYNC_IS_PINNED: boolean = /^[0-9a-f]{7,40}$/i.test(
   SPEC_SYNC.upstreamCommit
 );
 
-/** Short SHA for the badge; first 7 chars when pinned, raw string otherwise. */
+/** Short SHA: first 7 chars when pinned, raw string otherwise. */
 export const SPEC_SYNC_SHORT_SHA: string = SPEC_SYNC_IS_PINNED
   ? SPEC_SYNC.upstreamCommit.slice(0, 7)
   : SPEC_SYNC.upstreamCommit;
