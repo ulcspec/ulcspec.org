@@ -27,31 +27,37 @@ const roadmap: readonly RoadmapRow[] = [
     record: 'ERCO Quintessence',
     grade: 'Standard',
     toStandard: 'n/a',
-    toFull: 'zonal lumens, measurement uncertainty and corrections, instrumentation depth, and TM-30 detail (accredited test report).',
+    toFull: "measurement uncertainty and corrections, instrumentation depth, TM-30 detail, and a measured spectrum as data (accredited test report).",
   },
   {
     record: 'Selux Aya',
-    grade: 'Standard',
-    toStandard: 'n/a',
-    toFull: 'measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+    grade: 'Core',
+    toStandard: "a lumen-maintenance claim that states its hours (from the datasheet, per TM-21); its cutsheet states no hours.",
+    toFull: "measurement uncertainty and corrections, a method-backed lumen-maintenance projection, TM-30 detail, and a measured spectrum as data (accredited test report).",
   },
   {
     record: 'Lumenpulse Lumenfacade (RGB)',
     grade: 'Standard',
     toStandard: 'n/a',
-    toFull: 'zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+    toFull: "measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).",
   },
   {
     record: 'Lumenpulse Lumenfacade (RGBW)',
     grade: 'Standard',
     toStandard: 'n/a',
-    toFull: 'zonal lumens, measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).',
+    toFull: "measurement uncertainty and corrections, and a method-backed lumen-maintenance projection (accredited test report).",
+  },
+  {
+    record: "Lumenpulse Lumencore Linear Graze (tunable white)",
+    grade: "Incomplete",
+    toStandard: "Core first: distribution type, efficacy, input voltage, indoor or outdoor use, environment rating, mounting, secondary function, technical region, and a safety listing, the ordinary fields this color-state example does not author; then twelve Standard fields, zonal lumens and the lumen-maintenance claim among them.",
+    toFull: "melanopic DER at both ends of the white range (not published), TM-30 per-hue-bin detail, an operating point, measurement uncertainty and corrections, instrumentation depth, a method-backed lumen-maintenance projection, and a measured spectrum as data for the 4000 K baseline.",
   },
   {
     record: 'Vode Nexa',
     grade: 'Core',
     toStandard: 'a MacAdam SDCM step (from the datasheet, per ANSI C78.377).',
-    toFull: 'zonal lumens, measurement uncertainty and corrections, a method-backed lumen-maintenance projection, and TM-30 detail (accredited test report).',
+    toFull: "measurement uncertainty and corrections, a method-backed lumen-maintenance projection, TM-30 detail, and a measured spectrum as data (accredited test report).",
   },
   {
     record: 'Cooper Sure-Lites LPX (exit sign)',
@@ -76,7 +82,7 @@ const roadmap: readonly RoadmapRow[] = [
 
 <PageShell
   title="Conformance - ULC specification"
-  description="How ULC computes a record's conformance level: three grades (Core, Standard, Full) above an Incomplete floor, why the cut points mirror a Division 26 construction specification, and why a fixture is graded only on what its form requires, and how the eight reference records grade."
+  description="How ULC computes a record's conformance level: three grades (Core, Standard, Full) above an Incomplete floor, why the cut points mirror a Division 26 construction specification, and why a fixture is graded only on what its form requires, and how the nine reference records grade."
 >
   <SpecDocsLayout>
     <h1 class="page-h1">Conformance.</h1>
@@ -218,15 +224,11 @@ const roadmap: readonly RoadmapRow[] = [
       </p>
     </section>
 
-    {/* ── The eight reference records ─────────────────────────────────── */}
+    {/* ── The nine reference records ─────────────────────────────────── */}
     <section class="cf-section">
-      <h2 class="cf-h2">The eight reference records</h2>
+      <h2 class="cf-h2">The nine reference records</h2>
       <p>
-        The <a href="/downloads#examples" class="cf-link">eight canonical
-        records</a> show grading on real cutsheets: five architectural records
-        across the four authoring patterns, and three exit signs in the emergency
-        product class. Each one carries the grade it earned and its roadmap to
-        Full.
+        The <a href="/downloads#examples" class="cf-link">nine canonical records</a> show grading on real cutsheets: six architectural records across the four authoring patterns, and three exit signs in the emergency product class. Each one carries its computed level and its roadmap to Full.
       </p>
       <div class="cf-table-wrap">
         <table class="cf-table">
@@ -257,7 +259,7 @@ const roadmap: readonly RoadmapRow[] = [
         </table>
       </div>
       <p class="cf-note">
-        Vode is one field short of Standard. The two Lumenfacade records reach
+        Vode is one field short of Standard. Selux is held at Core by its cutsheet, which states no lumen-maintenance hours. The Lumencore grazer grades Incomplete by design: it is a focused color-state example that authors the white range and its endpoints, not the ordinary Core fields. The two Lumenfacade records reach
         Standard with their DMX driver exempt from the analog-dimming rows, an
         applicability rule in action. The LPX exit sign is held at Core by two
         figures its spec sheet does not publish (letter height and self-powered
