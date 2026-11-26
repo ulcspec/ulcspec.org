@@ -1,7 +1,7 @@
 commit-msg:
   commands:
     restamp-history:
-      run: python3 scripts/hooks/restamp-history-hook.py {1}
+      run: python3 scripts/hooks/restamp-history-hook.py "{1}"
 pre-commit:
   commands:
     # DISABLED 2026-05-15: astro-noop is a `run: 'true'` placeholder that
